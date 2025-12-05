@@ -1,20 +1,10 @@
-declare module '@salesforce/design-system-react/components/card/private/body' {
-	import React from 'react';
-	type Props = {
-		/**
-		 * Elements to place in the body.
-		 */
-		children?: React.ReactNode;
-		/**
-		 * CSS classes to be added to the card.
-		 */
-		className?: any[] | Record<string, any> | string;
-		/**
-		 * Set the HTML `id` of the body.
-		 */
-		id?: string;
-	};
+import React from 'react';
 
-	function Component(props: Props): JSX.Element;
-	export default Component;
+export interface BodyProps {
+	children?: React.ReactNode;
+	className?: string | string[] | Record<string, boolean>;
+	id?: string;
 }
+
+declare const Body: React.FC<BodyProps>;
+export default Body;

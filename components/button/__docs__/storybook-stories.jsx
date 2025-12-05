@@ -1,127 +1,231 @@
-/* eslint-disable react/display-name */
-
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import IconSettings from '../../icon-settings';
-
-import { BUTTON } from '../../../utilities/constants';
 import Button from '../../button';
-
 import BaseNeutral from '../__examples__/base-neutral';
 import BrandDisabled from '../__examples__/brand-disabled-destructive-inverse';
 import ButtonIcons from '../__examples__/button-icons';
 
-const getButton = (props) => <Button {...props} onClick={action('click')} />;
-
-const getIconButton = (props) => getButton({ variant: 'icon', ...props });
-
-const blueBackground = (getStory) => (
-	<div className="slds-hint-parent" style={{ backgroundColor: '#16325c' }}>
-		{getStory()}
+/**
+ * Decorator for inverse/dark background stories.
+ * Uses SLDS surface-inverse class for proper theming.
+ */
+const inverseDecorator = (Story) => (
+	<div
+		className="slds-hint-parent slds-box"
+		style={{
+			backgroundColor: 'var(--slds-g-color-neutral-base-10, #181818)',
+			padding: '1rem',
+			borderRadius: '0.25rem',
+		}}
+	>
+		<Story />
 	</div>
 );
 
-storiesOf(BUTTON, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">
-			<IconSettings iconPath="/assets/icons">{getStory()}</IconSettings>
-		</div>
-	))
-	.add('Base', () => getButton({ label: 'Base', variant: 'base' }))
-	.add('Aria attribute', () =>
-		getButton({ label: 'Base', 'aria-label': 'Base', variant: 'base' })
-	)
-	.add('Data attribute', () =>
-		getButton({
-			label: 'Base',
-			'data-some-property': 'Some value',
-			variant: 'base',
-		})
-	)
-	.add('Neutral', () => getButton({ label: 'Neutral' }))
-	.add('Neutral with id', () =>
-		getButton({ label: 'Neutral', id: 'custom-id' })
-	)
-	.add('Neutral Icon', () =>
-		getButton({
-			label: 'Neutral Icon',
-			iconCategory: 'utility',
-			iconName: 'download',
-			iconPosition: 'left',
-			onFocus: action('focus'),
-			onKeyDown: action('keyDown'),
-		})
-	)
-	.add('Disabled', () => getButton({ label: 'Disabled', disabled: true }))
-	.add('Icon large', () =>
-		getIconButton({
-			assistiveText: { icon: 'Icon' },
-			iconSize: 'large',
-			iconCategory: 'utility',
-			iconName: 'answer',
-			title: 'chat',
-		})
-	)
-	.add('Icon with external path', () =>
-		getIconButton({
-			assistiveText: { icon: 'Icon' },
-			iconSize: 'large',
-			iconPath: '/assets/icons/utility-sprite/svg/symbols.svg#announcement',
-			title: 'announcement',
-		})
-	)
-	.add(
-		'Small Icon Hint inverse',
-		() =>
-			getIconButton({
-				assistiveText: { icon: 'Hint' },
-				iconCategory: 'utility',
-				iconName: 'down',
-				iconVariant: 'border',
-				iconSize: 'small',
-				hint: true,
-				inverse: true,
-			}),
-		{ decorators: [blueBackground] }
-	)
-	.add(
-		'Icon Container Small',
-		() =>
-			getIconButton({
-				assistiveText: { icon: 'Icon border container small' },
-				iconCategory: 'utility',
-				iconName: 'settings',
-				iconSize: 'large',
-				iconVariant: 'border',
-				inverse: true,
-			}),
-		{ decorators: [blueBackground] }
-	)
-	.add(
-		'Dropdown Icon inverse',
-		() =>
-			getIconButton({
-				'aria-haspopup': true,
-				assistiveText: {
-					icon: 'Dropdown Icon inverse',
-				},
-				iconCategory: 'utility',
-				iconName: 'settings',
-				iconVariant: 'more',
-				inverse: true,
-			}),
-		{ decorators: [blueBackground] }
-	)
-	.add(
-		'Outline brand button',
-		() =>
-			getButton({
-				label: 'Outline brand button',
-				variant: 'outline-brand',
-			}),
-		{ decorators: [blueBackground] }
-	)
-	.add('Doc site Base Neutral', () => <BaseNeutral />)
-	.add('Doc site Brand Disabled', () => <BrandDisabled />)
-	.add('Doc site Button Icons', () => <ButtonIcons />);
+export default {
+	title: 'Components/Button',
+	component: Button,
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">
+					<Story />
+				</IconSettings>
+			</div>
+		),
+	],
+};
+
+const Template = (args) => <Button {...args} onClick={action('click')} />;
+
+// ============================================
+// Basic Button Variants
+// ============================================
+
+export const Base = Template.bind({});
+Base.args = {
+	label: 'Base',
+	variant: 'base',
+};
+
+export const Neutral = Template.bind({});
+Neutral.args = {
+	label: 'Neutral',
+};
+
+export const Brand = Template.bind({});
+Brand.args = {
+	label: 'Brand',
+	variant: 'brand',
+};
+
+export const Destructive = Template.bind({});
+Destructive.args = {
+	label: 'Destructive',
+	variant: 'destructive',
+};
+
+export const Success = Template.bind({});
+Success.args = {
+	label: 'Success',
+	variant: 'success',
+};
+
+export const Disabled = Template.bind({});
+Disabled.args = {
+	label: 'Disabled',
+	disabled: true,
+};
+
+// ============================================
+// Button with Icons
+// ============================================
+
+export const NeutralWithLeftIcon = Template.bind({});
+NeutralWithLeftIcon.args = {
+	label: 'Download',
+	iconCategory: 'utility',
+	iconName: 'download',
+	iconPosition: 'left',
+};
+
+export const NeutralWithRightIcon = Template.bind({});
+NeutralWithRightIcon.args = {
+	label: 'Settings',
+	iconCategory: 'utility',
+	iconName: 'settings',
+	iconPosition: 'right',
+};
+
+export const IconOnly = Template.bind({});
+IconOnly.args = {
+	variant: 'icon',
+	assistiveText: { icon: 'Settings' },
+	iconCategory: 'utility',
+	iconName: 'settings',
+	title: 'Settings',
+};
+
+export const IconLarge = Template.bind({});
+IconLarge.args = {
+	variant: 'icon',
+	assistiveText: { icon: 'Chat' },
+	iconSize: 'large',
+	iconCategory: 'utility',
+	iconName: 'answer',
+	title: 'Chat',
+};
+
+// ============================================
+// Inverse Buttons (for dark backgrounds)
+// ============================================
+
+export const InverseButton = Template.bind({});
+InverseButton.args = {
+	label: 'Inverse',
+	variant: 'neutral',
+	inverse: true,
+};
+InverseButton.decorators = [inverseDecorator];
+InverseButton.parameters = {
+	docs: {
+		description: {
+			story: 'Inverse buttons are designed for dark backgrounds. Toggle dark mode or view on the dark background below.',
+		},
+	},
+};
+
+export const InverseIconButton = Template.bind({});
+InverseIconButton.args = {
+	variant: 'icon',
+	assistiveText: { icon: 'Settings' },
+	iconCategory: 'utility',
+	iconName: 'settings',
+	iconVariant: 'border',
+	inverse: true,
+};
+InverseIconButton.decorators = [inverseDecorator];
+
+export const InverseIconWithHint = Template.bind({});
+InverseIconWithHint.args = {
+	variant: 'icon',
+	assistiveText: { icon: 'More options' },
+	iconCategory: 'utility',
+	iconName: 'down',
+	iconVariant: 'border',
+	iconSize: 'small',
+	hint: true,
+	inverse: true,
+};
+InverseIconWithHint.decorators = [inverseDecorator];
+
+export const OutlineBrandButton = Template.bind({});
+OutlineBrandButton.args = {
+	label: 'Outline Brand',
+	variant: 'outline-brand',
+};
+OutlineBrandButton.decorators = [inverseDecorator];
+
+// ============================================
+// Special Variants
+// ============================================
+
+export const DropdownButton = Template.bind({});
+DropdownButton.args = {
+	variant: 'icon',
+	'aria-haspopup': true,
+	assistiveText: { icon: 'More options' },
+	iconCategory: 'utility',
+	iconName: 'settings',
+	iconVariant: 'more',
+};
+
+export const LinkButton = Template.bind({});
+LinkButton.args = {
+	label: 'Link Style',
+	variant: 'link',
+};
+
+// ============================================
+// With Custom Attributes
+// ============================================
+
+export const WithAriaLabel = Template.bind({});
+WithAriaLabel.args = {
+	label: 'Submit',
+	'aria-label': 'Submit form',
+	variant: 'brand',
+};
+
+export const WithDataAttribute = Template.bind({});
+WithDataAttribute.args = {
+	label: 'Track Me',
+	'data-analytics-id': 'button-123',
+	variant: 'neutral',
+};
+
+export const WithCustomId = Template.bind({});
+WithCustomId.args = {
+	label: 'Custom ID',
+	id: 'my-custom-button',
+};
+
+// ============================================
+// Doc Site Examples
+// ============================================
+
+export const DocSiteBaseNeutral = () => <BaseNeutral />;
+DocSiteBaseNeutral.parameters = {
+	docs: { description: { story: 'Example from documentation site' } },
+};
+
+export const DocSiteBrandDisabled = () => <BrandDisabled />;
+DocSiteBrandDisabled.parameters = {
+	docs: { description: { story: 'Example from documentation site' } },
+};
+
+export const DocSiteButtonIcons = () => <ButtonIcons />;
+DocSiteButtonIcons.parameters = {
+	docs: { description: { story: 'Example from documentation site' } },
+};

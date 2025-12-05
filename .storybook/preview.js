@@ -1,12 +1,33 @@
-import { addParameters } from '@storybook/react';
-import axeConfig from '../tests/axe-config';
+/** @type { import('@storybook/react').Preview } */
+const preview = {
+  parameters: {
+    // Accessibility addon configuration
+    a11y: {
+      element: '#storybook-root',
+      options: {},
+    },
+    // Controls addon configuration
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/i,
+      },
+    },
+    // Documentation configuration
+    docs: {
+      toc: true,
+    },
+    // Dark mode addon configuration
+    darkMode: {
+      // Set class names for SLDS color schemes
+      classTarget: 'body',
+      darkClass: 'slds-color-scheme--dark',
+      lightClass: 'slds-color-scheme--light',
+      // Style the Storybook UI to match
+      stylePreview: true,
+    },
+  },
+  tags: ['autodocs'],
+};
 
-addParameters({
-	a11y: {
-		element: '#root',
-		// axe-core configurationOptions (https://github.com/dequelabs/axe-core/blob/develop/doc/API.md#parameters-1)
-		config: axeConfig,
-		// axe-core optionsParameter (https://github.com/dequelabs/axe-core/blob/develop/doc/API.md#options-parameter)
-		options: {},
-	},
-});
+export default preview;

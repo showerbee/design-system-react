@@ -1,11 +1,17 @@
-<link rel="stylesheet"
-	href="assets/styles/salesforce-lightning-design-system.css"
-	type="text/css" />
-<link rel="stylesheet" href="assets/styles/override.css" type="text/css" />
-<link rel="stylesheet" href="assets/styles/table.css" type="text/css" />
-<style>
-	html {
-		background-color: transparent;
-	}
+<!-- SLDS Plus CSS with light-dark() color functions -->
+<link rel="stylesheet" href="/assets/styles/slds-plus.css" />
 
+<style>
+  /* Apply light color scheme by default */
+  body {
+    color-scheme: light dark;
+  }
+  
+  body.slds-color-scheme--light {
+    color-scheme: only light;
+  }
+  
+  body.slds-color-scheme--dark {
+    color-scheme: only dark;
+  }
 </style>

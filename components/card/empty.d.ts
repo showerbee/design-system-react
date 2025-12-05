@@ -1,16 +1,9 @@
-declare module '@salesforce/design-system-react/components/card/empty' {
-	import React from 'react';
-	type Props = {
-		/**
-		 * Additional call to actions that will render under the heading. Often this is an "Add Item" button.
-		 */
-		children?: React.ReactNode;
-		/**
-		 * Primary text for an Empty Card.
-		 */
-		heading?: string;
-	};
+import React from 'react';
 
-	function Component(props: Props): JSX.Element;
-	export default Component;
+export interface EmptyProps {
+	heading?: React.ReactNode;
+	id?: string;
 }
+
+declare const Empty: React.FC<EmptyProps>;
+export default Empty;

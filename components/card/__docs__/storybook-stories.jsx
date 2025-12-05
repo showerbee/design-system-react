@@ -1,11 +1,5 @@
-import React from 'react';
-
-import PropTypes from 'prop-types';
-import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import React, { useState } from 'react';
 import IconSettings from '../../icon-settings';
-
-import { CARD } from '../../../utilities/constants';
 import Button from '../../button';
 import Card from '../../card';
 import CardEmpty from '../../card/empty';
@@ -14,13 +8,7 @@ import DataTable from '../../data-table';
 import DataTableColumn from '../../data-table/column';
 import DataTableHighlightCell from '../../data-table/highlight-cell';
 import Icon from '../../icon';
-
 import MediaObject from '../../media-object';
-import InlineEdit from '../../forms/input/inline';
-
-import RelatedListWithTable from '../__examples__/related-list-with-table';
-
-import generateId from '../../../utilities/generate-id';
 
 const sampleItems = [
 	{ id: '0', name: 'Cloudhub' },
@@ -28,195 +16,232 @@ const sampleItems = [
 	{ id: '2', name: 'Cloud City' },
 ];
 
-let currentId = 3;
+export default {
+	title: 'Components/Card',
+	component: Card,
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">
+					<Story />
+				</IconSettings>
+			</div>
+		),
+	],
+	tags: ['autodocs'],
+};
 
-class DemoCard extends React.Component {
-	static displayName = 'DemoCard';
+/**
+ * Basic card with items
+ */
+export const WithItems = {
+	render: () => (
+		<div className="slds-grid slds-grid_vertical">
+			<Card
+				id="ExampleCard"
+				heading={`Related Items (${sampleItems.length})`}
+				icon={<Icon category="standard" name="document" size="small" />}
+				headerActions={<Button label="New" />}
+				footer="Card Footer"
+			>
+				<DataTable id="SLDSDataTableExample-1" items={sampleItems}>
+					<DataTableColumn label="Opportunity Name" property="name" truncate>
+						<DataTableHighlightCell />
+					</DataTableColumn>
+				</DataTable>
+			</Card>
+		</div>
+	),
+};
 
-	static propTypes = {
-		items: PropTypes.array,
-		header: PropTypes.node,
-		heading: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
-	};
+/**
+ * Interactive card with filtering
+ */
+export const InteractiveCard = {
+	render: function InteractiveCardStory() {
+		const [items, setItems] = useState(sampleItems);
+		const [filter, setFilter] = useState(null);
+		let currentId = 3;
 
-	state = {
-		filter: null,
-		items: this.props.items,
-	};
+		const handleFilterChange = (event) => {
+			const filterValue =
+				event.target.value !== '' ? RegExp(event.target.value, 'i') : null;
+			setFilter(filterValue);
+		};
 
-	handleFilterChange = (event, ...rest) => {
-		action('filter')(event, ...rest);
+		const handleDeleteAll = () => {
+			setFilter(null);
+			setItems([]);
+		};
 
-		const filter =
-			event.target.value !== '' ? RegExp(event.target.value, 'i') : null;
+		const handleAddItem = () => {
+			setItems([
+				{ id: String(currentId++), name: `New Item ${Date.now()}` },
+				...items,
+			]);
+		};
 
-		this.setState({
-			filter,
-		});
-	};
-
-	handleDeleteAllItems = (...rest) => {
-		action('delete all')(...rest);
-
-		this.setState({
-			filter: null,
-			items: [],
-		});
-	};
-
-	handleAddItem = (...rest) => {
-		action('add')(...rest);
-
-		this.setState({
-			items: [
-				// eslint-disable-next-line no-plusplus
-				{ id: currentId++, name: `New item #${generateId()}` },
-				...this.state.items,
-			],
-		});
-	};
-
-	render() {
-		let { items } = this.state;
-		if (this.state.filter) {
-			items = items.filter((item) => this.state.filter.test(item.name));
+		let displayItems = items;
+		if (filter) {
+			displayItems = items.filter((item) => filter.test(item.name));
 		}
 
-		const isEmpty = items.length === 0;
-
-		let { heading } = this.props;
-
-		if (!this.props.heading) {
-			heading =
-				items.length > 0 ? `Related Items (${items.length})` : 'Related Items';
-		}
+		const isEmpty = displayItems.length === 0;
+		const heading = items.length > 0 ? `Related Items (${items.length})` : 'Related Items';
 
 		return (
 			<div className="slds-grid slds-grid_vertical">
 				<Card
-					id="ExampleCard"
+					id="InteractiveCard"
 					filter={
-						!isEmpty || this.state.filter ? (
-							<CardFilter onChange={this.handleFilterChange} />
+						!isEmpty || filter ? (
+							<CardFilter onChange={handleFilterChange} />
 						) : null
 					}
-					header={this.props.header}
 					headerActions={
 						!isEmpty ? (
-							<Button
-								label="Delete All Items"
-								onClick={this.handleDeleteAllItems}
-							/>
+							<Button label="Delete All Items" onClick={handleDeleteAll} />
 						) : (
-							<Button label="New" onClick={this.handleAddItem} />
+							<Button label="New" onClick={handleAddItem} />
 						)
 					}
 					footer="Card Footer"
 					heading={heading}
 					icon={<Icon category="standard" name="document" size="small" />}
 					empty={isEmpty ? <CardEmpty heading="No Related Items" /> : null}
-					aria-label="SLDSCard Component"
-					data-description="Description of the Card component"
 				>
-					<DataTable id="SLDSDataTableExample-1" items={items}>
+					<DataTable id="SLDSDataTableExample-2" items={displayItems}>
 						<DataTableColumn label="Opportunity Name" property="name" truncate>
-							<DataTableHighlightCell search={this.state.filter} />
+							<DataTableHighlightCell search={filter} />
 						</DataTableColumn>
 					</DataTable>
 				</Card>
 			</div>
 		);
-	}
-}
+	},
+};
 
-const SetHeightCard = () => (
-	<Card
-		bodyClassName="slds-grow slds-scrollable_y"
-		className="slds-grid slds-grid_vertical"
-		footer={
-			<a href="#" onClick={(event) => event.preventDefault()}>
-				Footer text
-			</a>
-		}
-		heading="Card with set height"
-		icon={<Icon category="standard" name="document" size="small" />}
-		style={{ height: '300px' }}
-	>
-		<div className="slds-card__body_inner">
-			<div>asdf</div>
-			<div>asdf</div>
-			<div>asdf</div>
-			<div>asdf</div>
-			<div>asdf</div>
-			<div>asdf</div>
-			<div>asdf</div>
-			<div>asdf</div>
-			<div>asdf</div>
-			<div>asdf</div>
-			<div>asdf</div>
-			<div>asdf</div>
-			<div>asdf</div>
-		</div>
-	</Card>
-);
+/**
+ * Empty card state
+ */
+export const EmptyCard = {
+	render: () => (
+		<Card
+			id="EmptyCard"
+			heading="Related Items"
+			icon={<Icon category="standard" name="document" size="small" />}
+			headerActions={<Button label="New" />}
+			empty={<CardEmpty heading="No Related Items" />}
+		/>
+	),
+};
 
-SetHeightCard.displayName = 'SET_HEIGHT_CARD';
-
-const DemoCardWithoutHeader = () => (
-	<Card
-		bodyClassName="slds-grow slds-scrollable_y"
-		className="slds-grid slds-grid_vertical"
-		footer={
-			<a href="#" onClick={(event) => event.preventDefault()}>
-				Footer text
-			</a>
-		}
-		hasNoHeader
-		icon={<Icon category="standard" name="document" size="small" />}
-		style={{ height: '300px' }}
-	>
-		<DataTable id="SLDSDataTableExample-1" items={sampleItems}>
-			<DataTableColumn label="Opportunity Name" property="name" truncate>
-				<DataTableHighlightCell />
-			</DataTableColumn>
-		</DataTable>
-	</Card>
-);
-
-DemoCardWithoutHeader.displayName = 'CARD_WITHOUT_HEADER';
-
-storiesOf(CARD, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">
-			<IconSettings iconPath="/assets/icons">{getStory()}</IconSettings>
-		</div>
-	))
-	.add('w/ Items', () => <DemoCard items={sampleItems} />)
-	.add('Empty', () => <DemoCard items={[]} />)
-	.add('Custom Header', () => (
-		<DemoCard
+/**
+ * Card with custom header using MediaObject
+ */
+export const CustomHeader = {
+	render: () => (
+		<Card
+			id="CustomHeaderCard"
 			header={
 				<MediaObject
 					body={
-						<InlineEdit
-							className="slds-text-heading_small slds-truncate"
-							name="inline-edit-standard"
-							value="Write your own heading"
-							id="inline-edit-standard"
-							silenceDeprecationWarning
-						/>
+						<h2 className="slds-text-heading_small slds-truncate">
+							Custom Media Object Header
+						</h2>
 					}
+					figure={<Icon category="standard" name="account" size="small" />}
 				/>
 			}
-			items={sampleItems}
-		/>
-	))
-	.add('Custom Heading', () => (
-		<DemoCard
-			items={sampleItems}
-			heading={<span style={{ color: 'red' }}>To Wanda! This is custom!</span>}
-		/>
-	))
-	.add('Set height card', () => <SetHeightCard />)
-	.add('w/o Header', () => <DemoCardWithoutHeader />)
-	.add('Doc site Related List With Table', () => <RelatedListWithTable />);
+			footer="Card Footer"
+		>
+			<DataTable id="SLDSDataTableExample-3" items={sampleItems}>
+				<DataTableColumn label="Opportunity Name" property="name" truncate>
+					<DataTableHighlightCell />
+				</DataTableColumn>
+			</DataTable>
+		</Card>
+	),
+};
+
+/**
+ * Card with custom heading style
+ */
+export const CustomHeading = {
+	render: () => (
+		<Card
+			id="CustomHeadingCard"
+			heading={<span style={{ color: 'var(--slds-g-color-brand-base-50, #0070d2)' }}>Custom Styled Heading</span>}
+			icon={<Icon category="standard" name="document" size="small" />}
+			footer="Card Footer"
+		>
+			<DataTable id="SLDSDataTableExample-4" items={sampleItems}>
+				<DataTableColumn label="Opportunity Name" property="name" truncate>
+					<DataTableHighlightCell />
+				</DataTableColumn>
+			</DataTable>
+		</Card>
+	),
+};
+
+/**
+ * Card with fixed height and scrollable body
+ */
+export const SetHeightCard = {
+	render: () => (
+		<Card
+			bodyClassName="slds-grow slds-scrollable_y"
+			className="slds-grid slds-grid_vertical"
+			footer={<a href="#">View All</a>}
+			heading="Card with Set Height"
+			icon={<Icon category="standard" name="document" size="small" />}
+			style={{ height: '300px' }}
+		>
+			<div className="slds-card__body_inner">
+				{Array.from({ length: 15 }, (_, i) => (
+					<div key={i} className="slds-p-around_x-small">
+						Scrollable content line {i + 1}
+					</div>
+				))}
+			</div>
+		</Card>
+	),
+};
+
+/**
+ * Card without header
+ */
+export const WithoutHeader = {
+	render: () => (
+		<Card
+			bodyClassName="slds-grow slds-scrollable_y"
+			className="slds-grid slds-grid_vertical"
+			footer={<a href="#">Footer Link</a>}
+			hasNoHeader
+			style={{ height: '200px' }}
+		>
+			<DataTable id="SLDSDataTableExample-5" items={sampleItems}>
+				<DataTableColumn label="Opportunity Name" property="name" truncate>
+					<DataTableHighlightCell />
+				</DataTableColumn>
+			</DataTable>
+		</Card>
+	),
+};
+
+/**
+ * Simple card with text content
+ */
+export const SimpleCard = {
+	render: () => (
+		<Card
+			heading="Simple Card"
+			icon={<Icon category="standard" name="account" size="small" />}
+		>
+			<div className="slds-card__body_inner slds-p-around_medium">
+				<p>This is a simple card with text content.</p>
+				<p>Cards are used to group related information.</p>
+			</div>
+		</Card>
+	),
+};

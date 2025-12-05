@@ -1,12 +1,8 @@
-declare module '@salesforce/design-system-react/components/card/private/footer' {
-	import React from 'react';
-	type Props = {
-		/**
-		 * Elements to place in the footer.
-		 */
-		children?: React.ReactNode;
-	};
+import React from 'react';
 
-	function Component(props: Props): JSX.Element;
-	export default Component;
+export interface FooterProps {
+	children?: React.ReactNode;
 }
+
+declare const Footer: React.FC<FooterProps>;
+export default Footer;
