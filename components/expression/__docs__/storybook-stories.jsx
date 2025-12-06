@@ -1,23 +1,110 @@
-import React from 'react';
-import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import React, { useState } from 'react';
+import IconSettings from '../../icon-settings';
+import Expression from '../';
+import ExpressionCondition from '../condition';
 
-import { EXPRESSION } from '../../../utilities/constants';
+export default {
+	title: 'Components/Expression',
+	component: Expression,
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">
+					<Story />
+				</IconSettings>
+			</div>
+		),
+	],
+	argTypes: {
+		triggerType: {
+			control: { type: 'select' },
+			options: ['all', 'any', 'custom', 'always', 'formula'],
+		},
+	},
+};
 
-import Initial from '../__examples__/initial';
-import ResourceSelected from '../__examples__/resource-selected';
-import MultipleConditions from '../__examples__/multi-condition';
-import WithGroup from '../__examples__/with-group';
-import CustomLogic from '../__examples__/with-custom-Logic';
-import FormulaLogic from '../__examples__/with-formula-logic';
+// Default expression
+export const Default = {
+	render: () => {
+		const [triggerType, setTriggerType] = useState('all');
 
-storiesOf(EXPRESSION, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">{getStory()}</div>
-	))
-	.add('Initial State', () => <Initial action={action} />)
-	.add('w/ Resource Selected', () => <ResourceSelected action={action} />)
-	.add('w/ Multiple Conditions', () => <MultipleConditions action={action} />)
-	.add('w/ Group', () => <WithGroup action={action} />)
-	.add('w/ Custom Logic', () => <CustomLogic action={action} />)
-	.add('w/ Formula Logic', () => <FormulaLogic action={action} />);
+		return (
+			<Expression
+				triggerType={triggerType}
+				events={{
+					onChangeTrigger: (event, data) => setTriggerType(data.triggerType),
+					onAddCondition: () => console.log('Add condition'),
+					onAddGroup: () => console.log('Add group'),
+				}}
+			>
+				<ExpressionCondition
+					labels={{
+						resource: 'Resource',
+						operator: 'Operator',
+						value: 'Value',
+					}}
+				/>
+			</Expression>
+		);
+	},
+};
+
+// All conditions trigger
+export const AllConditions = {
+	render: () => (
+		<Expression
+			triggerType="all"
+			labels={{
+				title: 'Filter Conditions',
+			}}
+			events={{
+				onChangeTrigger: (event, data) => console.log('Trigger changed:', data.triggerType),
+				onAddCondition: () => console.log('Add condition'),
+			}}
+		>
+			<ExpressionCondition />
+			<ExpressionCondition />
+		</Expression>
+	),
+};
+
+// Any condition trigger
+export const AnyCondition = {
+	render: () => (
+		<Expression
+			triggerType="any"
+			labels={{
+				title: 'Match Any Condition',
+			}}
+			events={{
+				onChangeTrigger: (event, data) => console.log('Trigger changed:', data.triggerType),
+				onAddCondition: () => console.log('Add condition'),
+			}}
+		>
+			<ExpressionCondition />
+		</Expression>
+	),
+};
+
+// Custom logic
+export const CustomLogic = {
+	render: () => {
+		const [customLogicValue, setCustomLogicValue] = useState('1 AND 2 OR 3');
+
+		return (
+			<Expression
+				triggerType="custom"
+				customLogicValue={customLogicValue}
+				events={{
+					onChangeTrigger: () => {},
+					onChangeCustomLogicValue: (e) => setCustomLogicValue(e.target.value),
+					onAddCondition: () => console.log('Add condition'),
+				}}
+			>
+				<ExpressionCondition />
+				<ExpressionCondition />
+				<ExpressionCondition />
+			</Expression>
+		);
+	},
+};

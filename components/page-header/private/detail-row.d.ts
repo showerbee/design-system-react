@@ -1,17 +1,9 @@
-declare module '@salesforce/design-system-react/components/page-header/private/detail-row' {
-	import React from 'react';
-	type Props = {
-		children?: React.ReactNode;
-		/**
-		 * Optional class name
-		 */
-		className?: any[] | Record<string, any> | string;
-		/**
-		 * An array of detail blocks
-		 */
-		details?: any[];
-	};
+import { ReactNode } from 'react';
 
-	function Component(props: Props): JSX.Element;
-	export default Component;
+export interface DetailRowProps {
+	children?: ReactNode;
+	className?: string;
 }
+
+declare const DetailRow: React.FC<DetailRowProps>;
+export default DetailRow;

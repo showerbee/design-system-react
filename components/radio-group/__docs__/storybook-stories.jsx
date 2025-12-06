@@ -1,89 +1,124 @@
-/* eslint-disable react/display-name */ import React from 'react';
-import PropTypes from 'prop-types';
-import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-import RadioGroup from '../../radio-group';
-import Radio from '../../radio-group/radio';
-import { RADIO_GROUP } from '../../../utilities/constants';
+import React, { useState } from 'react';
+import IconSettings from '../../icon-settings';
+import Radio from '../../radio';
+import RadioGroup from '../';
 
-import Base from '../__examples__/base';
-
-class RadioGroupExample extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {};
-		this.onChange = this.onChange.bind(this);
-	}
-
-	onChange(event) {
-		this.setState({
-			checked: event.target.value,
-		});
-		action('onChange')(event);
-	}
-
-	render() {
-		const values = ['Radio Label One', 'Radio Label Two'];
-		return (
-			<div>
-				<h1 className="slds-text-title_caps slds-p-vertical_medium">
-					{this.props.heading}
-				</h1>
-				<RadioGroup
-					errorId={
-						this.props.labels && this.props.labels.error
-							? 'error-id'
-							: undefined
-					}
-					labels={this.props.labels}
-					name="radio-group-example"
-					onChange={this.onChange}
-					disabled={this.props.disabled}
-					required={this.props.required}
-				>
-					{values.map((value) => (
-						<Radio
-							key={value}
-							id={value}
-							labels={{ label: value }}
-							value={value}
-							checked={this.state.checked === value}
-							variant="base"
-						/>
-					))}
-				</RadioGroup>
+export default {
+	title: 'Components/RadioGroup',
+	component: RadioGroup,
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">
+					<Story />
+				</IconSettings>
 			</div>
-		);
-	}
-}
-RadioGroupExample.propTypes = {
-	labels: PropTypes.shape({
-		error: PropTypes.string,
-		label: PropTypes.string,
-	}),
-	disabled: PropTypes.bool,
-	required: PropTypes.bool,
-	heading: PropTypes.string,
-};
-RadioGroupExample.defaultProps = {
-	labels: {
-		label: 'Radio Group Label',
+		),
+	],
+	argTypes: {
+		variant: {
+			control: { type: 'select' },
+			options: ['base', 'button-group'],
+		},
+		required: { control: 'boolean' },
+		disabled: { control: 'boolean' },
 	},
 };
-storiesOf(RADIO_GROUP, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">{getStory()}</div>
-	))
-	.add('Base', () => <RadioGroupExample heading="Base" />)
-	.add('Disabled', () => <RadioGroupExample heading="Disabled" disabled />)
-	.add('Required', () => <RadioGroupExample heading="Required" required />)
-	.add('Error', () => (
-		<RadioGroupExample
-			heading="Error"
-			labels={{
-				label: 'Radio Group Label',
-				error: 'There is an error',
+
+// Interactive example with state
+const InteractiveExample = ({ variant = 'base', ...props }) => {
+	const [selected, setSelected] = useState('option1');
+
+	return (
+		<RadioGroup
+			labels={{ label: 'Select an option' }}
+			onChange={(e) => {
+				if (e.target && e.target.value) {
+					setSelected(e.target.value);
+				}
 			}}
+			variant={variant}
+			{...props}
+		>
+			<Radio
+				labels={{ label: 'Option 1' }}
+				value="option1"
+				checked={selected === 'option1'}
+				variant={variant === 'button-group' ? 'button-group' : 'base'}
+			/>
+			<Radio
+				labels={{ label: 'Option 2' }}
+				value="option2"
+				checked={selected === 'option2'}
+				variant={variant === 'button-group' ? 'button-group' : 'base'}
+			/>
+			<Radio
+				labels={{ label: 'Option 3' }}
+				value="option3"
+				checked={selected === 'option3'}
+				variant={variant === 'button-group' ? 'button-group' : 'base'}
+			/>
+		</RadioGroup>
+	);
+};
+
+// Default radio group
+export const Default = {
+	render: () => <InteractiveExample />,
+};
+
+// Button group variant
+export const ButtonGroupVariant = {
+	render: () => <InteractiveExample variant="button-group" />,
+};
+
+// Required radio group
+export const Required = {
+	render: () => <InteractiveExample required />,
+};
+
+// Disabled radio group
+export const Disabled = {
+	render: () => <InteractiveExample disabled />,
+};
+
+// With error
+export const WithError = {
+	render: () => {
+		const [selected, setSelected] = useState('');
+
+		return (
+			<RadioGroup
+				labels={{
+					label: 'Select an option',
+					error: 'This field is required',
+				}}
+				onChange={(e) => {
+					if (e.target && e.target.value) {
+						setSelected(e.target.value);
+					}
+				}}
+			>
+				<Radio
+					labels={{ label: 'Option 1' }}
+					value="option1"
+					checked={selected === 'option1'}
+				/>
+				<Radio
+					labels={{ label: 'Option 2' }}
+					value="option2"
+					checked={selected === 'option2'}
+				/>
+			</RadioGroup>
+		);
+	},
+};
+
+// With assistive text
+export const WithAssistiveText = {
+	render: () => (
+		<InteractiveExample
+			assistiveText={{ label: 'Choose your preferred option' }}
 		/>
-	))
-	.add('Docs site Base', () => <Base name="base-doc-site" />);
+	),
+};

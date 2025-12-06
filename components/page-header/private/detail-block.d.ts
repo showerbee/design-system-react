@@ -1,28 +1,13 @@
-declare module '@salesforce/design-system-react/components/page-header/private/detail-block' {
-	import React from 'react';
-	type Props = {
-		/**
-		 * Optional class name
-		 */
-		className?: any[] | Record<string, any> | string;
-		/**
-		 * The content property can be a string or a React element
-		 */
-		content?: React.ReactNode;
-		/**
-		 * Sets the 'flavor' of a block, which adds the following sizing class: `slds-size_${flavor}`
-		 */
-		flavor?: string;
-		/**
-		 * Sets the label of a detail block
-		 */
-		label?: React.ReactNode;
-		/**
-		 * Sets whether the fields truncate
-		 */
-		truncate?: boolean;
-	};
+import { ReactNode } from 'react';
 
-	function Component(props: Props): JSX.Element;
-	export default Component;
+export interface DetailBlockProps {
+	children?: ReactNode;
+	className?: string;
+	flavor?: string;
+	label?: ReactNode;
+	content?: ReactNode;
+	truncate?: boolean;
 }
+
+declare const DetailBlock: React.FC<DetailBlockProps>;
+export default DetailBlock;

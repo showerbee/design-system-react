@@ -1,20 +1,8 @@
-declare module '@salesforce/design-system-react/components/builder-header/utilities' {
-	import React from 'react';
-	type Props = {
-    /**
-     * Provide children of the types `<BuilderHeaderNavLink />` or `<BuilderHeaderNavDropdown />` to define the structure of the utilities section.
-     * ```
-     * <BuilderHeader>
-     *   <BuilderHeaderUtilities>
-     *     <BuilderHeaderNavLink />
-     *     <BuilderHeaderNavDropdown />
-     *   </BuilderHeaderUtilities>
-     * </BuilderHeader>
-     * ```
-     */
-    children?: React.ReactNode,
-	};
+import { ReactNode } from 'react';
 
-	function Component(props: Props): JSX.Element;
-	export default Component;
+export interface BuilderHeaderUtilitiesProps {
+	children?: ReactNode;
 }
+
+declare const BuilderHeaderUtilities: React.FC<BuilderHeaderUtilitiesProps>;
+export default BuilderHeaderUtilities;

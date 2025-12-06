@@ -1,5 +1,5 @@
 import React from 'react';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 import IconSettings from '../../icon-settings';
 import Textarea from '../../textarea';
 import DefaultExample from '../__examples__/default';

@@ -1,53 +1,149 @@
 import React from 'react';
-import { storiesOf } from '@storybook/react';
+import Avatar from '../../avatar';
+import IconSettings from '../../icon-settings';
 
-import { AVATAR } from '../../../utilities/constants';
-import Base from '../__examples__/base';
-import InverseUserInitials from '../__examples__/inverse-user-initials.jsx';
-import UserIcon from '../__examples__/user-icon.jsx';
-import UserInitials from '../__examples__/user-initials.jsx';
-import EntityIcon from '../__examples__/entity-icon.jsx';
-import EntityInitials from '../__examples__/entity-initials.jsx';
+export default {
+	title: 'Components/Avatar',
+	component: Avatar,
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">
+					<Story />
+				</IconSettings>
+			</div>
+		),
+	],
+	argTypes: {
+		size: {
+			control: 'select',
+			options: ['x-small', 'small', 'medium', 'large'],
+		},
+		variant: {
+			control: 'radio',
+			options: ['user', 'entity'],
+		},
+	},
+	tags: ['autodocs'],
+};
 
-/* eslint-disable react/display-name */
+/**
+ * Base avatar with image
+ */
+export const BaseWithImage = {
+	args: {
+		imgSrc: 'https://lightningdesignsystem.com/assets/images/avatar2.jpg',
+		imgAlt: 'User profile',
+		variant: 'user',
+		size: 'medium',
+	},
+};
 
-storiesOf(AVATAR, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">{getStory()}</div>
-	))
-	.add('Base', () => (
-		<div>
-			<h1 style={{ marginBottom: '10px' }}>Base Avatar</h1>
-			<Base />
+/**
+ * User avatar with initials from label
+ */
+export const UserInitials = {
+	args: {
+		label: 'John Smith',
+		variant: 'user',
+		size: 'medium',
+	},
+};
+
+/**
+ * User avatar with custom initials
+ */
+export const UserCustomInitials = {
+	args: {
+		initials: 'AB',
+		variant: 'user',
+		size: 'medium',
+	},
+};
+
+/**
+ * User avatar with inverse styling (dark text on light background)
+ */
+export const UserInitialsInverse = {
+	args: {
+		label: 'Jane Doe',
+		variant: 'user',
+		size: 'medium',
+		inverse: true,
+	},
+};
+
+/**
+ * User icon fallback (when no image or initials)
+ */
+export const UserIcon = {
+	args: {
+		variant: 'user',
+		size: 'medium',
+	},
+};
+
+/**
+ * Entity avatar with initials
+ */
+export const EntityInitials = {
+	args: {
+		label: 'Acme Corporation',
+		variant: 'entity',
+		size: 'medium',
+	},
+};
+
+/**
+ * Entity icon fallback
+ */
+export const EntityIcon = {
+	args: {
+		variant: 'entity',
+		size: 'medium',
+	},
+};
+
+/**
+ * All sizes comparison - User variant
+ */
+export const AllSizes = {
+	render: () => (
+		<div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
+			<div style={{ textAlign: 'center' }}>
+				<Avatar label="John Smith" variant="user" size="x-small" />
+				<div style={{ marginTop: '0.5rem', fontSize: '12px' }}>x-small</div>
+			</div>
+			<div style={{ textAlign: 'center' }}>
+				<Avatar label="John Smith" variant="user" size="small" />
+				<div style={{ marginTop: '0.5rem', fontSize: '12px' }}>small</div>
+			</div>
+			<div style={{ textAlign: 'center' }}>
+				<Avatar label="John Smith" variant="user" size="medium" />
+				<div style={{ marginTop: '0.5rem', fontSize: '12px' }}>medium</div>
+			</div>
+			<div style={{ textAlign: 'center' }}>
+				<Avatar label="John Smith" variant="user" size="large" />
+				<div style={{ marginTop: '0.5rem', fontSize: '12px' }}>large</div>
+			</div>
 		</div>
-	))
-	.add('Entity Icon', () => (
-		<div>
-			<h1 style={{ marginBottom: '10px' }}>Entity Icon Avatar</h1>
-			<EntityIcon />
+	),
+};
+
+/**
+ * User vs Entity comparison
+ */
+export const UserVsEntity = {
+	render: () => (
+		<div style={{ display: 'flex', gap: '2rem' }}>
+			<div style={{ textAlign: 'center' }}>
+				<Avatar label="John Smith" variant="user" size="large" />
+				<div style={{ marginTop: '0.5rem' }}>User (circle)</div>
+			</div>
+			<div style={{ textAlign: 'center' }}>
+				<Avatar label="Acme Corp" variant="entity" size="large" />
+				<div style={{ marginTop: '0.5rem' }}>Entity (square)</div>
+			</div>
 		</div>
-	))
-	.add('Entity Initials', () => (
-		<div>
-			<h1 style={{ marginBottom: '10px' }}>Entity Initials Avatar</h1>
-			<EntityInitials />
-		</div>
-	))
-	.add('User Icon', () => (
-		<div>
-			<h1 style={{ marginBottom: '10px' }}>User Icon Avatar</h1>
-			<UserIcon />
-		</div>
-	))
-	.add('User Initials', () => (
-		<div>
-			<h1 style={{ marginBottom: '10px' }}>User Initials Avatar</h1>
-			<UserInitials />
-		</div>
-	))
-	.add('Inverse User Initials', () => (
-		<div>
-			<h1 style={{ marginBottom: '10px' }}>Inversed User Initials Avatar</h1>
-			<InverseUserInitials />
-		</div>
-	));
+	),
+};

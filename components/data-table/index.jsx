@@ -24,7 +24,9 @@ import {
 	canUseEventListeners,
 } from '../../utilities/execution-environment';
 import { colorGray5 } from '../../utilities/design-tokens/dist/palette-colors.common';
-import { tableBorderRadius } from '../../utilities/design-tokens/dist/salesforce-skin.common';
+import salesforceSkin from '../../utilities/design-tokens/dist/salesforce-skin.common';
+
+const { tableBorderRadius } = salesforceSkin;
 
 // ## Children
 import DataTableCell from './cell';

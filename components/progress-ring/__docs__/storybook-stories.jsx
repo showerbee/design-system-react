@@ -1,24 +1,118 @@
 import React from 'react';
-import { storiesOf } from '@storybook/react';
+import IconSettings from '../../icon-settings';
+import ProgressRing from '../';
 
-import Active from '../__examples__/active';
-import Base from '../__examples__/base';
-import Complete from '../__examples__/complete';
-import Warning from '../__examples__/warning';
-import Expired from '../__examples__/expired';
-import CustomIcon from '../__examples__/customIcon';
-import Examples from '../__examples__/examples';
+export default {
+	title: 'Components/ProgressRing',
+	component: ProgressRing,
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">
+					<Story />
+				</IconSettings>
+			</div>
+		),
+	],
+	argTypes: {
+		value: { control: { type: 'range', min: 0, max: 100, step: 1 } },
+		theme: {
+			control: { type: 'select' },
+			options: ['active', 'warning', 'expired', 'complete'],
+		},
+		flowDirection: {
+			control: { type: 'select' },
+			options: ['drain', 'fill'],
+		},
+		size: {
+			control: { type: 'select' },
+			options: ['medium', 'large'],
+		},
+	},
+};
 
-import { PROGRESS_RING } from '../../../utilities/constants';
+// Default progress ring
+export const Default = {
+	args: {
+		value: 75,
+	},
+};
 
-storiesOf(PROGRESS_RING, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">{getStory()}</div>
-	))
-	.add('Base', () => <Base />)
-	.add('Theme: Active', () => <Active />)
-	.add('Theme: Complete', () => <Complete />)
-	.add('Theme: Warning', () => <Warning />)
-	.add('Theme: Expired', () => <Expired />)
-	.add('Custom Icon', () => <CustomIcon />)
-	.add('Snapshot Test Examples', () => <Examples />);
+// Active theme
+export const Active = {
+	args: {
+		value: 50,
+		theme: 'active',
+		hasIcon: true,
+	},
+};
+
+// Warning theme
+export const Warning = {
+	args: {
+		value: 80,
+		theme: 'warning',
+		hasIcon: true,
+	},
+};
+
+// Expired theme
+export const Expired = {
+	args: {
+		value: 100,
+		theme: 'expired',
+		hasIcon: true,
+	},
+};
+
+// Complete theme
+export const Complete = {
+	args: {
+		value: 100,
+		theme: 'complete',
+		hasIcon: true,
+	},
+};
+
+// Fill direction
+export const FillDirection = {
+	args: {
+		value: 60,
+		flowDirection: 'fill',
+		theme: 'active',
+	},
+};
+
+// Large size
+export const Large = {
+	args: {
+		value: 75,
+		size: 'large',
+		theme: 'active',
+		hasIcon: true,
+	},
+};
+
+// All themes showcase
+export const AllThemes = {
+	render: () => (
+		<div className="slds-grid slds-wrap slds-gutters">
+			<div className="slds-col slds-size_1-of-4 slds-text-align_center">
+				<ProgressRing value={50} theme="active" hasIcon />
+				<p className="slds-m-top_small">Active (50%)</p>
+			</div>
+			<div className="slds-col slds-size_1-of-4 slds-text-align_center">
+				<ProgressRing value={75} theme="warning" hasIcon />
+				<p className="slds-m-top_small">Warning (75%)</p>
+			</div>
+			<div className="slds-col slds-size_1-of-4 slds-text-align_center">
+				<ProgressRing value={100} theme="expired" hasIcon />
+				<p className="slds-m-top_small">Expired (100%)</p>
+			</div>
+			<div className="slds-col slds-size_1-of-4 slds-text-align_center">
+				<ProgressRing value={100} theme="complete" hasIcon />
+				<p className="slds-m-top_small">Complete (100%)</p>
+			</div>
+		</div>
+	),
+};

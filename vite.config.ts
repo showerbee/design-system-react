@@ -38,17 +38,6 @@ export default defineConfig({
     commonjsOptions: {
       include: [/node_modules/, /design-tokens/],
       transformMixedEsModules: true,
-      // Named exports for design tokens
-      namedExports: {
-        './utilities/design-tokens/dist/palette-colors.common.js': [
-          'colorGray1', 'colorGray2', 'colorGray3', 'colorGray4', 'colorGray5',
-          'colorGray6', 'colorGray7', 'colorGray8', 'colorGray9', 'colorGray10',
-          'colorGray11', 'colorGray12', 'brandPrimary', 'brandAccessible',
-        ],
-        './utilities/design-tokens/dist/salesforce-skin.common.js': [
-          'tableBorderRadius',
-        ],
-      },
     },
     lib: {
       entry: path.resolve(__dirname, 'components/index.js'),

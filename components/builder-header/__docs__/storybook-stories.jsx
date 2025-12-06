@@ -1,28 +1,65 @@
 import React from 'react';
-import { storiesOf } from '@storybook/react';
+import IconSettings from '../../icon-settings';
+import BuilderHeader from '../';
 
-import BuilderHeaderBase from '../__examples__/base';
-import BuilderHeaderBaseWithToolbar from '../__examples__/base-with-toolbar';
-import BuilderHeaderBaseWithUtilities from '../__examples__/base-with-utilities';
-import BuilderHeaderCustomIcon from '../__examples__/custom-icon';
-import BuilderHeaderSuccessfulSave from '../__examples__/successful-save';
-import BuilderHeaderAfterSuccessfulSave from '../__examples__/after-successful-save';
-import BuilderHeaderFailedSave from '../__examples__/failed-save';
-import BuilderHeaderWithPageTypeEditable from '../__examples__/base-with-page-type-editable';
+export default {
+	title: 'Components/BuilderHeader',
+	component: BuilderHeader,
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">
+					<Story />
+				</IconSettings>
+			</div>
+		),
+	],
+};
 
-import { BUILDER_HEADER } from '../../../utilities/constants';
+// Default builder header
+export const Default = {
+	render: () => (
+		<BuilderHeader
+			events={{
+				onClickBack: () => console.log('Back clicked'),
+				onClickHelp: () => console.log('Help clicked'),
+			}}
+		/>
+	),
+};
 
-storiesOf(BUILDER_HEADER, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">{getStory()}</div>
-	))
-	.add('Base', () => <BuilderHeaderBase />)
-	.add('Base with Toolbar', () => <BuilderHeaderBaseWithToolbar />)
-	.add('Base with Utilities', () => <BuilderHeaderBaseWithUtilities />)
-	.add('Custom Icon', () => <BuilderHeaderCustomIcon />)
-	.add('Successful Save', () => <BuilderHeaderSuccessfulSave />)
-	.add('After Successful Save', () => <BuilderHeaderAfterSuccessfulSave />)
-	.add('Failed Save', () => <BuilderHeaderFailedSave />)
-	.add('Base with Page Type Editable', () => (
-		<BuilderHeaderWithPageTypeEditable />
-	));
+// Custom labels
+export const CustomLabels = {
+	render: () => (
+		<BuilderHeader
+			labels={{
+				title: 'My App Builder',
+				pageType: 'Home Page',
+				back: 'Go Back',
+				help: 'Get Help',
+			}}
+			events={{
+				onClickBack: () => console.log('Back clicked'),
+				onClickHelp: () => console.log('Help clicked'),
+			}}
+		/>
+	),
+};
+
+// Custom icon
+export const CustomIcon = {
+	render: () => (
+		<BuilderHeader
+			iconCategory="standard"
+			iconName="account"
+			labels={{
+				title: 'Account Builder',
+				pageType: 'Account Details',
+			}}
+			events={{
+				onClickBack: () => console.log('Back clicked'),
+				onClickHelp: () => console.log('Help clicked'),
+			}}
+		/>
+	),
+};

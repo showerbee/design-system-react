@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 import IconSettings from '../../icon-settings';
 import Checkbox from '../../checkbox';
 import Button from '../../button';

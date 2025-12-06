@@ -1,26 +1,95 @@
 import React from 'react';
-import { storiesOf } from '@storybook/react';
-import { SLIDER } from '../../../utilities/constants';
-import Base from '../__examples__/base';
-import Disabled from '../__examples__/disabled';
-import Error from '../__examples__/error';
-import Vertical from '../__examples__/vertical';
-import SizesExtraSmall from '../__examples__/sizes-x-small';
-import SizesSmall from '../__examples__/sizes-small';
-import SizesMedium from '../__examples__/sizes-medium';
-import SizesLarge from '../__examples__/sizes-large';
-import Sizes from '../__examples__/sizes';
+import IconSettings from '../../icon-settings';
+import Slider from '../';
 
-storiesOf(SLIDER, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">{getStory()}</div>
-	))
-	.add('Slider', () => <Base />)
-	.add('Disabled', () => <Disabled />)
-	.add('Error', () => <Error />)
-	.add('Vertical', () => <Vertical />)
-	.add('Size: X-Small', () => <SizesExtraSmall />)
-	.add('Size: Small', () => <SizesSmall />)
-	.add('Size: Medium', () => <SizesMedium />)
-	.add('Size: Large', () => <SizesLarge />)
-	.add('Docs site Sizes', () => <Sizes />);
+export default {
+	title: 'Components/Slider',
+	component: Slider,
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium" style={{ maxWidth: '400px' }}>
+				<IconSettings iconPath="/assets/icons">
+					<Story />
+				</IconSettings>
+			</div>
+		),
+	],
+	argTypes: {
+		value: { control: { type: 'range', min: 0, max: 100, step: 1 } },
+		min: { control: 'number' },
+		max: { control: 'number' },
+		step: { control: 'number' },
+		disabled: { control: 'boolean' },
+		vertical: { control: 'boolean' },
+		size: {
+			control: { type: 'select' },
+			options: ['x-small', 'small', 'medium', 'large'],
+		},
+	},
+};
+
+// Default slider
+export const Default = {
+	args: {
+		label: 'Slider Label',
+		value: 50,
+	},
+};
+
+// Slider with custom range
+export const CustomRange = {
+	args: {
+		label: 'Custom Range',
+		value: 25,
+		min: 0,
+		max: 50,
+	},
+};
+
+// Slider with step
+export const WithStep = {
+	args: {
+		label: 'Step of 10',
+		value: 30,
+		step: 10,
+	},
+};
+
+// Disabled slider
+export const Disabled = {
+	args: {
+		label: 'Disabled Slider',
+		value: 60,
+		disabled: true,
+	},
+};
+
+// Slider with error
+export const WithError = {
+	args: {
+		label: 'Slider with Error',
+		value: 80,
+		errorText: 'Value exceeds the recommended limit.',
+	},
+};
+
+// Vertical slider
+export const Vertical = {
+	render: () => (
+		<div style={{ height: '200px' }}>
+			<Slider label="Vertical Slider" value={50} vertical />
+		</div>
+	),
+};
+
+// Different sizes
+export const Sizes = {
+	render: () => (
+		<div className="slds-grid slds-grid_vertical slds-gutters">
+			<Slider label="X-Small" value={50} size="x-small" />
+			<Slider label="Small" value={50} size="small" />
+			<Slider label="Medium" value={50} size="medium" />
+			<Slider label="Large" value={50} size="large" />
+		</div>
+	),
+};

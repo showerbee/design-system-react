@@ -1,35 +1,109 @@
 import React from 'react';
-import { storiesOf } from '@storybook/react';
-// import IconSettings from '../../icon-settings';
+import IconSettings from '../../icon-settings';
+import BrandBand from '../';
 
-import { BRAND_BAND } from '../../../utilities/constants';
-import Default from '../__examples__/default';
-import Large from '../__examples__/large';
-import NoImage from '../__examples__/no-image';
-import Small from '../__examples__/small';
-import BackgroundCover from '../__examples__/background-cover';
-import UserImage from '../__examples__/user-image';
-import GroupImage from '../__examples__/group-image';
+export default {
+	title: 'Components/BrandBand',
+	component: BrandBand,
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">
+					<Story />
+				</IconSettings>
+			</div>
+		),
+	],
+	argTypes: {
+		size: {
+			control: { type: 'select' },
+			options: ['small', 'medium', 'large'],
+		},
+		image: {
+			control: { type: 'select' },
+			options: ['default', 'none', 'group', 'user'],
+		},
+		backgroundSize: {
+			control: { type: 'select' },
+			options: ['contain', 'cover'],
+		},
+	},
+};
 
-storiesOf(BRAND_BAND, module)
-	.addDecorator((getStory) => (
-		<div
-			style={{
-				bottom: '1rem',
-				left: '1rem',
-				overflow: 'auto',
-				position: 'absolute',
-				right: '1rem',
-				top: '1rem',
-			}}
-		>
-			{getStory()}
-		</div>
-	))
-	.add('Default (medium)', () => <Default />)
-	.add('Small', () => <Small />)
-	.add('Large', () => <Large />)
-	.add('No Image', () => <NoImage />)
-	.add('User Image', () => <UserImage />)
-	.add('Group Image', () => <GroupImage />)
-	.add('Image with background size cover', () => <BackgroundCover />);
+// Default brand band
+export const Default = {
+	render: () => (
+		<BrandBand style={{ height: '300px', position: 'relative' }}>
+			<div className="slds-p-around_large slds-text-align_center">
+				<h1 className="slds-text-heading_large">Welcome</h1>
+				<p>Content inside the brand band</p>
+			</div>
+		</BrandBand>
+	),
+};
+
+// Small size
+export const Small = {
+	render: () => (
+		<BrandBand size="small" style={{ height: '200px', position: 'relative' }}>
+			<div className="slds-p-around_medium slds-text-align_center">
+				<p>Small brand band</p>
+			</div>
+		</BrandBand>
+	),
+};
+
+// Large size
+export const Large = {
+	render: () => (
+		<BrandBand size="large" style={{ height: '400px', position: 'relative' }}>
+			<div className="slds-p-around_large slds-text-align_center">
+				<h1 className="slds-text-heading_large">Large Brand Band</h1>
+			</div>
+		</BrandBand>
+	),
+};
+
+// No image
+export const NoImage = {
+	render: () => (
+		<BrandBand image="none" style={{ height: '200px', position: 'relative' }}>
+			<div className="slds-p-around_medium slds-text-align_center">
+				<p>Brand band without background image</p>
+			</div>
+		</BrandBand>
+	),
+};
+
+// User image
+export const UserImage = {
+	render: () => (
+		<BrandBand image="user" style={{ height: '300px', position: 'relative' }}>
+			<div className="slds-p-around_large slds-text-align_center">
+				<h1 className="slds-text-heading_medium">User Profile</h1>
+			</div>
+		</BrandBand>
+	),
+};
+
+// Group image
+export const GroupImage = {
+	render: () => (
+		<BrandBand image="group" style={{ height: '300px', position: 'relative' }}>
+			<div className="slds-p-around_large slds-text-align_center">
+				<h1 className="slds-text-heading_medium">Group Page</h1>
+			</div>
+		</BrandBand>
+	),
+};
+
+// Cover background size
+export const CoverBackground = {
+	render: () => (
+		<BrandBand backgroundSize="cover" style={{ height: '300px', position: 'relative' }}>
+			<div className="slds-p-around_large slds-text-align_center">
+				<p>Brand band with cover background size</p>
+			</div>
+		</BrandBand>
+	),
+};
