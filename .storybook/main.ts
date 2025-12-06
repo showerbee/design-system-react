@@ -50,8 +50,7 @@ const config: StorybookConfig = {
     '@storybook/addon-links',
     '@storybook/addon-a11y',
     '@storybook/addon-docs',
-    // Note: storybook-dark-mode removed - not compatible with Storybook 10 yet
-    // Will implement dark mode using Storybook 10's built-in theming
+    '@vueless/storybook-dark-mode',
   ],
 
   framework: {

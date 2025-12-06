@@ -21,8 +21,17 @@ const preview = {
     docs: {
       toc: true,
     },
-    // TODO: Re-add dark mode support when storybook-dark-mode is compatible with Storybook 10
-    // or implement using Storybook 10's built-in theming
+    // Dark mode addon configuration (@vueless/storybook-dark-mode for Storybook 10)
+    darkMode: {
+      // Set class names for SLDS color schemes
+      classTarget: 'body',
+      darkClass: 'slds-color-scheme--dark',
+      lightClass: 'slds-color-scheme--light',
+      // Style the Storybook UI to match
+      stylePreview: true,
+      // Default to light mode
+      current: 'light',
+    },
   },
   tags: ['autodocs'],
 };

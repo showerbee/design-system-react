@@ -65,7 +65,7 @@ This document outlines the complete plan to modernize `design-system-react` to R
 - [x] **Upgraded to Storybook 10.1.4** ✅
 - [x] Migrate stories from `storiesOf` to CSF format
 - [x] Configure Storybook addons (a11y, controls, actions, docs)
-- [ ] Re-add dark mode toggle (storybook-dark-mode addon not compatible with v10 yet)
+- [x] Re-add dark mode toggle (@vueless/storybook-dark-mode for v10) ✅
 - [ ] Add Storybook visual regression testing
 - [ ] Migrate remaining component stories to CSF format (in progress)
 
@@ -221,7 +221,7 @@ For each component:
 
 ### Dark Mode Support ✅ PARTIAL
 
-- [ ] Re-add Storybook dark mode toggle (storybook-dark-mode addon not compatible with v10 yet)
+- [x] Re-add Storybook dark mode toggle (@vueless/storybook-dark-mode for v10) ✅
 - [x] Configure SLDS color scheme classes (slds-color-scheme--dark/light)
 - [x] Add dark mode CSS for Storybook Docs pages
 - [ ] Implement dark mode theme tokens (SLDS Plus tokens in use)
