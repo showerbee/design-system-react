@@ -1,28 +1,17 @@
-declare module '@salesforce/design-system-react/components/carousel/private/previous-next-carousel-navigator' {
-	import React from 'react';
-	type Props = {
-		/**
-		 * Description of the previous/next navigation icons for screen-readers.
-		 */
-		assistiveText?: string;
-		/**
-		 * Name of icon displayed within the navigation button
-		 */
-		iconName?: 'chevronleft' | 'chevronright';
-		/**
-		 * Determines where the navigator indicator has been disabled
-		 */
-		isDisabled?: boolean;
-		/**
-		 * Additional styles to be applied to the container
-		 */
-		inlineStyle?: Record<string, any>;
-		/**
-		 * Triggered when the indicator is clicked.
-		 */
-		onClick?: (v: any) => any;
-	};
+import { MouseEvent, CSSProperties } from 'react';
 
-	function Component(props: Props): JSX.Element;
-	export default Component;
+export interface PreviousNextCarouselNavigatorProps {
+	/** Assistive text */
+	assistiveText?: string;
+	/** Icon name (chevronleft or chevronright) */
+	iconName?: string;
+	/** Custom inline styles */
+	inlineStyle?: CSSProperties;
+	/** Whether button is disabled */
+	isDisabled?: boolean;
+	/** Click handler */
+	onClick?: (event: MouseEvent) => void;
 }
+
+declare const PreviousNextCarouselNavigator: React.FC<PreviousNextCarouselNavigatorProps>;
+export default PreviousNextCarouselNavigator;

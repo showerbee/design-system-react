@@ -169,7 +169,7 @@ For each component:
 
 #### Overlay Components (Priority 6)
 
-- [ ] **Popover**
+- [x] **Popover** - TypeScript + CSF stories ✅ (Note: Uses Popper.js v1 - future: @floating-ui/react)
 - [ ] **Tooltip**
 - [ ] **DatePicker**
 - [ ] **TimePicker**
@@ -185,7 +185,7 @@ For each component:
 - [x] **BuilderHeader** - TypeScript + CSF stories ✅
 - [x] **ButtonGroup** - TypeScript + CSF stories ✅
 - [x] **ButtonStateful** - TypeScript + CSF stories ✅
-- [ ] **Carousel**
+- [x] **Carousel** - TypeScript + CSF stories ✅
 - [x] **DockedComposer** - TypeScript + CSF stories ✅
 - [x] **DynamicIcon** - TypeScript + CSF stories ✅
 - [x] **Expression** - TypeScript + CSF stories ✅
@@ -355,7 +355,7 @@ For each component:
 | Overlay Components | 0 | 6 | 0% |
 | Specialized Components | 20 | 22 | **91%** |
 
-**Total Components Migrated: 52** (with TypeScript)
+**Total Components Migrated: 54** (with TypeScript)
 
 ---
 

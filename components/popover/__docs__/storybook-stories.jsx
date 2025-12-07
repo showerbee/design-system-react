@@ -1,153 +1,253 @@
-/* eslint-disable react/display-name */
-
-import React from 'react';
-import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import React, { useState } from 'react';
 import IconSettings from '../../icon-settings';
-
-import { POPOVER } from '../../../utilities/constants';
-
-import CustomTarget from '../__examples__/custom-target';
-import Header from '../__examples__/header';
-import Error from '../__examples__/error';
-import Feature from '../__examples__/feature';
-import Walkthrough from '../__examples__/walkthrough';
-import EditDialog from '../__examples__/edit-dialog';
-import WalkthroughAction from '../__examples__/walkthrough-action';
-import Warning from '../__examples__/warning';
-import AlternativeHeader from '../__examples__/alternative-header';
-import ControlledWithFooter from '../__examples__/controlled-with-footer';
-
-import Popover from '../../popover';
+import Popover from '../';
 import Button from '../../button';
 
-const getPopover = (props) => (
-	<div>
-		<Popover {...props}>
-			<Button label="Trigger Popover" />
+export default {
+	title: 'Components/Popover',
+	component: Popover,
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_large" style={{ minHeight: '300px' }}>
+				<IconSettings iconPath="/assets/icons">
+					<Story />
+				</IconSettings>
+			</div>
+		),
+	],
+	argTypes: {
+		align: {
+			control: { type: 'select' },
+			options: [
+				'top',
+				'top left',
+				'top right',
+				'right',
+				'right top',
+				'right bottom',
+				'bottom',
+				'bottom left',
+				'bottom right',
+				'left',
+				'left top',
+				'left bottom',
+			],
+		},
+		variant: {
+			control: { type: 'select' },
+			options: ['base', 'error', 'warning', 'feature', 'walkthrough', 'walkthrough-action'],
+		},
+	},
+};
+
+// Default popover
+export const Default = {
+	render: () => (
+		<Popover
+			body="This is a default popover with some helpful information."
+			heading="Popover Title"
+			id="default-popover"
+		>
+			<Button label="Click to open" />
 		</Popover>
-	</div>
-);
+	),
+};
 
-const getPopoverNubbins = (props) => {
-	/* eslint-disable react/prop-types */
-	const children = [];
+// Controlled popover
+export const Controlled = {
+	render: () => {
+		const [isOpen, setIsOpen] = useState(false);
 
-	const align = [
-		'top',
-		'top right',
-		'top left',
-		'right',
-		'right top',
-		'right bottom',
-		'bottom',
-		'bottom left',
-		'bottom right',
-		'left',
-		'left top',
-		'left bottom',
-	];
-
-	align.forEach((value) => {
-		children.push(
-			<div key={value} style={{ margin: '150px auto' }}>
+		return (
+			<div>
+				<div className="slds-m-bottom_small">
+					Popover is: {isOpen ? 'Open' : 'Closed'}
+				</div>
 				<Popover
-					align={value}
-					assistiveText={{ closeButton: 'This is a popover.' }}
-					body="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-					hasStaticAlignment
-					heading="My Popover"
-					id={value}
-					isOpen
-					position="overflowBoundaryElement"
-					{...props}
+					body="This is a controlled popover. Use the button or close icon to toggle."
+					heading="Controlled Popover"
+					id="controlled-popover"
+					isOpen={isOpen}
+					onClick={() => setIsOpen(!isOpen)}
+					onRequestClose={() => setIsOpen(false)}
 				>
-					{props.trigger}
+					<Button label={isOpen ? 'Click to close' : 'Click to open'} />
 				</Popover>
 			</div>
 		);
-	});
-
-	return (
-		<div key="container" data-ignore-axe-duplicate-id-active>
-			{children}
-		</div>
-	);
+	},
 };
 
-const bodyContent =
-	'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
-
-const popoverBackgroundColor = 'rgb(255, 80, 121)';
-const containerBackgroundColor = 'rgb(255, 127, 80)';
-
-storiesOf(POPOVER, module)
-	.addDecorator((getStory) => (
-		<div
-			className="slds-p-around_medium slds-m-horizontal_x-large"
-			style={{
-				margin: '300px auto',
-				width: '500px',
-			}}
-		>
-			<IconSettings iconPath="/assets/icons">{getStory()}</IconSettings>
+// Different alignments
+export const Alignments = {
+	render: () => (
+		<div className="slds-grid slds-wrap slds-grid_pull-padded">
+			<div className="slds-p-around_medium">
+				<Popover
+					body="Top aligned popover"
+					heading="Top"
+					align="top"
+					id="top-popover"
+				>
+					<Button label="Top" />
+				</Popover>
+			</div>
+			<div className="slds-p-around_medium">
+				<Popover
+					body="Bottom aligned popover"
+					heading="Bottom"
+					align="bottom"
+					id="bottom-popover"
+				>
+					<Button label="Bottom" />
+				</Popover>
+			</div>
+			<div className="slds-p-around_medium">
+				<Popover
+					body="Left aligned popover"
+					heading="Left"
+					align="left"
+					id="left-popover"
+				>
+					<Button label="Left" />
+				</Popover>
+			</div>
+			<div className="slds-p-around_medium">
+				<Popover
+					body="Right aligned popover"
+					heading="Right"
+					align="right"
+					id="right-popover"
+				>
+					<Button label="Right" />
+				</Popover>
+			</div>
 		</div>
-	))
-	.add('Header', () => <Header />)
-	.add('Controlled w/ Footer', () => <ControlledWithFooter log={action} />)
-	.add('AlternativeHeader', () => <AlternativeHeader />)
-	.add('Alignment (Button)', () =>
-		getPopoverNubbins({
-			trigger: <Button label="Trigger Popover" tabIndex="0" />,
-		})
-	)
-	.add('Alignment (ButtonIcon)', () =>
-		getPopoverNubbins({
-			body: bodyContent,
-			hasStaticAlignment: true,
-			heading: 'My Popover',
-			id: 'myPopoverId',
-			isOpen: true,
-			trigger: (
-				<Button
-					assistiveText={{ icon: 'Case Icon' }}
-					iconCategory="utility"
-					iconName="filter"
-					iconSize="small"
-					iconVariant="border"
-					variant="icon"
-				/>
-			),
-		})
-	)
-	.add('Custom Target', () => <CustomTarget />)
-	.add('Custom Target - Open', () => <CustomTarget isOpen />)
-	.add('Styling (dev-only)', () =>
-		getPopover({
-			body: bodyContent,
-			heading: 'My Popover',
-			id: 'myPopoverId',
-			isOpen: true,
-			className: 'sample-classname',
-			assistiveText: {
-				closeButton: 'Shut it now!',
-			},
-			containerClassName: 'sample-container-classname',
-			containerStyle: { background: containerBackgroundColor },
-			style: { background: popoverBackgroundColor },
-		})
-	)
-	.add('Error', () => <Error />)
-	.add('Error w/ Footer', () => <Error footer="Footer Item" />)
-	.add('Error - Open', () => <Error isOpen />)
-	.add('Feature', () => <Feature action={action} />)
-	.add('Feature - Open', () => <Feature action={action} isOpen />)
-	.add('Warning', () => <Warning />)
-	.add('Warning  - Open', () => <Warning isOpen />)
-	.add('Walkthrough', () => <Walkthrough action={action} />)
-	.add('Walkthrough - Open', () => <Walkthrough action={action} isOpen />)
-	.add('Walkthrough Action', () => <WalkthroughAction />)
-	.add('Walkthrough Action - Open', () => <WalkthroughAction isOpen />)
-	.add('Edit Dialog', () => <EditDialog />)
-	.add('Edit Dialog - Open', () => <EditDialog isOpen />)
-	.add('Edit Dialog - Disabled', () => <EditDialog disabled />);
+	),
+};
+
+// Error variant
+export const ErrorVariant = {
+	render: () => (
+		<Popover
+			body="There was an error processing your request. Please try again."
+			heading="Error"
+			variant="error"
+			id="error-popover"
+		>
+			<Button label="Show Error" variant="destructive" />
+		</Popover>
+	),
+};
+
+// Warning variant
+export const WarningVariant = {
+	render: () => (
+		<Popover
+			body="This action may have unintended consequences. Please review before continuing."
+			heading="Warning"
+			variant="warning"
+			id="warning-popover"
+		>
+			<Button label="Show Warning" />
+		</Popover>
+	),
+};
+
+// Feature variant
+export const FeatureVariant = {
+	render: () => (
+		<Popover
+			body="Check out this exciting new feature that will help you be more productive!"
+			heading="New Feature"
+			variant="feature"
+			icon={<span className="slds-icon_container">✨</span>}
+			id="feature-popover"
+		>
+			<Button label="Learn More" variant="brand" />
+		</Popover>
+	),
+};
+
+// Walkthrough variant
+export const WalkthroughVariant = {
+	render: () => (
+		<Popover
+			body="This is where you can find all your recent activities and notifications."
+			heading="Welcome!"
+			variant="walkthrough"
+			stepText="Step 1 of 3"
+			footerWalkthroughActions={
+				<>
+					<Button label="Skip" variant="neutral" />
+					<Button label="Next" variant="brand" className="slds-m-left_x-small" />
+				</>
+			}
+			id="walkthrough-popover"
+		>
+			<Button label="Start Tour" variant="brand" />
+		</Popover>
+	),
+};
+
+// Walkthrough action variant
+export const WalkthroughActionVariant = {
+	render: () => (
+		<Popover
+			body="Click this button to create a new record."
+			heading="Create New"
+			variant="walkthrough-action"
+			stepText="Step 2 of 3"
+			id="walkthrough-action-popover"
+		>
+			<Button label="Show Action" variant="brand" />
+		</Popover>
+	),
+};
+
+// With footer
+export const WithFooter = {
+	render: () => (
+		<Popover
+			body="This popover has a custom footer with action buttons."
+			heading="Popover with Footer"
+			footer={
+				<div className="slds-grid slds-grid_align-end">
+					<Button label="Cancel" variant="neutral" />
+					<Button label="Save" variant="brand" className="slds-m-left_x-small" />
+				</div>
+			}
+			id="footer-popover"
+		>
+			<Button label="Open" />
+		</Popover>
+	),
+};
+
+// No nubbin
+export const NoNubbin = {
+	render: () => (
+		<Popover
+			body="This popover has no nubbin (arrow pointer)."
+			heading="No Nubbin"
+			hasNoNubbin
+			id="no-nubbin-popover"
+		>
+			<Button label="Open" />
+		</Popover>
+	),
+};
+
+// No close button
+export const NoCloseButton = {
+	render: () => (
+		<Popover
+			body="This popover has no close button. Click outside or press Escape to close."
+			heading="No Close Button"
+			hasNoCloseButton
+			id="no-close-popover"
+		>
+			<Button label="Open" />
+		</Popover>
+	),
+};
