@@ -43,6 +43,7 @@ const config: StorybookConfig = {
     '../components/tabs/__docs__/storybook-stories.jsx',
     '../components/textarea/__docs__/storybook-stories.jsx',
     '../components/toast/__docs__/storybook-stories.jsx',
+    '../components/tooltip/__docs__/storybook-stories.jsx',
     '../components/vertical-navigation/__docs__/storybook-stories.jsx',
     '../components/visual-picker/__docs__/storybook-stories.jsx',
     // Add more components as they are migrated to CSF format
