@@ -2,7 +2,7 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable indent */ /* eslint-disable react/display-name */ import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 import IconSettings from '../../icon-settings';
 import { MENU_PICKLIST } from '../../../utilities/constants';
 import Picklist from '../../menu-picklist';

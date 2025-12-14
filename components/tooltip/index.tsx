@@ -459,8 +459,17 @@ const Tooltip = ({
 	};
 
 	const getTooltipContent = () => {
+		// REMOVE AT NEXT BREAKING CHANGE (v1.0 or v0.9)
+		// Support deprecated 'error' variant value (now use theme='error')
+		const isErrorTheme = theme === 'error' || (variant as string) === 'error';
+		
 		return (
-			<div className="slds-popover__body">
+			<div 
+				className={classNames('slds-popover__body', {
+					// Ensure text contrast on error theme (red background needs white text)
+					'slds-text-color_inverse': isErrorTheme,
+				})}
+			>
 				{content}
 				{variant === 'learnMore' && onClickTrigger ? (
 					<div className="slds-m-top_x-small" aria-hidden="true">

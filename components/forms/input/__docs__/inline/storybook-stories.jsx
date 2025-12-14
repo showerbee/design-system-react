@@ -3,7 +3,7 @@
 import React from 'react';
 
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 import IconSettings from '../../../../../components/icon-settings';
 
 import { FORMS_INLINE_EDIT } from '../../../../../utilities/constants';

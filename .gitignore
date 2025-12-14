@@ -6,6 +6,7 @@
 # React Storybook
 storybook/
 storybook-based-tests/
+storybook-static/
 
 # Publishing and dist build
 .tmp*

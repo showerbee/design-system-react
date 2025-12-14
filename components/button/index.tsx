@@ -354,7 +354,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
 		// Deprecated: wrap button in tooltip if tooltip prop is provided
 		if (tooltip) {
-			return <Tooltip content={tooltip}>{renderButton}</Tooltip>;
+			return <Tooltip content={tooltip}>{renderButton()}</Tooltip>;
 		}
 
 		return renderButton();

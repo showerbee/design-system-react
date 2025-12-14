@@ -20,9 +20,9 @@ This document outlines the complete plan to modernize `design-system-react` to R
 
 ### Branch Strategy
 
-- [ ] Create `modernization` branch from `main` for all React 19 work
+- [x] Create `react19-modernization` branch from `main` for all React 19 work
 - [ ] Keep `main` stable with current React 17/18 version for existing consumers
-- [ ] Use feature branches off `modernization` for large component migrations
+- [ ] Use feature branches off `react19-modernization` for large component migrations
 - [ ] Consider `legacy/v0.x` branch to preserve pre-modernization state
 
 ### Versioning
@@ -66,6 +66,7 @@ This document outlines the complete plan to modernize `design-system-react` to R
 - [x] Migrate stories from `storiesOf` to CSF format
 - [x] Configure Storybook addons (a11y, controls, actions, docs)
 - [x] Re-add dark mode toggle (@vueless/storybook-dark-mode for v10) ✅
+- [x] Add `Input` and `Search` CSF stories to `.storybook/main.ts` allowlist (explicit story loading)
 - [ ] Add Storybook visual regression testing
 - [ ] Migrate remaining component stories to CSF format (in progress)
 
@@ -87,6 +88,7 @@ This document outlines the complete plan to modernize `design-system-react` to R
 - [x] Add TypeScript ESLint rules
 - [x] Configure Prettier for consistent formatting
 - [x] Set up lint-staged configuration
+- [x] Configure `tsconfigRootDir` in ESLint so `parserOptions.project` resolves correctly from subdirectories
 - [ ] Add Husky pre-commit hooks (requires git write access)
 
 ### Dependencies Cleanup
@@ -120,7 +122,7 @@ For each component:
 - [x] **Button** - TypeScript + CSF stories ✅
 - [x] **Icon** - TypeScript ✅
 - [x] **IconSettings** - TypeScript ✅
-- [ ] **Input** - Complex, has sub-components
+- [x] **Input** - TypeScript + CSF stories ✅ (includes InnerInput, Search)
 - [x] **Checkbox** - TypeScript + CSF stories ✅
 - [x] **Radio** - TypeScript + CSF stories ✅
 - [x] **RadioGroup** - TypeScript + CSF stories ✅
@@ -132,7 +134,7 @@ For each component:
 
 - [x] **Card** - TypeScript + CSF stories ✅
 - [x] **MediaObject** - TypeScript ✅
-- [ ] **Modal** - Complex, has sub-components
+- [x] **Modal** - TypeScript + CSF stories ✅ (moved to Overlay)
 - [x] **Panel** - TypeScript ✅
 - [x] **Accordion** - TypeScript + CSF stories ✅
 - [ ] **AccordionPanel** - (internal, uses JSX)
@@ -145,7 +147,7 @@ For each component:
 - [x] **GlobalNavigationBar** - TypeScript + CSF stories ✅
 - [x] **VerticalNavigation** - TypeScript + CSF stories ✅
 - [x] **Breadcrumb** - TypeScript + CSF stories ✅
-- [ ] **MenuDropdown**
+- [x] **MenuDropdown** - TypeScript + CSF stories ✅ (removed react-onclickoutside, uses native click outside)
 - [ ] **MenuPicklist**
 
 #### Data Components (Priority 4)
@@ -170,7 +172,8 @@ For each component:
 #### Overlay Components (Priority 6)
 
 - [x] **Popover** - TypeScript + CSF stories ✅ (Note: Uses Popper.js v1 - future: @floating-ui/react)
-- [ ] **Tooltip**
+- [x] **Tooltip** - TypeScript + CSF stories ✅
+- [x] **Modal** - TypeScript + CSF stories ✅
 - [ ] **DatePicker**
 - [ ] **TimePicker**
 - [ ] **ColorPicker**
@@ -333,13 +336,13 @@ For each component:
 
 ## Immediate Next Steps
 
-1. ~~**Create `modernization` branch** from main~~ (working on master for now)
+1. ~~**Create `react19-modernization` branch** from main~~ ✅ DONE (current working branch)
 2. ~~**Migrate Icon and IconSettings**~~ ✅ DONE
-3. **Migrate Input component** (complex, has sub-components)
-4. **Migrate Radio/RadioGroup** (complete form input set)
-5. **Migrate Modal** (commonly used overlay)
-6. **Set up CI pipeline** for automated testing
-7. **Begin theming architecture** design
+3. ~~**Migrate Input component**~~ ✅ DONE (includes InnerInput, Search, CSF stories)
+4. ~~**Migrate MenuDropdown**~~ ✅ DONE (removed react-onclickoutside, uses native click outside / useClickOutside)
+5. **Migrate Combobox** (uses react-onclickoutside)
+6. **Migrate DatePicker** (uses react-onclickoutside)
+7. **Set up CI pipeline** for automated testing
 
 ---
 
@@ -349,13 +352,13 @@ For each component:
 |----------|-----------|-------|----------|
 | Core Components | 10 | 10 | **100%** ✅ |
 | Layout Components | 7 | 8 | **88%** |
-| Navigation Components | 4 | 6 | **67%** |
+| Navigation Components | 5 | 6 | **83%** |
 | Data Components | 2 | 6 | 33% |
 | Feedback Components | 6 | 7 | **86%** |
-| Overlay Components | 0 | 6 | 0% |
+| Overlay Components | 3 | 7 | **43%** |
 | Specialized Components | 20 | 22 | **91%** |
 
-**Total Components Migrated: 54** (with TypeScript)
+**Total Components Migrated: 58** (with TypeScript)
 
 ---
 
@@ -364,6 +367,25 @@ For each component:
 - Design tokens converted to ES modules for Vite compatibility
 - Using SLDS Plus CSS for dark mode support
 - Some components have type declaration files (.d.ts) as placeholders until full migration
+- **React 19.2.0** - Updated December 2025 (includes security fix for CVE-2025-55182)
+- **useClickOutside hook** - Modern replacement for `react-onclickoutside` created at `utilities/hooks/use-click-outside.ts`
+- **Input a11y follow-ups** - Ensure descriptive text is included in `aria-describedby` (inline help + error) and avoid duplicate IDs for per-input spinner status.
+
+---
+
+## To Revisit
+
+Issues and improvements to address in future iterations:
+
+### Accessibility Issues
+
+- [ ] **Tooltip Error Theme Contrast** - The `slds-theme_error` class on tooltips may have text contrast issues. Currently using `slds-text-color_inverse` as a fix, but should verify this works correctly with SLDS1 vs SLDS2 CSS. The error tooltip's red background needs white text for proper accessibility compliance.
+
+### Technical Debt
+
+- [ ] **Popper.js Migration** - Popover and Tooltip use Popper.js v1. Consider migrating to `@floating-ui/react` for better React 18/19 support and smaller bundle size.
+- [ ] **react-onclickoutside Removal** - This library uses `findDOMNode` which is deprecated in React 19 and doesn't support React 19 peer dependencies. Components using it (menu-dropdown, date-picker, combobox, lookup) need to be refactored to use the new `useClickOutside` hook at `utilities/hooks/use-click-outside.ts`. Currently using `--legacy-peer-deps` as a workaround.
+- [ ] **react-text-truncate Update** - This library only supports up to React 18. Need to find an alternative or update when a compatible version is released.
 
 ## References
 Storybook reference: (this is our single source of truth for SLDS components and stories, for reference purposes)
@@ -373,5 +395,5 @@ SLDS 2 (aka SLDS+) is the single source of truth for components and /utilities, 
 /Users/shubick/salesforce-design-system/packages/sds-subsystems/src/slds+
 ---
 
-*Last Updated: December 5, 2024*
+*Last Updated: December 13, 2025* (MenuDropdown converted to TypeScript + removed react-onclickoutside dependency)
 

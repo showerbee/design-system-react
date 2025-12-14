@@ -10,3 +10,12 @@ declare const Swatch: React.FC<SwatchProps>;
 export default Swatch;
 
 
+
+
+
+
+
+
+
+
+

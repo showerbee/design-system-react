@@ -149,3 +149,12 @@ DockedComposer.displayName = 'SLDSDockedComposer';
 
 export default DockedComposer;
 
+
+
+
+
+
+
+
+
+

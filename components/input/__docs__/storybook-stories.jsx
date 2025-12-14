@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 import { INPUT } from '../../../utilities/constants';
 import IconSettings from '../../icon-settings';
 import Input from '../';

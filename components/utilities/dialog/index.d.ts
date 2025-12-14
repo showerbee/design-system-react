@@ -53,3 +53,12 @@ export interface DialogProps {
 declare const Dialog: React.ForwardRefExoticComponent<DialogProps & React.RefAttributes<HTMLElement>>;
 export default Dialog;
 
+
+
+
+
+
+
+
+
+

@@ -21,6 +21,9 @@ module.exports = {
 		ecmaFeatures: {
 			jsx: true,
 		},
+		// Ensure `project` paths resolve relative to this config file (not process.cwd()).
+		// This prevents ESLint from trying to read a non-existent repo-root tsconfig.json.
+		tsconfigRootDir: __dirname,
 		project: ['./tsconfig.json', './tsconfig.node.json'],
 	},
 	plugins: ['@typescript-eslint', 'react', 'react-hooks'],

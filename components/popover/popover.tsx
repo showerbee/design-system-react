@@ -158,7 +158,7 @@ export interface PopoverProps {
 	/** Mouse leave handler */
 	onMouseLeave?: (event: MouseEvent) => void;
 	/** Open callback */
-	onOpen?: (event: unknown, data: { portal?: HTMLElement }) => void;
+	onOpen?: (event?: unknown, data?: { portal?: HTMLElement }) => void;
 	/** Close request callback */
 	onRequestClose?: (
 		event: MouseEvent | KeyboardEvent | undefined,
@@ -286,7 +286,7 @@ const Popover = ({
 	// Handle dialog close (when unmounted)
 	const handleDialogClose = useCallback(
 		(
-			event: MouseEvent | KeyboardEvent | undefined,
+			event?: React.MouseEvent | React.KeyboardEvent | MouseEvent | KeyboardEvent,
 			data?: { componentWillUnmount?: boolean }
 		) => {
 			const componentWillUnmount = data?.componentWillUnmount || false;

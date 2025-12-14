@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 import IconSettings from '../../icon-settings';
 
 import Datepicker from '../../date-picker';

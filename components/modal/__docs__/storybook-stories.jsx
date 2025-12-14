@@ -1,67 +1,46 @@
-/* eslint-disable react/display-name */
-import React from 'react';
-import moment from 'moment';
-import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-import IconSettings from '../../icon-settings';
-import { MODAL } from '../../../utilities/constants';
-import Modal from '../../modal';
-import Combobox from '../../combobox/';
-import Timepicker from '../../time-picker';
-import Datepicker from '../../date-picker';
+import React, { useState } from 'react';
+import Modal from '../index';
 import Button from '../../button';
-import ComboboxBase from '../../combobox/__examples__/base';
-import ModalCustomParentNode from '../__examples__/modal-custom-parent-node';
-import SLDSSettings from '../../SLDSSettings';
-import HeaderFooter from '../__examples__/header-footer';
-import MenuContents from '../__examples__/menu-contents';
-import Prompt from '../__examples__/prompt';
-import Sizes from '../__examples__/sizes';
-import Taglines from '../__examples__/taglines';
+import IconSettings from '../../icon-settings';
 
-import { canUseDOM } from '../../../utilities/execution-environment';
+export default {
+	title: 'Components/Modal',
+	component: Modal,
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">
+					<Story />
+				</IconSettings>
+			</div>
+		),
+	],
+	parameters: {
+		docs: {
+			description: {
+				component: `The Modal component is used for the Lightning Design System Modal and Notification > Prompt components. 
+				The Modal opens from a state change outside of the component itself (pass this state to the \`isOpen\` prop).`,
+			},
+		},
+	},
+	argTypes: {
+		size: {
+			control: 'select',
+			options: ['small', 'medium', 'large'],
+		},
+		prompt: {
+			control: 'select',
+			options: [undefined, 'success', 'warning', 'error', 'wrench', 'offline', 'info'],
+		},
+		align: {
+			control: 'radio',
+			options: ['center', 'top'],
+		},
+	},
+};
 
-// used by Modal component
-if (canUseDOM && document.querySelector('#root')) {
-	SLDSSettings.setAppElement('#root');
-} else if (canUseDOM) {
-	SLDSSettings.setAppElement(document.createElement('div'));
-}
-
-const getModal = (props) => <Modal {...props} />;
-
-const modalFooter = [
-	<Button key="modalBCancel" label="Cancel" />,
-	<Button key="modalBSave" label="Save" variant="brand" />,
-];
-const leadSourceTypes = [
-	{
-		id: 1,
-		label: 'Third Party Program',
-		value: 'A0',
-	},
-	{
-		id: 2,
-		label: 'Cold Call',
-		value: 'B0',
-	},
-	{
-		id: 3,
-		label: 'LinkedIn',
-		value: 'C0',
-	},
-	{
-		id: 4,
-		label: 'Direct Mail',
-		value: 'D0',
-	},
-	{
-		id: 5,
-		label: 'Other',
-		value: 'E0',
-	},
-];
-const modalContent = (
+// Sample modal content
+const SampleContent = () => (
 	<section className="slds-p-around_large">
 		<div className="slds-form-element slds-m-bottom_large">
 			<label className="slds-form-element__label" htmlFor="opptyName">
@@ -88,130 +67,7 @@ const modalContent = (
 				/>
 			</div>
 		</div>
-
-		<div className="slds-form-element slds-m-vertical_large">
-			<label className="slds-form-element__label" htmlFor="amount">
-				Amount
-			</label>
-			<div className="slds-form-element__control">
-				<input
-					id="amount"
-					className="slds-input"
-					type="text"
-					placeholder="Enter Amount"
-				/>
-			</div>
-		</div>
-		<div className="slds-form-element slds-m-vertical_large">
-			<label className="slds-form-element__label" htmlFor="amount">
-				Amount
-			</label>
-			<div className="slds-form-element__control">
-				<input
-					id="amount"
-					className="slds-input"
-					type="text"
-					placeholder="Enter Amount"
-				/>
-			</div>
-		</div>
-		<div className="slds-m-bottom_large">
-			<Datepicker
-				onDateChange={() => {
-					action('date is selected');
-				}}
-				formatter={(date) => {
-					return date ? moment(date).format('M/D/YYYY') : '';
-				}}
-				parser={(dateString) => {
-					return moment(dateString, 'MM-DD-YYYY').toDate();
-				}}
-			/>
-		</div>
-
 		<div className="slds-form-element slds-m-bottom_large">
-			<ComboboxBase />
-		</div>
-
-		<div className="slds-m-bottom_large">
-			<Combobox
-				events={{
-					onSelect: (event, data) =>
-						action('selected: ', data.selection[0].label),
-				}}
-				labels={{
-					label: 'Lead Source',
-					placeholder: 'Select Lead Source',
-				}}
-				menuPosition="relative"
-				options={leadSourceTypes}
-				selection={[leadSourceTypes[1]]}
-				variant="readonly"
-			/>
-		</div>
-
-		<div className="slds-m-bottom_large">
-			<Timepicker
-				onDateChange={() => {
-					action('time is selected');
-				}}
-			/>
-		</div>
-
-		<div className="slds-form-element slds-m-vertical_large">
-			<label className="slds-form-element__label" htmlFor="amount">
-				Amount
-			</label>
-			<div className="slds-form-element__control">
-				<input
-					id="amount"
-					className="slds-input"
-					type="text"
-					placeholder="Enter Amount"
-				/>
-			</div>
-		</div>
-
-		<div className="slds-form-element slds-m-vertical_large">
-			<label className="slds-form-element__label" htmlFor="amount">
-				Amount
-			</label>
-			<div className="slds-form-element__control">
-				<input
-					id="amount"
-					className="slds-input"
-					type="text"
-					placeholder="Enter Amount"
-				/>
-			</div>
-		</div>
-		<div className="slds-form-element slds-m-vertical_large">
-			<label className="slds-form-element__label" htmlFor="amount">
-				Amount
-			</label>
-			<div className="slds-form-element__control">
-				<input
-					id="amount"
-					className="slds-input"
-					type="text"
-					placeholder="Enter Amount"
-				/>
-			</div>
-		</div>
-		<div className="slds-form-element slds-m-vertical_large">
-			<label className="slds-form-element__label" htmlFor="amount">
-				Amount
-			</label>
-			<div className="slds-form-element__control">
-				<input
-					id="amount"
-					className="slds-input"
-					type="text"
-					placeholder="Enter Amount"
-				/>
-			</div>
-		</div>
-		<div className="slds-form-element slds-m-vertical_large">
 			<label className="slds-form-element__label" htmlFor="amount">
 				Amount
 			</label>
@@ -226,103 +82,316 @@ const modalContent = (
 		</div>
 	</section>
 );
-storiesOf(MODAL, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">
-			<IconSettings iconPath="/assets/icons">{getStory()}</IconSettings>
-		</div>
-	))
-	.add('Modal with Custom Parent Node', () => <ModalCustomParentNode />)
-	.add('Small', () =>
-		getModal({
-			assistiveText: {
-				closeButton: 'Exit',
+
+// Interactive modal with trigger button
+const ModalWithTrigger = ({ buttonLabel, ...modalProps }) => {
+	const [isOpen, setIsOpen] = useState(false);
+	return (
+		<>
+			<Button label={buttonLabel || 'Open Modal'} onClick={() => setIsOpen(true)} />
+			<Modal
+				{...modalProps}
+				isOpen={isOpen}
+				onRequestClose={() => setIsOpen(false)}
+			/>
+		</>
+	);
+};
+
+// Default story
+export const Default = {
+	render: () => (
+		<ModalWithTrigger
+			heading="New Opportunity"
+			tagline="Enter in details below"
+			buttonLabel="Open Modal"
+		>
+			<SampleContent />
+		</ModalWithTrigger>
+	),
+};
+
+// With footer buttons
+export const WithFooter = {
+	render: () => (
+		<ModalWithTrigger
+			heading="New Opportunity"
+			tagline="Enter in details below"
+			buttonLabel="Open with Footer"
+			footer={[
+				<Button key="cancel" label="Cancel" />,
+				<Button key="save" label="Save" variant="brand" />,
+			]}
+		>
+			<SampleContent />
+		</ModalWithTrigger>
+	),
+};
+
+// Directional footer (back/next buttons)
+export const DirectionalFooter = {
+	render: () => (
+		<ModalWithTrigger
+			heading="Step 2 of 3"
+			tagline="Configure your settings"
+			buttonLabel="Open Directional Footer"
+			directional
+			footer={[
+				<Button key="back" label="Back" />,
+				<Button key="next" label="Next" variant="brand" />,
+			]}
+		>
+			<SampleContent />
+		</ModalWithTrigger>
+	),
+};
+
+// Large size
+export const Large = {
+	render: () => (
+		<ModalWithTrigger
+			heading="Large Modal"
+			size="large"
+			buttonLabel="Open Large Modal"
+			footer={[
+				<Button key="cancel" label="Cancel" />,
+				<Button key="save" label="Save" variant="brand" />,
+			]}
+		>
+			<SampleContent />
+		</ModalWithTrigger>
+	),
+};
+
+// Medium size
+export const Medium = {
+	render: () => (
+		<ModalWithTrigger
+			heading="Medium Modal"
+			size="medium"
+			buttonLabel="Open Medium Modal"
+			footer={[
+				<Button key="cancel" label="Cancel" />,
+				<Button key="save" label="Save" variant="brand" />,
+			]}
+		>
+			<SampleContent />
+		</ModalWithTrigger>
+	),
+};
+
+// Small size
+export const Small = {
+	render: () => (
+		<ModalWithTrigger
+			heading="Small Modal"
+			size="small"
+			buttonLabel="Open Small Modal"
+			footer={[
+				<Button key="cancel" label="Cancel" />,
+				<Button key="save" label="Save" variant="brand" />,
+			]}
+		>
+			<SampleContent />
+		</ModalWithTrigger>
+	),
+};
+
+// No header
+export const NoHeader = {
+	render: () => (
+		<ModalWithTrigger
+			assistiveText={{ dialogLabel: 'Modal without header' }}
+			buttonLabel="Open No Header Modal"
+		>
+			<section className="slds-p-around_large">
+				<p>
+					This modal has no visible header, but includes an assistive text
+					label for screen readers.
+				</p>
+				<p className="slds-m-top_medium">
+					Sit nulla est ex deserunt exercitation anim occaecat. Nostrud
+					ullamco deserunt aute id consequat veniam incididunt duis in sint
+					irure nisi.
+				</p>
+			</section>
+		</ModalWithTrigger>
+	),
+};
+
+// Prompt - Error
+export const PromptError = {
+	render: () => (
+		<ModalWithTrigger
+			heading="Delete Record"
+			prompt="error"
+			buttonLabel="Open Error Prompt"
+			footer={[
+				<Button key="cancel" label="Cancel" variant="neutral" />,
+				<Button key="delete" label="Delete" variant="destructive" />,
+			]}
+		>
+			<div className="slds-p-around_medium">
+				<p>
+					Are you sure you want to delete this record? This action cannot be
+					undone.
+				</p>
+			</div>
+		</ModalWithTrigger>
+	),
+};
+
+// Prompt - Warning
+export const PromptWarning = {
+	render: () => (
+		<ModalWithTrigger
+			heading="Warning"
+			prompt="warning"
+			buttonLabel="Open Warning Prompt"
+			footer={<Button key="ok" label="Got it" variant="neutral" />}
+		>
+			<div className="slds-p-around_medium">
+				<p>
+					You are about to leave this page. Any unsaved changes will be lost.
+				</p>
+			</div>
+		</ModalWithTrigger>
+	),
+};
+
+// Prompt - Success
+export const PromptSuccess = {
+	render: () => (
+		<ModalWithTrigger
+			heading="Success!"
+			prompt="success"
+			buttonLabel="Open Success Prompt"
+			footer={<Button key="ok" label="Continue" variant="neutral" />}
+		>
+			<div className="slds-p-around_medium">
+				<p>Your changes have been saved successfully.</p>
+			</div>
+		</ModalWithTrigger>
+	),
+};
+
+// Prompt - Info
+export const PromptInfo = {
+	render: () => (
+		<ModalWithTrigger
+			heading="Information"
+			prompt="info"
+			buttonLabel="Open Info Prompt"
+			footer={<Button key="ok" label="OK" variant="neutral" />}
+		>
+			<div className="slds-p-around_medium">
+				<p>
+					This feature requires additional configuration. Please contact your
+					administrator for assistance.
+				</p>
+			</div>
+		</ModalWithTrigger>
+	),
+};
+
+// Not dismissible
+export const NotDismissible = {
+	render: () => {
+		const [isOpen, setIsOpen] = useState(false);
+		return (
+			<>
+				<Button
+					label="Open Non-Dismissible Modal"
+					onClick={() => setIsOpen(true)}
+				/>
+				<Modal
+					heading="Required Action"
+					isOpen={isOpen}
+					disableClose
+					onRequestClose={() => setIsOpen(false)}
+					footer={
+						<Button
+							key="accept"
+							label="I Accept"
+							variant="brand"
+							onClick={() => setIsOpen(false)}
+						/>
+					}
+				>
+					<div className="slds-p-around_medium">
+						<p>
+							You must accept the terms and conditions to continue. This modal
+							cannot be dismissed by clicking outside or pressing Escape.
+						</p>
+					</div>
+				</Modal>
+			</>
+		);
+	},
+};
+
+// Top aligned
+export const TopAligned = {
+	render: () => (
+		<ModalWithTrigger
+			heading="Top Aligned Modal"
+			align="top"
+			buttonLabel="Open Top Aligned"
+			footer={[
+				<Button key="cancel" label="Cancel" />,
+				<Button key="save" label="Save" variant="brand" />,
+			]}
+		>
+			<SampleContent />
+		</ModalWithTrigger>
+	),
+};
+
+// Custom header
+export const CustomHeader = {
+	render: () => (
+		<ModalWithTrigger
+			buttonLabel="Open Custom Header"
+			header={
+				<div className="slds-grid slds-grid_align-spread slds-p-around_medium">
+					<div>
+						<span className="slds-badge slds-theme_success">New</span>
+						<span className="slds-m-left_x-small slds-text-heading_medium">
+							Custom Header Content
+						</span>
+					</div>
+				</div>
+			}
+			footer={<Button key="close" label="Close" variant="neutral" />}
+		>
+			<section className="slds-p-around_large">
+				<p>This modal has a completely custom header with a badge and custom layout.</p>
+			</section>
+		</ModalWithTrigger>
+	),
+};
+
+// Always open (for testing/documentation)
+export const AlwaysOpen = {
+	render: () => (
+		<Modal
+			heading="Always Open Modal"
+			tagline="This modal is always visible for documentation"
+			isOpen
+			onRequestClose={() => {}}
+			footer={[
+				<Button key="cancel" label="Cancel" />,
+				<Button key="save" label="Save" variant="brand" />,
+			]}
+		>
+			<SampleContent />
+		</Modal>
+	),
+	parameters: {
+		docs: {
+			description: {
+				story: 'This modal is always open for documentation purposes. In real usage, control the `isOpen` prop with state.',
 			},
-			isOpen: true,
-			tagline: 'Enter in details below',
-			heading: 'New Opportunity',
-			children: modalContent,
-			onRequestClose: action('modal closed'),
-			portalClassName: 'portal-class-name-test',
-		})
-	)
-	.add('Small with footer, not dismissible', () =>
-		getModal({
-			disableClose: true,
-			isOpen: true,
-			tagline: 'Enter in details below',
-			heading: 'New Opportunity',
-			children: modalContent,
-			onRequestClose: action('modal closed'),
-			footer: modalFooter,
-		})
-	)
-	.add('Small with custom footer', () =>
-		getModal({
-			directional: true,
-			isOpen: true,
-			tagline: 'Enter in details below',
-			heading: 'New Opportunity',
-			children: modalContent,
-			onRequestClose: action('modal closed'),
-			footer: (
-				<div>
-					<Button label="cancel" /> and some random text in here{' '}
-					<Button label="update" />
-					<Button label="run" />
-				</div>
-			),
-		})
-	)
-	.add('Small no header', () =>
-		getModal({
-			isOpen: true,
-			children: modalContent,
-			onRequestClose: action('modal closed'),
-			portalClassName: 'portal-class-name-test',
-		})
-	)
-	.add('Small no header and custom footer', () =>
-		getModal({
-			isOpen: true,
-			children: modalContent,
-			onRequestClose: action('modal closed'),
-			portalClassName: 'portal-class-name-test',
-			footer: modalFooter,
-		})
-	)
-	.add('Large with directional footer', () =>
-		getModal({
-			directional: true,
-			isOpen: true,
-			tagline: 'Enter in details below',
-			heading: 'New Opportunity',
-			children: modalContent,
-			onRequestClose: action('modal closed'),
-			footer: modalFooter,
-			size: 'large',
-		})
-	)
-	.add('Prompt', () =>
-		getModal({
-			isOpen: true,
-			heading: 'Delete state - Default',
-			children: (
-				<div className="slds-p-around_medium">
-					Are you sure you want to delete the Default State? This action cannot
-					be undone. Are you sure you want to delete the Default State? This
-					action cannot be undone. Are you sure you want to delete the Default
-					State? This action cannot be undone.{' '}
-					<Button className="slds-m-around_medium">Ok, got it!</Button>
-				</div>
-			),
-			// eslint-disable-line max-len
-			prompt: 'error',
-			onRequestClose: action('modal closed'),
-		})
-	)
-	.add('Docs site HeaderFooter', () => <HeaderFooter />)
-	.add('Docs site MenuContents', () => <MenuContents />)
-	.add('Docs site Prompt', () => <Prompt />)
-	.add('Docs site Sizes', () => <Sizes />)
-	.add('Docs site Taglines', () => <Taglines />);
+		},
+	},
+};

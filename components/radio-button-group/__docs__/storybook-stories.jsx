@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */ import React from 'react';
 import PropTypes from 'prop-types';
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 import RadioButtonGroup from '../../radio-button-group';
 import Radio from '../../radio-button-group/radio';
 import { RADIO_BUTTON_GROUP } from '../../../utilities/constants';

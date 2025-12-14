@@ -2,6 +2,19 @@
 // This prevents false warnings about act() from state updates in Storybook
 globalThis.IS_REACT_ACT_ENVIRONMENT = false;
 
+// Configure Modal to use #storybook-root for accessibility
+// This silences the "App element is not defined" warning
+import Settings from '../components/settings';
+
+// Set after DOM is ready
+if (typeof document !== 'undefined') {
+  // Use requestAnimationFrame to ensure #storybook-root exists
+  requestAnimationFrame(() => {
+    const root = document.getElementById('storybook-root') || document.body;
+    Settings.setAppElement(root);
+  });
+}
+
 /** @type { import('@storybook/react-vite').Preview } */
 const preview = {
   parameters: {
