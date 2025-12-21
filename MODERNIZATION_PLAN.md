@@ -154,7 +154,7 @@ For each component:
 
 - [ ] **DataTable**
 - [ ] **Tree**
-- [ ] **Combobox**
+- [x] **Combobox** - TypeScript + CSF stories ✅ (removed react-onclickoutside, uses useClickOutside)
 - [ ] **Lookup** (deprecated - consider removal)
 - [x] **Pill** - TypeScript + CSF stories ✅
 - [x] **PillContainer** - TypeScript + CSF stories ✅
@@ -174,9 +174,9 @@ For each component:
 - [x] **Popover** - TypeScript + CSF stories ✅ (Note: Uses Popper.js v1 - future: @floating-ui/react)
 - [x] **Tooltip** - TypeScript + CSF stories ✅
 - [x] **Modal** - TypeScript + CSF stories ✅
-- [ ] **DatePicker**
-- [ ] **TimePicker**
-- [ ] **ColorPicker**
+- [x] **DatePicker** - TypeScript + CSF stories ✅ (removed react-onclickoutside, uses useClickOutside)
+- [x] **TimePicker** - TypeScript + CSF stories ✅
+- [x] **ColorPicker** - TypeScript + CSF stories ✅ (7 subcomponents converted)
 - [ ] **Filter**
 
 #### Specialized Components (Priority 7)
@@ -340,9 +340,11 @@ For each component:
 2. ~~**Migrate Icon and IconSettings**~~ ✅ DONE
 3. ~~**Migrate Input component**~~ ✅ DONE (includes InnerInput, Search, CSF stories)
 4. ~~**Migrate MenuDropdown**~~ ✅ DONE (removed react-onclickoutside, uses native click outside / useClickOutside)
-5. **Migrate Combobox** (uses react-onclickoutside)
-6. **Migrate DatePicker** (uses react-onclickoutside)
-7. **Set up CI pipeline** for automated testing
+5. ~~**Migrate Combobox**~~ ✅ DONE (removed react-onclickoutside, uses useClickOutside)
+6. ~~**Migrate DatePicker**~~ ✅ DONE (removed react-onclickoutside, uses useClickOutside)
+7. **Migrate TimePicker** (uses react-onclickoutside)
+8. **Migrate ColorPicker** (uses react-onclickoutside)
+9. **Set up CI pipeline** for automated testing
 
 ---
 
@@ -353,12 +355,12 @@ For each component:
 | Core Components | 10 | 10 | **100%** ✅ |
 | Layout Components | 7 | 8 | **88%** |
 | Navigation Components | 5 | 6 | **83%** |
-| Data Components | 2 | 6 | 33% |
+| Data Components | 3 | 6 | **50%** |
 | Feedback Components | 6 | 7 | **86%** |
-| Overlay Components | 3 | 7 | **43%** |
+| Overlay Components | 5 | 7 | **71%** |
 | Specialized Components | 20 | 22 | **91%** |
 
-**Total Components Migrated: 58** (with TypeScript)
+**Total Components Migrated: 61** (with TypeScript)
 
 ---
 
@@ -395,5 +397,5 @@ SLDS 2 (aka SLDS+) is the single source of truth for components and /utilities, 
 /Users/shubick/salesforce-design-system/packages/sds-subsystems/src/slds+
 ---
 
-*Last Updated: December 13, 2025* (MenuDropdown converted to TypeScript + removed react-onclickoutside dependency)
+*Last Updated: December 20, 2025* (ColorPicker converted to TypeScript + CSF stories)
 

@@ -1,52 +1,29 @@
-declare module '@salesforce/design-system-react/components/date-picker/private/navigation' {
-	import React from 'react';
-	type Props = {
-		/**
-		 * Label for button to go to the next month
-		 */
-		assistiveTextNextMonth: string /*.isRequired*/;
-		/**
-		 * Label for button to go to the previous month
-		 */
-		assistiveTextPreviousMonth: string /*.isRequired*/;
-		/**
-		 * Label for year picklist/combobox
-		 */
-		assistiveTextYear: string /*.isRequired*/;
-		/**
-		 * HTML id for component
-		 */
-		id?: string;
-		/**
-		 * Date used to create calendar that is displayed. This is typically the initial day focused when using the keyboard navigation. Focus will be set to this date if available.
-		 */
-		initialDateForCalendarRender: Date /*.isRequired*/;
-		/**
-		 * Displayed calendar has changed or re-rendered
-		 */
-		onChangeMonth: (v: any) => any /*.isRequired*/;
-		/**
-		 * Names of the months
-		 */
-		monthLabels: any[] /*.isRequired*/;
-		/**
-		 * For keyboard navigation. In order to trap focus within the dialog, the first DOM node with a tab index should be listened to.
-		 */
-		onPreviousMonthKeyDown?: (v: any) => any;
-		/**
-		 * Callback that passes in the DOM reference of the `<button>` DOM node within this component. Primary use is to allow `focus` to be called. You should still test if the node exists, since rendering is asynchronous.
-		 */
-		previousMonthRef: (v: any) => any /*.isRequired*/;
-		/**
-		 * Offset of year from current year that can be selected in the year selection dropdown. (2017 - 5 = 2012).
-		 */
-		relativeYearFrom?: number;
-		/**
-		 * Offset of year from current year that can be selected in the year selection dropdown. (2017 + 5 = 2012).
-		 */
-		relativeYearTo?: number;
-	};
+import { KeyboardEvent, SyntheticEvent } from 'react';
 
-	function Component(props: Props): JSX.Element;
-	export default Component;
+export interface NavigationProps {
+	/** Label for button to go to the next month */
+	assistiveTextNextMonth?: string;
+	/** Label for button to go to the previous month */
+	assistiveTextPreviousMonth?: string;
+	/** Label for year picklist/combobox */
+	assistiveTextYear?: string;
+	/** HTML id for component */
+	id?: string;
+	/** Date used to create calendar that is displayed */
+	initialDateForCalendarRender?: Date;
+	/** Called when month changes */
+	onChangeMonth?: (event: SyntheticEvent | undefined, date: Date) => void;
+	/** Names of the months */
+	monthLabels?: string[];
+	/** Called on previous month button keydown */
+	onPreviousMonthKeyDown?: (event: KeyboardEvent) => void;
+	/** Ref callback for previous month button */
+	previousMonthRef?: (ref: HTMLButtonElement | null) => void;
+	/** Years before current year in dropdown */
+	relativeYearFrom?: number;
+	/** Years after current year in dropdown */
+	relativeYearTo?: number;
 }
+
+declare const Navigation: React.FC<NavigationProps>;
+export default Navigation;

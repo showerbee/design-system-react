@@ -42,6 +42,8 @@ export interface PillOption {
 	label?: ReactNode | string;
 	/** Hover title */
 	title?: string;
+	/** Allow additional properties */
+	[key: string]: unknown;
 }
 
 /**
@@ -194,7 +196,7 @@ const PillContainer = ({
 	);
 
 	const handleNavigatePillContainer = useCallback(
-		(_event: KeyboardEvent, { direction }: { direction: 'next' | 'previous' }) => {
+		(_event: React.SyntheticEvent | React.KeyboardEvent, { direction }: { direction: 'next' | 'previous' }) => {
 			const offsets = { next: 1, previous: -1 };
 			const isLastOptionAndRightIsPressed =
 				activeSelectedOptionIndex + 1 === options.length && direction === 'next';
@@ -234,10 +236,10 @@ const PillContainer = ({
 	);
 
 	const handleRequestRemove = useCallback(
-		(event: MouseEvent | KeyboardEvent, data: { index: number; option: PillOption }) => {
-			if (onRequestRemovePill) {
+		(event: MouseEvent | KeyboardEvent | React.SyntheticEvent, data: { index?: number; option: PillOption }) => {
+			if (onRequestRemovePill && data.index !== undefined) {
 				preserveFocusRef.current = true;
-				onRequestRemovePill(event, { index: data.index, option: data.option });
+				onRequestRemovePill(event as MouseEvent | KeyboardEvent, { index: data.index, option: data.option });
 			}
 		},
 		[onRequestRemovePill]

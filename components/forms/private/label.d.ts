@@ -1,28 +1,20 @@
-declare module '@salesforce/design-system-react/components/forms/private/label' {
-	import React from 'react';
-	type Props = {
-		/*
-		 * Assistive Text to use instead of a visible label
-		 */
-		assistiveText?: Record<string, any>;
-		/*
-		 * Id of the input associated with this label
-		 */
-		htmlFor?: string;
-		/*
-		 * Input Label or inner node for formatting purposes
-		 */
-		label?: React.ReactNode | string;
-		/*
-		 * Applies label styling for a required form element
-		 */
-		required?: boolean;
-		/**
-		 * Changes markup of label.
-		 */
-		variant?: 'base' | 'static';
-	};
+import { ReactNode } from 'react';
 
-	function Component(props: Props): JSX.Element;
-	export default Component;
+export interface LabelProps {
+	/** Assistive text for accessibility */
+	assistiveText?: {
+		label?: string;
+		[key: string]: unknown;
+	};
+	/** Id of associated input */
+	htmlFor?: string;
+	/** Label content */
+	label?: ReactNode | string;
+	/** Required field styling */
+	required?: boolean;
+	/** Label variant */
+	variant?: 'base' | 'static';
 }
+
+declare const Label: React.FC<LabelProps>;
+export default Label;

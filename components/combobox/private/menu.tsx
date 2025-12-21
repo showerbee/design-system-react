@@ -1,103 +1,85 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-/* eslint-disable jsx-a11y/interactive-supports-focus */
-
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode, type ReactElement, type CSSProperties } from 'react';
 import isEqual from 'lodash.isequal';
 import classNames from 'classnames';
 
 import Icon from '../../icon';
 import Spinner from '../../spinner';
 
-const propTypes = {
-	/*
-	 * Active descendant in menu
-	 */
-	activeOption: PropTypes.object,
-	/*
-	 * Index of active descendant in menu
-	 */
-	activeOptionIndex: PropTypes.number,
-	/**
-	 * CSS classes to be added to menu sub header `span` tag. Uses `classNames` [API](https://github.com/JedWatson/classnames).
-	 */
-	classNameMenuSubHeader: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
-	/**
-	 * Sets the dialog width to the width of one of the following:
-	 * `target`: (Menus attached to `input` typically follow this UX pattern),
-	 *  `menu`: Consider setting a menuMaxWidth if using this value. If not, width will be set to width of largest menu item.
-	 *  'none'
-	 */
-	inheritWidthOf: PropTypes.oneOf(['target', 'menu', 'none']),
-	/*
-	 * Id used for assistive technology
-	 */
-	inputId: PropTypes.string,
-	/**
-	 * Determines the height of the menu based on SLDS CSS classes.
-	 */
-	itemVisibleLength: PropTypes.oneOf([5, 7, 10]),
-	/**
-	 * **Text labels for internationalization**
-	 * This object is merged with the default props object on every render.
-	 * * `noOptionsFound`: Custom message that renders when no matches found. The default empty state is just text that says, 'No matches found.'.
-	 */
-	labels: PropTypes.shape({
-		noOptionsFound: PropTypes.oneOfType([PropTypes.node, PropTypes.string])
-			.isRequired,
-	}),
-	/**
-	 * Accepts a custom menu item rendering function that becomes a custom component and is passed in the following props:
-	 * * `assistiveText`: Object, `assistiveText` prop that is passed into Combobox
-	 * * `option`: Object, option data for item being rendered that is passed into Combobox
-	 * * `selected`: Boolean, allows rendering of `assistiveText.optionSelectedInMenu` in Readonly Combobox
-	 *
-	 * _Tested with snapshot testing._
-	 */
-	onRenderMenuItem: PropTypes.func,
-	/**
-	 * Accepts a ref function or object (React.createRef() or otherwise) to store the menu DOM reference once available
-	 */
-	menuRef: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-	/*
-	 * Sets a maximum width that the menu will be if `inheritWidthOf` is menu.
-	 */
-	maxWidth: PropTypes.string,
-	/*
-	 * Callback when option is selected with keyboard or mouse
-	 */
-	onSelect: PropTypes.func,
-	/*
-	 * Menu options
-	 */
-	options: PropTypes.array,
-	/*
-	 * Selected options
-	 */
-	selection: PropTypes.array,
-	/*
-	 * Adds loading spinner below the options
-	 */
-	hasMenuSpinner: PropTypes.bool,
-	/**
-	 * Accepts a tooltip that is displayed when hovering on disabled menu items.
-	 */
-	tooltipMenuItemDisabled: PropTypes.element,
-	/**
-	 * Changes styles of the menu option
-	 */
-	variant: PropTypes.oneOf(['icon-title-subtitle', 'checkbox']),
-	isSelected: PropTypes.func,
-	assistiveText: PropTypes.object,
-};
+export interface ComboboxOption {
+	id: string;
+	label?: string | ((searchTerm: string) => ReactNode);
+	subTitle?: string;
+	title?: string;
+	type?: 'separator' | 'header' | 'footer' | 'deselect' | string;
+	icon?: ReactNode;
+	disabled?: boolean;
+	tooltipContent?: ReactNode;
+	value?: string;
+	onClick?: (event: React.MouseEvent) => void;
+}
 
-const setBold = (label, searchTerm) => {
+export interface MenuAssistiveText {
+	loadingMenuItems?: string;
+	optionSelectedInMenu?: string;
+}
+
+export interface MenuLabels {
+	noOptionsFound: ReactNode | string;
+}
+
+export interface MenuProps {
+	/** Active descendant in menu */
+	activeOption?: ComboboxOption;
+	/** Index of active descendant in menu */
+	activeOptionIndex?: number;
+	/** Assistive text for accessibility */
+	assistiveText?: MenuAssistiveText;
+	/** CSS classes to be added to menu sub header span tag */
+	classNameMenuSubHeader?: string | string[] | Record<string, boolean>;
+	/** CSS classes for menu */
+	classNameMenu?: string | string[] | Record<string, boolean>;
+	/** Sets the dialog width */
+	inheritWidthOf?: 'target' | 'menu' | 'none';
+	/** Id used for assistive technology */
+	inputId?: string;
+	/** Input value for bolding matches */
+	inputValue?: string;
+	/** Function to check if option is selected */
+	isSelected: (params: { selection: ComboboxOption[]; option: ComboboxOption }) => boolean;
+	/** Determines the height of the menu */
+	itemVisibleLength?: 5 | 7 | 10 | null;
+	/** Text labels */
+	labels: MenuLabels;
+	/** Adds loading spinner below the options */
+	hasMenuSpinner?: boolean;
+	/** Sets a maximum width for menu */
+	maxWidth?: string;
+	/** Menu position */
+	menuPosition?: 'absolute' | 'overflowBoundaryElement' | 'relative';
+	/** Ref for menu element */
+	menuRef?: React.RefCallback<HTMLUListElement> | React.RefObject<HTMLUListElement>;
+	/** Custom menu item renderer */
+	onRenderMenuItem?: React.ComponentType<{
+		assistiveText?: MenuAssistiveText;
+		selected: boolean;
+		option: ComboboxOption;
+	}>;
+	/** Callback when option is selected */
+	onSelect: (event: React.MouseEvent, data: { option: ComboboxOption; selection?: ComboboxOption[] }) => void;
+	/** Menu options */
+	options: ComboboxOption[];
+	/** Selected options */
+	selection: ComboboxOption[];
+	/** Tooltip for disabled menu items */
+	tooltipMenuItemDisabled?: ReactElement;
+	/** Menu variant */
+	variant?: 'icon-title-subtitle' | 'checkbox';
+}
+
+const setBold = (label: string | undefined, searchTerm: string): ReactNode => {
 	if (!label || label.length === 0 || !searchTerm || searchTerm.length === 0) {
 		return label;
 	}
@@ -117,42 +99,39 @@ const setBold = (label, searchTerm) => {
 	return label;
 };
 
-const renderLabel = (labelProp, searchTerm) => {
+const renderLabel = (labelProp: string | ((searchTerm: string) => ReactNode) | undefined, searchTerm: string): ReactNode => {
 	if (labelProp == null || typeof labelProp === 'string') {
 		return labelProp;
 	}
-
 	return labelProp(searchTerm);
 };
 
-const Menu = ({
+const Menu: React.FC<MenuProps> = ({
 	activeOption,
-	activeOptionIndex,
+	activeOptionIndex = -1,
+	assistiveText = {},
 	classNameMenuSubHeader,
 	classNameMenu,
 	inheritWidthOf,
 	inputId,
+	inputValue = '',
+	isSelected,
 	itemVisibleLength,
 	labels,
-	onRenderMenuItem,
-	menuRef = () => {},
-	menuPosition,
+	hasMenuSpinner,
 	maxWidth,
+	menuPosition,
+	menuRef,
+	onRenderMenuItem: MenuItem,
 	onSelect,
 	options,
 	selection,
-	hasMenuSpinner,
 	tooltipMenuItemDisabled,
-	variant,
-	isSelected,
-	assistiveText,
-	inputValue = '',
+	variant = 'icon-title-subtitle',
 }) => {
-	let menuMaxWidth = inheritWidthOf === 'menu' ? 'inherit' : undefined;
-	menuMaxWidth =
-		inheritWidthOf === 'menu' && maxWidth ? maxWidth : menuMaxWidth;
+	let menuMaxWidth: string | undefined = inheritWidthOf === 'menu' ? 'inherit' : undefined;
+	menuMaxWidth = inheritWidthOf === 'menu' && maxWidth ? maxWidth : menuMaxWidth;
 
-	// .slds-dropdown sets the menu to absolute positioning, since it has a relative parent. Absolute positioning removes clientHeight and clientWidth which Popper.js needs to absolute position the menu's wrapping div. Absolute positioning an already absolute positioned element doesn't work. Setting the menu's position to relative allows PopperJS to work it's magic.
 	const menuOptions = options.map((optionData, index) => {
 		const active =
 			index === activeOptionIndex &&
@@ -163,14 +142,14 @@ const Menu = ({
 				selection,
 				option: optionData,
 			}) &&
-			(optionData.type !== 'header' || optionData.type === 'footer');
-		const MenuItem = onRenderMenuItem;
+			optionData.type !== 'header' &&
+			optionData.type !== 'footer';
 
 		if (optionData.type === 'separator') {
 			return optionData.label ? (
 				<li
 					className="slds-dropdown__header slds-truncate"
-					title={optionData.label}
+					title={typeof optionData.label === 'string' ? optionData.label : undefined}
 					role="separator"
 					key={`menu-separator-${optionData.id}`}
 				>
@@ -180,7 +159,7 @@ const Menu = ({
 							classNameMenuSubHeader
 						)}
 					>
-						{optionData.label}
+						{typeof optionData.label === 'string' ? optionData.label : optionData.label?.(inputValue)}
 					</span>
 				</li>
 			) : (
@@ -191,6 +170,7 @@ const Menu = ({
 				/>
 			);
 		}
+
 		if (optionData.type === 'header') {
 			return (
 				<li
@@ -201,7 +181,7 @@ const Menu = ({
 					<div
 						onClick={
 							optionData.disabled
-								? null
+								? undefined
 								: (event) => {
 										onSelect(event, { option: optionData });
 								  }
@@ -225,6 +205,7 @@ const Menu = ({
 				</li>
 			);
 		}
+
 		if (optionData.type === 'footer') {
 			return (
 				<li
@@ -236,7 +217,7 @@ const Menu = ({
 						aria-selected={active}
 						onClick={
 							optionData.disabled
-								? null
+								? undefined
 								: (event) => {
 										onSelect(event, { option: optionData });
 								  }
@@ -260,17 +241,23 @@ const Menu = ({
 			);
 		}
 
-		const disabledProps = {};
+		const disabledProps: {
+			'aria-describedby'?: string;
+			'aria-disabled'?: boolean;
+			style?: CSSProperties;
+		} = {};
 		const tooltipId = `${inputId}-listbox-option-help-${optionData.id}`;
 		if (optionData.disabled && tooltipMenuItemDisabled && active) {
 			disabledProps['aria-describedby'] = tooltipId;
 		}
 		if (optionData.disabled) {
-			disabledProps['aria-disabled'] = !!optionData.disabled;
-			disabledProps.style = { cursor: 'default' }; // Replace this with a css class name once SLDS has it.
+			disabledProps['aria-disabled'] = true;
+			disabledProps.style = { cursor: 'default' };
 		}
 
-		const menuItem = {
+		const labelString = typeof optionData.label === 'string' ? optionData.label : undefined;
+
+		const menuItem: Record<string, ReactNode> = {
 			'icon-title-subtitle': (
 				<span
 					aria-selected={active}
@@ -284,18 +271,17 @@ const Menu = ({
 					)}
 					onClick={
 						optionData.disabled
-							? null
+							? undefined
 							: (event) => {
 									onSelect(event, { option: optionData });
 							  }
 					}
 					role="option"
 				>
-					{/* For backward compatibility,  */}
-					{optionData.icon && !onRenderMenuItem ? (
+					{optionData.icon && !MenuItem ? (
 						<span className="slds-media__figure">{optionData.icon}</span>
 					) : null}
-					{onRenderMenuItem ? (
+					{MenuItem ? (
 						<MenuItem
 							assistiveText={assistiveText}
 							selected={selected}
@@ -309,9 +295,9 @@ const Menu = ({
 									'slds-listbox__option-text_entity',
 									{ 'slds-disabled-text': optionData.disabled }
 								)}
-								title={optionData.label}
+								title={labelString}
 							>
-								{setBold(optionData.label, inputValue)}
+								{setBold(labelString, inputValue)}
 							</span>
 							<span
 								className={classNames(
@@ -327,7 +313,7 @@ const Menu = ({
 				</span>
 			),
 			checkbox: (
-				<span // eslint-disable-line jsx-a11y/no-static-element-interactions
+				<span
 					aria-selected={active}
 					{...disabledProps}
 					id={`${inputId}-listbox-option-${optionData.id}`}
@@ -342,7 +328,7 @@ const Menu = ({
 					)}
 					onClick={
 						optionData.disabled
-							? null
+							? undefined
 							: (event) => {
 									onSelect(event, {
 										selection,
@@ -361,7 +347,7 @@ const Menu = ({
 						/>
 					</span>
 					<span className="slds-media__body">
-						{onRenderMenuItem ? (
+						{MenuItem ? (
 							<MenuItem
 								assistiveText={assistiveText}
 								selected={selected}
@@ -372,7 +358,7 @@ const Menu = ({
 								className={classNames('slds-truncate', {
 									'slds-disabled-text': optionData.disabled,
 								})}
-								title={optionData.label}
+								title={labelString}
 							>
 								{selected ? (
 									<span className="slds-assistive-text">
@@ -380,9 +366,9 @@ const Menu = ({
 									</span>
 								) : null}{' '}
 								{optionData.type === 'deselect' ? (
-									<em>{optionData.label}</em>
+									<em>{labelString}</em>
 								) : (
-									optionData.label
+									labelString
 								)}
 							</span>
 						)}
@@ -391,23 +377,20 @@ const Menu = ({
 			),
 		};
 
-		let item;
+		let item: ReactNode;
 		if (optionData.disabled && tooltipMenuItemDisabled) {
-			const {
-				content,
-				...userDefinedTooltipProps
-			} = tooltipMenuItemDisabled.props;
-			const tooltipProps = {
+			const tooltipPropsFromElement = tooltipMenuItemDisabled.props as { content?: ReactNode; [key: string]: unknown };
+			const { content, ...userDefinedTooltipProps } = tooltipPropsFromElement;
+			const tooltipProps: Record<string, unknown> = {
 				align: 'top',
-				content: optionData.tooltipContent || content, // either use specific content defined on option or content defined on tooltip component.
+				content: optionData.tooltipContent || content,
 				id: tooltipId,
 				position: 'absolute',
 				silenceTriggerTabbableWarning: true,
 				triggerStyle: { width: '100%' },
-				...userDefinedTooltipProps, // we want to allow user defined tooltip pros to overwrite default props, if need be.
+				...userDefinedTooltipProps,
 			};
 			if (active) {
-				// allows showing the tooltip on keyboard navigation to disabled menu item
 				tooltipProps.isOpen = true;
 			}
 			item = React.cloneElement(
@@ -479,6 +462,6 @@ const Menu = ({
 };
 
 Menu.displayName = 'Menu';
-Menu.propTypes = propTypes;
 
 export default Menu;
+

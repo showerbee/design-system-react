@@ -1,68 +1,39 @@
-declare module '@salesforce/design-system-react/components/date-picker/private/week' {
-	import React from 'react';
-	type Props = {
-		/**
-		 * Date used to create calendar that is displayed. This is typically the initial day focused when using the keyboard navigation. Focus will be set to this date if available.
-		 */
-		initialDateForCalendarRender: Date /*.isRequired*/;
-		/**
-		 * Is true if calendar day has focus.
-		 */
-		calendarHasFocus: boolean /*.isRequired*/;
-		/**
-		 * dateDisabled() takes a date as input argument, returns true if given date should be disabled, otherwise returns false.
-		 */
-		dateDisabled?: (v: any) => any;
-		/**
-		 * First day of week.
-		 */
-		firstDayOfWeek: Date /*.isRequired*/;
-		/**
-		 * Date that has focus.
-		 */
-		focusedDate: Date /*.isRequired*/;
-		/**
-		 * Triggered when the keyboard moves focus off the calendar.
-		 */
-		onCalendarBlur: (v: any) => any /*.isRequired*/;
-		/**
-		 * For keyboard navigation. Changes the focus to the next day on the calendar. Triggered when right arrow button is pressed.
-		 */
-		onKeyboardNavigateToNextDay: (v: any) => any /*.isRequired*/;
-		/**
-		 * For keyboard navigation. Changes the focus to the same day in the next week on the calendar. Triggered when down arrow button is pressed.
-		 */
-		onKeyboardNavigateToNextWeek: (v: any) => any /*.isRequired*/;
-		/**
-		 * For keyboard navigation. Changes the focus to the previous day on the calendar. Triggered when left arrow button is pressed.
-		 */
-		onKeyboardNavigateToPreviousDay: (v: any) => any /*.isRequired*/;
-		/**
-		 * For keyboard navigation. Changes the focus to the same day in the previous week on the calendar. Triggered when up arrow button is pressed.
-		 */
-		onKeyboardNavigateToPreviousWeek: (v: any) => any /*.isRequired*/;
-		/**
-		 * Triggered when the user wants to focus on a new day witht he keyboard. It returns the keyboard event a data object with the shape: `{date: [Date object]}`. Keyboard event is ommited if a new month is rendered.  _Tested with Mocha framework._
-		 */
-		onRequestInternalFocusDate: (v: any) => any /*.isRequired*/;
-		/**
-		 * Triggered when a date on the calendar is clicked.
-		 */
-		onSelectDate: (v: any) => any /*.isRequired*/;
-		/**
-		 * Currently selected date. This should be present in the input field.
-		 */
-		selectedDate: Date /*.isRequired*/;
-		/**
-		 * Component reference / DOM node for selected day.
-		 */
-		selectedDateRef: (v: any) => any /*.isRequired*/;
-		/**
-		 * Label of shortcut to jump to today within the calendar. Also used for assistive text for the current day.
-		 */
-		todayLabel: string /*.isRequired*/;
-	};
+import { SyntheticEvent } from 'react';
 
-	function Component(props: Props): JSX.Element;
-	export default Component;
+export interface WeekProps {
+	/** Date used to create calendar that is displayed */
+	initialDateForCalendarRender?: Date;
+	/** Is true if calendar day has focus */
+	calendarHasFocus?: boolean;
+	/** Function to determine if a date should be disabled */
+	dateDisabled?: (data: { date: Date }) => boolean;
+	/** First day of week */
+	firstDayOfWeek?: Date;
+	/** Date that has focus */
+	focusedDate?: Date;
+	/** Called when focus moves off calendar */
+	onCalendarBlur?: (event: SyntheticEvent, data: { direction: string }) => void;
+	/** Called on next day keyboard navigation */
+	onKeyboardNavigateToNextDay?: (event: SyntheticEvent, data: { date: Date }) => void;
+	/** Called on next week keyboard navigation */
+	onKeyboardNavigateToNextWeek?: (event: SyntheticEvent, data: { date: Date }) => void;
+	/** Called on previous day keyboard navigation */
+	onKeyboardNavigateToPreviousDay?: (event: SyntheticEvent, data: { date: Date }) => void;
+	/** Called on previous week keyboard navigation */
+	onKeyboardNavigateToPreviousWeek?: (event: SyntheticEvent, data: { date: Date }) => void;
+	/** Called when internal focus date requested */
+	onRequestInternalFocusDate?: (event: SyntheticEvent | undefined, data: { date: Date; ref?: HTMLElement }) => void;
+	/** Called when calendar should close */
+	onRequestClose?: (event?: SyntheticEvent, data?: Record<string, unknown>) => void;
+	/** Called when a date is selected */
+	onSelectDate?: (event: SyntheticEvent, data: { date: Date }) => void;
+	/** Currently selected date */
+	selectedDate?: Date;
+	/** Ref callback for selected date cell */
+	selectedDateRef?: (ref: HTMLElement | null) => void;
+	/** Label for today shortcut */
+	todayLabel?: string;
 }
+
+declare const Week: React.FC<WeekProps>;
+export default Week;

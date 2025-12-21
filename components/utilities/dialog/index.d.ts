@@ -35,13 +35,15 @@ export interface DialogProps {
 	containerProps?: DialogContainerProps;
 	hasNubbin?: boolean;
 	hasStaticAlignment?: boolean;
+	inheritWidthOf?: 'target' | 'menu' | 'none' | string;
 	offset?: string;
 	onCancel?: (event?: MouseEvent | KeyboardEvent, data?: { trigger?: string }) => void;
-	onClose?: (event?: MouseEvent | KeyboardEvent, data?: { componentWillUnmount?: boolean }) => void;
+	onClose?: (event?: React.SyntheticEvent, data?: { componentWillUnmount?: boolean; trigger?: string }) => void;
 	onKeyDown?: (event: KeyboardEvent) => void;
+	onMouseDown?: (event: MouseEvent) => void;
 	onMouseEnter?: (event: MouseEvent) => void;
 	onMouseLeave?: (event: MouseEvent) => void;
-	onOpen?: (event: unknown, data: { portal?: HTMLElement }) => void;
+	onOpen?: (event?: React.SyntheticEvent, data?: { portal?: HTMLElement } | Record<string, unknown>) => void;
 	onRequestTargetElement?: () => HTMLElement | null;
 	outsideClickIgnoreClass?: string;
 	position?: DialogPosition;

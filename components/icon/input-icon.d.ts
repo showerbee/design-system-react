@@ -1,32 +1,33 @@
-declare module '@salesforce/design-system-react/components/icon/input-icon' {
-	import React from 'react';
-	type Props = {
-		/**
-		 * Icon category from [lightningdesignsystem.com/icons/](https://www.lightningdesignsystem.com/icons/)
-		 */
-		category?: string;
-		/**
-		 * This is only needed if an input contains two icons, the Input component handles this prop for you.
-		 */
-		iconPosition?: 'left' | 'right';
-		/**
-		 * Name of the icon. Visit <a href='http://www.lightningdesignsystem.com/resources/icons'>Lightning Design System Icons</a> to reference icon names.
-		 */
-		name?: string;
-		/**
-		 * Path to the icon. This will override any global icon settings.
-		 */
-		path?: string;
-		/**
-		 * This event fires when the icon is clicked.
-		 */
-		onClick?: (v: any) => any;
-		/**
-		 * Changes styles of the InputIcon.
-		 */
-		variant?: 'base' | 'combobox';
-	};
+import React from 'react';
 
-	function Component(props: Props): JSX.Element;
-	export default Component;
+export interface InputIconProps {
+	/** aria-expanded attribute */
+	'aria-expanded'?: boolean;
+	/** aria-haspopup attribute */
+	'aria-haspopup'?: boolean | 'dialog' | 'menu' | 'listbox' | 'tree' | 'grid';
+	/** Assistive text for accessibility */
+	assistiveText?: {
+		icon?: string;
+	};
+	/** Ref callback for the button element */
+	buttonRef?: (ref: HTMLButtonElement | null) => void;
+	/** Icon category */
+	category?: string;
+	/** Icon position */
+	iconPosition?: 'left' | 'right';
+	/** Icon name */
+	name?: string;
+	/** Path to the icon */
+	path?: string;
+	/** Title attribute */
+	title?: string;
+	/** HTML type attribute for button */
+	type?: 'button' | 'submit' | 'reset';
+	/** Click handler */
+	onClick?: (event: React.MouseEvent) => void;
+	/** Variant styling */
+	variant?: 'base' | 'combobox';
 }
+
+declare const InputIcon: React.FC<InputIconProps>;
+export default InputIcon;

@@ -1,87 +1,47 @@
-declare module '@salesforce/design-system-react/components/date-picker/private/calendar-wrapper' {
-	import React from 'react';
-	type Props = {
-		/**
-		 * Label for button to go to the next month
-		 */
-		assistiveTextNextMonth: string /*.isRequired*/;
-		/**
-		 * Label for button to go to the previous month
-		 */
-		assistiveTextPreviousMonth: string /*.isRequired*/;
-		/**
-		 * Label for year picklist/combobox
-		 */
-		assistiveTextYear: string /*.isRequired*/;
-		/**
-		 * One letter abbreviations of the days of the week, starting on Sunday.
-		 */ abbreviatedWeekDayLabels: any[] /*.isRequired*/;
-		/**
-		 * Whether or not the `CalendarWrapper` can steal focus from the main `Input`
-		 */
-		canFocusCalendar: boolean /*.isRequired*/;
-		/**
-		 * CSS classes to be added to tag with `slds-datepicker`.
-		 */
-		className?: any[] | Record<string, any> | string;
-		/**
-		 * dateDisabled() takes a date as input argument, returns true if given date should be disabled, otherwise returns false.
-		 */
-		dateDisabled?: (v: any) => any;
-		/**
-		 * HTML id for component
-		 */
-		id?: string;
-		/**
-		 * Makes Monday the first day of the week
-		 */
-		isIsoWeekday?: boolean;
-		/**
-		 * For use of datepicker outside of dropdown.
-		 */
-		isolated?: boolean;
-		/**
-		 * Names of the months
-		 */
-		monthLabels: any[] /*.isRequired*/;
-		/**
-		 * Triggered when the keyboard moves focus on the calendar. {date: [Date object], formattedDate: [string]}  _Tested with Mocha framework._
-		 */
-		onCalendarFocus?: (v: any) => any;
-		/**
-		 * Triggered when the calendar is supposed to close.
-		 */
-		onRequestClose: (v: any) => any /*.isRequired*/;
-		/**
-		 * Triggered when a date on the calendar is clicked.
-		 */
-		onSelectDate: (v: any) => any /*.isRequired*/;
-		/**
-		 * The earliest year that can be selected in the year selection dropdown.
-		 */
-		relativeYearFrom: number /*.isRequired*/;
-		/**
-		 * The maximum year that can be selected in the year selection dropdown.
-		 */
-		relativeYearTo: number /*.isRequired*/;
-		/**
-		 * Currently selected date
-		 */
-		selectedDate?: Date;
-		/**
-		 * Component reference / DOM node for selected day.
-		 */
-		selectedDateRef?: (v: any) => any;
-		/**
-		 * Label of shortcut to jump to today within the calendar. Also used for assistive text for the current day.
-		 */
-		todayLabel: string /*.isRequired*/;
-		/**
-		 * Names of the seven days of the week, starting on Sunday.
-		 */
-		weekDayLabels: any[] /*.isRequired*/;
-	};
+import { ReactNode, SyntheticEvent } from 'react';
 
-	function Component(props: Props): JSX.Element;
-	export default Component;
+export interface CalendarWrapperProps {
+	/** Label for button to go to the next month */
+	assistiveTextNextMonth?: string;
+	/** Label for button to go to the previous month */
+	assistiveTextPreviousMonth?: string;
+	/** Label for year picklist/combobox */
+	assistiveTextYear?: string;
+	/** One letter abbreviations of the days of the week, starting on Sunday */
+	abbreviatedWeekDayLabels?: string[];
+	/** Whether or not the CalendarWrapper can steal focus from the main Input */
+	canFocusCalendar?: boolean;
+	/** CSS classes for datepicker */
+	className?: string | string[] | Record<string, boolean>;
+	/** Function to determine if a date should be disabled */
+	dateDisabled?: (date: Date) => boolean;
+	/** HTML id for component */
+	id?: string;
+	/** Makes Monday the first day of the week */
+	isIsoWeekday?: boolean;
+	/** For use of datepicker outside of dropdown */
+	isolated?: boolean;
+	/** Names of the months */
+	monthLabels?: string[];
+	/** Called when keyboard moves focus on calendar */
+	onCalendarFocus?: (event: SyntheticEvent | null, data: { date?: Date; ref?: HTMLElement; direction?: string }) => void;
+	/** Called when calendar should close */
+	onRequestClose?: (event?: SyntheticEvent, data?: Record<string, unknown>) => void;
+	/** Called when a date is selected */
+	onSelectDate?: (event: SyntheticEvent, data: { date: Date }) => void;
+	/** Years before current year in dropdown */
+	relativeYearFrom?: number;
+	/** Years after current year in dropdown */
+	relativeYearTo?: number;
+	/** Currently selected date */
+	selectedDate?: Date;
+	/** Ref callback for selected date cell */
+	selectedDateRef?: (ref: HTMLElement | null) => void;
+	/** Label for today shortcut */
+	todayLabel?: string;
+	/** Full names of the days of the week */
+	weekDayLabels?: string[];
 }
+
+declare const CalendarWrapper: React.FC<CalendarWrapperProps>;
+export default CalendarWrapper;
