@@ -63,6 +63,7 @@ This document outlines the complete plan to modernize `design-system-react` to R
 
 - [x] Upgrade to Storybook 8 with Vite builder
 - [x] **Upgraded to Storybook 10.1.4** ✅
+- [x] **Node requirement**: Storybook 10 requires **Node >= 20.19.0** (or **>= 22.12.0**)
 - [x] Migrate stories from `storiesOf` to CSF format
 - [x] Configure Storybook addons (a11y, controls, actions, docs)
 - [x] Re-add dark mode toggle (@vueless/storybook-dark-mode for v10) ✅
@@ -148,12 +149,12 @@ For each component:
 - [x] **VerticalNavigation** - TypeScript + CSF stories ✅
 - [x] **Breadcrumb** - TypeScript + CSF stories ✅
 - [x] **MenuDropdown** - TypeScript + CSF stories ✅ (removed react-onclickoutside, uses native click outside)
-- [ ] **MenuPicklist**
+- [x] **MenuPicklist** - TypeScript + CSF stories ✅ (deprecated - use Combobox)
 
 #### Data Components (Priority 4)
 
-- [ ] **DataTable**
-- [ ] **Tree**
+- [x] **DataTable** - TypeScript subcomponents + CSF stories ✅ (main component still JSX)
+- [x] **Tree** - TypeScript + CSF stories ✅
 - [x] **Combobox** - TypeScript + CSF stories ✅ (removed react-onclickoutside, uses useClickOutside)
 - [ ] **Lookup** (deprecated - consider removal)
 - [x] **Pill** - TypeScript + CSF stories ✅
@@ -177,7 +178,7 @@ For each component:
 - [x] **DatePicker** - TypeScript + CSF stories ✅ (removed react-onclickoutside, uses useClickOutside)
 - [x] **TimePicker** - TypeScript + CSF stories ✅
 - [x] **ColorPicker** - TypeScript + CSF stories ✅ (7 subcomponents converted)
-- [ ] **Filter**
+- [x] **Filter** - TypeScript + CSF stories ✅
 
 #### Specialized Components (Priority 7)
 
@@ -397,5 +398,5 @@ SLDS 2 (aka SLDS+) is the single source of truth for components and /utilities, 
 /Users/shubick/salesforce-design-system/packages/sds-subsystems/src/slds+
 ---
 
-*Last Updated: December 20, 2025* (ColorPicker converted to TypeScript + CSF stories)
+*Last Updated: December 21, 2025* (DataTable subcomponents + CSF stories)
 

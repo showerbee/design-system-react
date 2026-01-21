@@ -21,8 +21,8 @@ If you are adding or changing component props, the first step is to propose the 
 
 1. Fork this repository (button in upper right). Install [git](https://git-scm.com/) and clone your fork locally with `git clone git@github.com:[YOUR-USER]/design-system-react.git`. This library only supports use of `git-bash` in Windows. The default command prompt may not work.
 1. Create a [topic branch](https://git-scm.com/book/en/v2/Git-Branching-Branching-Workflows) locally such as `menu-alignment-fix`.
-1. Install [Node and NPM](https://nodejs.org/en/). `npm install` to install development dependencies.
-1. `npm start` to start [Storybook](https://storybook.js.org/). View stories at [http://localhost:9001](http://localhost:9001). Modify the source code to update component stories in the sidebar.
+1. Install [Node and NPM](https://nodejs.org/en/). **Node >= 20.19.0** is required for Storybook 10. `npm install` to install development dependencies.
+1. `npm run storybook` to start [Storybook](https://storybook.js.org/). View stories at [http://localhost:6007](http://localhost:6007). Modify the source code to update component stories in the sidebar.
 1. Read the [Codebase Overview](docs/codebase-overview.md) to learn concepts and best practices for the codebase and to confirm contribution is within project scope.
 
 ## Adding a new prop

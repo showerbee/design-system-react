@@ -123,8 +123,8 @@ Bundled script files are provided _only_ for convenience. Do not use in producti
 git clone git@github.com:salesforce/design-system-react.git
 cd design-system-react
 npm install
-npm start
-open http://localhost:9001 http://localhost:8001
+npm run storybook
+open http://localhost:6007
 ```
 
 Please read the [CONTRIBUTING.md](CONTRIBUTING.md) and [Test README](/tests/README.md) first. Then, create an issue to tell others you are working on a bug. If you would like to contribute a new component, create an issue with a list of proposed props to discuss with maintainers. Issues not addressed with pull requests may be closed eventually. Check out [who's contributing](https://github.com/salesforce/design-system-react/graphs/contributors) to the project.
