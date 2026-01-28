@@ -47,3 +47,5 @@ Swatch.displayName = 'SLDSSwatch';
 
 export default Swatch;
 
+
+

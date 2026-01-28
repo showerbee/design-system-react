@@ -1,13 +1,16 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-// ### React
-import React from 'react';
+import React, { ReactNode } from 'react';
+
+interface CellFixedProps {
+	children?: ReactNode;
+}
 
 /**
  * Used internally, provides fixed cell rendering
  */
-const CellFixed = (props) => (
+const CellFixed: React.FC<CellFixedProps> = ({ children }) => (
 	<div
 		className="slds-cell-fixed"
 		style={{
@@ -17,7 +20,7 @@ const CellFixed = (props) => (
 			lineHeight: '2rem',
 		}}
 	>
-		{props.children}
+		{children}
 	</div>
 );
 

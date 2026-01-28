@@ -1,86 +1,56 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-// # Tree Branch Component
-
-// Implements the [Tree design pattern](https://www.lightningdesignsystem.com/components/tree/) in React.
-
-// ## Dependencies
-
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { ReactNode } from 'react';
 import findIndex from 'lodash.findindex';
 import isFunction from 'lodash.isfunction';
 import classNames from 'classnames';
 
-// Child components
 import Button from '../../button';
+// @ts-expect-error - Module declaration doesn't match relative import
 import Highlighter from '../../utilities/highlighter';
 
 import EventUtil from '../../../utilities/event';
 import KEYS from '../../../utilities/key-code';
 import mapKeyEventCallbacks from '../../../utilities/key-callbacks';
+import { TreeNode, FlattenedNode } from '../types';
 
-const propTypes = {
-	/**
-	 * HTML `id` of primary element that has `.slds-tree` on it. This component has a wrapping container element outside of `.slds-tree`.
-	 */
-	htmlId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	/**
-	 * The text of the tree item.
-	 */
-	label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
-	/**
-	 * The number of nestings. Determines the ARIA level and style alignment.
-	 */
-	level: PropTypes.number.isRequired,
-	/**
-	 * The current node that is being rendered.
-	 */
-	node: PropTypes.object.isRequired,
-	/**
-	 * This function triggers when the expand or collapse icon is clicked or due to keyboard navigation.
-	 */
-	onExpand: PropTypes.func.isRequired,
-	/**
-	 * Function that will run whenever an item or branch is clicked.
-	 */
-	onSelect: PropTypes.func,
-	/**
-	 * Highlights term if found in node label
-	 */
-	searchTerm: PropTypes.string,
-	/**
-	 * Location of node (zero index). First node is `0`. It's first child is `0-0`. This can be used to modify your nodes without searching for the node. This index is only valid if the `nodes` prop is the same as at the time of the event.
-	 */
-	treeIndex: PropTypes.string,
-	/**
-	 * Flattened tree structure.
-	 */
-	flattenedNodes: PropTypes.arrayOf(PropTypes.object),
-	/**
-	 * Tree indexes of nodes that are currently selected.
-	 */
-	selectedNodeIndexes: PropTypes.arrayOf(PropTypes.string),
-	/**
-	 * Tree index of the node that is currently focused.
-	 */
-	focusedNodeIndex: PropTypes.string,
-	/**
-	 * Callback for when a node is blurred.
-	 */
-	onNodeBlur: PropTypes.func,
-	/**
-	 * Sets focus on render.
-	 */
-	treeHasFocus: PropTypes.bool,
-	/**
-	 * This node's parent.
-	 */
-	parent: PropTypes.object,
-};
+export interface RenderBranchProps {
+	htmlId: string | number;
+	label?: ReactNode | string;
+	level: number;
+	node: TreeNode;
+	onExpand: (params: {
+		event: React.SyntheticEvent;
+		data: {
+			node: TreeNode;
+			expand: boolean;
+			treeIndex: string;
+			select?: boolean;
+		};
+	}) => void;
+	onSelect?: (params: {
+		event: React.SyntheticEvent;
+		data: {
+			node: TreeNode;
+			select: boolean;
+			treeIndex: string;
+		};
+		fromFocus?: boolean;
+		clearSelectedNodes?: boolean;
+	}) => void;
+	searchTerm?: string;
+	treeIndex: string;
+	flattenedNodes: FlattenedNode[];
+	selectedNodeIndexes: string[];
+	focusedNodeIndex?: string;
+	onNodeBlur?: () => void;
+	treeHasFocus?: boolean;
+	parent?: TreeNode | { nodes?: TreeNode[] };
+	getNodes?: (node: { nodes?: TreeNode[] }) => TreeNode[] | undefined;
+}
 
-const handleExpand = (event, props) => {
+const handleExpand = (event: React.SyntheticEvent, props: RenderBranchProps) => {
 	EventUtil.trap(event);
 	if (isFunction(props.onExpand)) {
 		props.onExpand({
@@ -94,7 +64,15 @@ const handleExpand = (event, props) => {
 	}
 };
 
-const handleSelect = ({ event, props, fromFocus }) => {
+const handleSelect = ({
+	event,
+	props,
+	fromFocus,
+}: {
+	event: React.SyntheticEvent;
+	props: RenderBranchProps;
+	fromFocus?: boolean;
+}) => {
 	EventUtil.trap(event);
 	if (isFunction(props.onSelect)) {
 		props.onSelect({
@@ -109,13 +87,13 @@ const handleSelect = ({ event, props, fromFocus }) => {
 	}
 };
 
-const findNextNode = (flattenedNodes, node) => {
+const findNextNode = (flattenedNodes: FlattenedNode[], node: TreeNode) => {
 	const nodes = flattenedNodes.map((flattenedNode) => flattenedNode.node);
 	const index = findIndex(nodes, { id: node.id });
 	return flattenedNodes[(index + 1) % flattenedNodes.length];
 };
 
-const findPreviousNode = (flattenedNodes, node) => {
+const findPreviousNode = (flattenedNodes: FlattenedNode[], node: TreeNode) => {
 	const nodes = flattenedNodes.map((flattenedNode) => flattenedNode.node);
 	let index = findIndex(nodes, { id: node.id }) - 1;
 	if (index < 0) {
@@ -124,11 +102,10 @@ const findPreviousNode = (flattenedNodes, node) => {
 	return flattenedNodes[index];
 };
 
-const handleKeyDownDown = (event, props) => {
+const handleKeyDownDown = (event: React.KeyboardEvent, props: RenderBranchProps) => {
 	if (props.focusedNodeIndex === props.treeIndex) {
-		// Select the next visible node
 		const flattenedNode = findNextNode(props.flattenedNodes, props.node);
-		props.onSelect({
+		props.onSelect?.({
 			event,
 			data: {
 				node: flattenedNode.node,
@@ -140,11 +117,10 @@ const handleKeyDownDown = (event, props) => {
 	}
 };
 
-const handleKeyDownUp = (event, props) => {
+const handleKeyDownUp = (event: React.KeyboardEvent, props: RenderBranchProps) => {
 	if (props.focusedNodeIndex === props.treeIndex) {
-		// Go to the previous visible node
 		const flattenedNode = findPreviousNode(props.flattenedNodes, props.node);
-		props.onSelect({
+		props.onSelect?.({
 			event,
 			data: {
 				node: flattenedNode.node,
@@ -156,9 +132,10 @@ const handleKeyDownUp = (event, props) => {
 	}
 };
 
-const handleKeyDownRight = (event, props) => {
+const handleKeyDownRight = (event: React.KeyboardEvent, props: RenderBranchProps) => {
 	if (props.node.expanded) {
-		if (props.getNodes(props.node) && props.getNodes(props.node).length > 0) {
+		const childNodes = props.getNodes?.(props.node);
+		if (childNodes && childNodes.length > 0) {
 			handleKeyDownDown(event, props);
 		}
 	} else {
@@ -166,21 +143,20 @@ const handleKeyDownRight = (event, props) => {
 	}
 };
 
-const handleKeyDownLeft = (event, props) => {
+const handleKeyDownLeft = (event: React.KeyboardEvent, props: RenderBranchProps) => {
 	if (props.node.expanded) {
 		handleExpand(event, props);
 	} else {
-		const nodes = props.flattenedNodes.map(
-			(flattenedNode) => flattenedNode.node
-		);
-		const index = findIndex(nodes, { id: props.parent.id });
+		const nodes = props.flattenedNodes.map((flattenedNode) => flattenedNode.node);
+		const parent = props.parent as TreeNode;
+		const index = findIndex(nodes, { id: parent?.id });
 		if (index !== -1) {
 			props.onExpand({
 				event,
 				data: {
-					node: props.parent,
+					node: parent,
 					select: true,
-					expand: !props.parent.expanded,
+					expand: !parent.expanded,
 					treeIndex: props.flattenedNodes[index].treeIndex,
 				},
 			});
@@ -188,42 +164,43 @@ const handleKeyDownLeft = (event, props) => {
 	}
 };
 
-const handleKeyDownEnter = (event, props) => {
+const handleKeyDownEnter = (event: React.KeyboardEvent, props: RenderBranchProps) => {
 	handleSelect({ event, props });
 };
 
-const handleKeyDown = (event, props) => {
+const handleKeyDown = (event: React.KeyboardEvent, props: RenderBranchProps) => {
 	mapKeyEventCallbacks(event, {
 		callbacks: {
-			[KEYS.DOWN]: { callback: (evt) => handleKeyDownDown(evt, props) },
-			[KEYS.UP]: { callback: (evt) => handleKeyDownUp(evt, props) },
-			[KEYS.RIGHT]: { callback: (evt) => handleKeyDownRight(evt, props) },
-			[KEYS.LEFT]: { callback: (evt) => handleKeyDownLeft(evt, props) },
-			[KEYS.ENTER]: { callback: (evt) => handleKeyDownEnter(evt, props) },
+			[KEYS.DOWN]: { callback: (evt: React.KeyboardEvent) => handleKeyDownDown(evt, props) },
+			[KEYS.UP]: { callback: (evt: React.KeyboardEvent) => handleKeyDownUp(evt, props) },
+			[KEYS.RIGHT]: { callback: (evt: React.KeyboardEvent) => handleKeyDownRight(evt, props) },
+			[KEYS.LEFT]: { callback: (evt: React.KeyboardEvent) => handleKeyDownLeft(evt, props) },
+			[KEYS.ENTER]: { callback: (evt: React.KeyboardEvent) => handleKeyDownEnter(evt, props) },
 		},
 	});
 };
 
-const handleFocus = (event, props) => {
+const handleFocus = (event: React.FocusEvent, props: RenderBranchProps) => {
 	if (
 		!props.treeHasFocus &&
 		!props.focusedNodeIndex &&
 		event.target === event.currentTarget
 	) {
-		// did it happen by mouse?
 		handleSelect({ event, props, fromFocus: true });
 	}
 };
 
-const getTabIndex = (props) => {
+const getTabIndex = (props: RenderBranchProps): number => {
 	const initialFocus =
 		props.selectedNodeIndexes.length === 0 &&
-		props.treeIndex === props.flattenedNodes[0].treeIndex;
+		props.treeIndex === props.flattenedNodes[0]?.treeIndex;
 	return props.treeIndex === props.focusedNodeIndex || initialFocus ? 0 : -1;
 };
 
-// Most of these props come from the nodes array, not from the Tree props
-const RenderBranch = (children, props) => {
+/**
+ * Renders a branch node in the tree.
+ */
+const RenderBranch = (children: ReactNode, props: RenderBranchProps): React.ReactElement => {
 	const isExpanded = props.node.expanded;
 	const isSelected = props.node.selected;
 	const isFocused = props.treeIndex === props.focusedNodeIndex;
@@ -273,15 +250,20 @@ const RenderBranch = (children, props) => {
 	const label =
 		props.node.assistiveText ||
 		(typeof props.node.label === 'string' ? props.node.label : null);
+
+	// aria-level and aria-expanded are valid for elements with role="treeitem"
+	const ariaProps = {
+		'aria-level': props.level,
+		'aria-expanded': isExpanded ? 'true' as const : 'false' as const,
+		'aria-label': props.node.nodes && props.node.nodes.length > 0 ? label : undefined,
+	};
+
 	return (
+		// @ts-expect-error - aria-level is valid for treeitem role but not in React types
 		<li
-			id={props.htmlId}
+			id={String(props.htmlId)}
 			role="treeitem"
-			aria-level={props.level}
-			aria-expanded={isExpanded ? 'true' : 'false'}
-			aria-label={
-				props.node.nodes && props.node.nodes.length > 0 ? label : null
-			}
+			{...ariaProps}
 			tabIndex={getTabIndex(props)}
 			onKeyDown={(event) => handleKeyDown(event, props)}
 			onFocus={(event) => handleFocus(event, props)}
@@ -292,30 +274,21 @@ const RenderBranch = (children, props) => {
 				}
 			}}
 		>
-			{/* eslint-disable jsx-a11y/no-static-element-interactions */}
 			<div
 				className={classNames('slds-tree__item', {
 					'slds-is-selected': isSelected,
 				})}
-				onClick={(event) => {
-					handleSelect({ event, props });
-				}}
+				onClick={(event) => handleSelect({ event, props })}
 			>
-				{/* eslint-enable jsx-a11y/no-static-element-interactions */}
 				<Button
-					aria-hidden
 					assistiveText={{ icon: 'Expand Tree Branch' }}
 					iconCategory="utility"
 					iconName="chevronright"
 					iconSize="small"
 					variant="icon"
 					className="slds-m-right_small"
-					role="presentation"
-					aria-controls={props.htmlId}
-					onClick={(event) => {
-						handleExpand(event, props);
-					}}
-					tabIndex="-1"
+					onClick={(event) => handleExpand(event, props)}
+					tabIndex={-1}
 				/>
 				<span className="slds-size_1-of-1" id={`${props.htmlId}__label`}>
 					<Highlighter
@@ -342,6 +315,6 @@ const RenderBranch = (children, props) => {
 };
 
 RenderBranch.displayName = 'Branch';
-RenderBranch.propTypes = propTypes;
 
 export default RenderBranch;
+

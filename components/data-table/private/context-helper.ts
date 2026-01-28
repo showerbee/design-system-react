@@ -2,21 +2,31 @@
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
 import { useCallback } from 'react';
+import { TableContextValue } from './table-context';
+import { CellContextValue } from './cell-context';
+
+interface ContextHelperResult {
+	tabIndex: number | undefined;
+	hasFocus: boolean;
+	handleFocus: () => void;
+	handleKeyDown: (event: React.KeyboardEvent) => void;
+}
 
 /**
  * Calculates data table keyboard navigation state based on currently selected cell
  */
 export default function useTableContextHelper(
-	tableContext,
-	cellContext,
-	fixedLayout
-) {
+	tableContext: TableContextValue,
+	cellContext: CellContextValue,
+	fixedLayout?: boolean
+): ContextHelperResult {
 	const isActive =
 		tableContext.activeCell.rowIndex === cellContext.rowIndex &&
 		tableContext.activeCell.columnIndex === cellContext.columnIndex;
 
-	const hasFocus = fixedLayout && tableContext.tableHasFocus && isActive;
+	const hasFocus = Boolean(fixedLayout && tableContext.tableHasFocus && isActive);
 	const { changeActiveCell, handleKeyDown: handleTableKeyDown } = tableContext;
+
 	const handleFocus = useCallback(() => {
 		if (fixedLayout && tableContext.allowKeyboardNavigation) {
 			changeActiveCell(cellContext.rowIndex, cellContext.columnIndex);
@@ -30,7 +40,7 @@ export default function useTableContextHelper(
 	]);
 
 	const handleKeyDown = useCallback(
-		(event) => {
+		(event: React.KeyboardEvent) => {
 			if (fixedLayout && tableContext.allowKeyboardNavigation) {
 				handleTableKeyDown(event);
 			}
@@ -43,7 +53,7 @@ export default function useTableContextHelper(
 		isActive &&
 		!tableContext.activeElement &&
 		tableContext.allowKeyboardNavigation
-			? '0'
+			? 0
 			: undefined;
 
 	return { tabIndex, hasFocus, handleFocus, handleKeyDown };

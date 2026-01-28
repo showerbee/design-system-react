@@ -142,3 +142,5 @@ SwatchPicker.displayName = 'SLDSSwatchPicker';
 
 export default LanguageDirection(SwatchPicker);
 
+
+

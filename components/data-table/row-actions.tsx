@@ -1,20 +1,12 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-
-// ### React
-import React, { useContext } from 'react';
-import PropTypes from 'prop-types';
+import React, { useContext, ReactNode } from 'react';
 import classNames from 'classnames';
-
-// ### isFunction
 import isFunction from 'lodash.isfunction';
 
-// ## Children
 import Dropdown from '../menu-dropdown';
 
-// ### Event Helpers
 import EventUtil from '../../utilities/event';
 
 import InteractiveElement from './interactive-element';
@@ -22,51 +14,37 @@ import CellContext from './private/cell-context';
 import TableContext from './private/table-context';
 import useContextHelper from './private/context-helper';
 
-// ## Constants
 import { DATA_TABLE_ROW_ACTIONS } from '../../utilities/constants';
 
-const InteractiveDropdown = InteractiveElement(Dropdown);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const InteractiveDropdown = InteractiveElement(Dropdown as any) as React.ComponentType<any>;
 
-const propTypes = {
-	/**
-	 * Description of the menu for screenreaders.
-	 */
-	assistiveText: PropTypes.object,
-	/**
-	 * Class names to be added to the actions menu.
-	 */
-	className: PropTypes.string,
-	/**
-	 * HTML ID to be added to the actions menu.
-	 */
-	id: PropTypes.string,
-	/**
-	 * `DataTable` row item
-	 */
-	item: PropTypes.object,
-	/**
-	 * Disable hint styling which changes the color of the dropdown svg on hover over.
-	 */
-	noHint: PropTypes.bool,
-	/**
-	 * Triggered when an item is selected.
-	 */
-	onAction: PropTypes.func,
-	/**
-	 * `Dropdown` options. See `Dropdown`.
-	 */
-	options: PropTypes.array,
-	/**
-	 * A [Dropdown](http://react.lightningdesignsystem.com/components/dropdown-menus/) component. The props from this drop will be merged and override any default props.
-	 * **Note:** onAction will not be overridden, both `DropDown`'s onSelect(dropDownActionOption) and onAction(rowItem, dropdownActionOption) will be called with appropriate parameters
-	 */
-	dropdown: PropTypes.node,
-};
+export interface DataTableRowActionsProps {
+	/** Description of the menu for screenreaders */
+	assistiveText?: { icon?: string };
+	/** Class names to be added to the actions menu */
+	className?: string;
+	/** HTML ID to be added to the actions menu */
+	id?: string;
+	/** DataTable row item */
+	item?: Record<string, unknown>;
+	/** Disable hint styling which changes the color of the dropdown svg on hover */
+	noHint?: boolean;
+	/** Triggered when an item is selected */
+	onAction?: (item: Record<string, unknown>, selection: unknown) => void;
+	/** Dropdown options. See Dropdown. */
+	options?: unknown[];
+	/** A Dropdown component. Props from this will be merged and override defaults. */
+	dropdown?: ReactNode;
+	/** Fixed layout mode */
+	fixedLayout?: boolean;
+}
 
 /**
- * RowActions provide a mechanism for defining a menu to display alongside each row in the DataTable.
+ * RowActions provide a mechanism for defining a menu to display alongside
+ * each row in the DataTable.
  */
-const DataTableRowActions = ({
+const DataTableRowActions: React.FC<DataTableRowActionsProps> = ({
 	assistiveText = { icon: 'Actions' },
 	noHint = false,
 	options = [],
@@ -85,20 +63,21 @@ const DataTableRowActions = ({
 		fixedLayout
 	);
 
-	const handleClick = (e) => {
+	const handleClick = (e: React.MouseEvent) => {
 		EventUtil.trap(e);
 	};
 
-	const handleSelect = (selection) => {
-		if (isFunction(onAction)) {
+	const handleSelect = (selection: unknown) => {
+		if (isFunction(onAction) && item) {
 			onAction(item, selection);
 		}
-		if (dropdown && isFunction(dropdown.props.onSelect)) {
-			dropdown.props.onSelect(selection);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		if (dropdown && isFunction((dropdown as any).props?.onSelect)) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(dropdown as any).props.onSelect(selection);
 		}
 	};
 
-	// i18n
 	const defaultDropdownProps = {
 		align: 'right',
 		buttonClassName: 'slds-button_icon-x-small',
@@ -114,7 +93,11 @@ const DataTableRowActions = ({
 		id,
 	};
 
-	let dropdownProps = dropdown ? dropdown.props : {};
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let dropdownProps: Record<string, any> = dropdown
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		? (dropdown as any).props
+		: {};
 	dropdownProps = {
 		...defaultDropdownProps,
 		...dropdownProps,
@@ -122,7 +105,6 @@ const DataTableRowActions = ({
 	};
 
 	return (
-		/* eslint-disable jsx-a11y/no-static-element-interactions */
 		<td
 			className={classNames({ 'slds-has-focus': hasFocus })}
 			data-label="Actions"
@@ -135,15 +117,14 @@ const DataTableRowActions = ({
 					ref.focus();
 				}
 			}}
-			role={fixedLayout ? 'gridcell' : null}
+			role={fixedLayout ? 'gridcell' : undefined}
 			tabIndex={tabIndex}
 		>
-			{/* eslint-enable jsx-a11y/no-static-element-interactions */}
 			<InteractiveDropdown {...dropdownProps} />
 		</td>
 	);
 };
 
-DataTableRowActions.propTypes = propTypes;
 DataTableRowActions.displayName = DATA_TABLE_ROW_ACTIONS;
+
 export default DataTableRowActions;

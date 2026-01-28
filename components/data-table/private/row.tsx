@@ -1,21 +1,13 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-// ### React
-import React, { useCallback, useContext, useMemo } from 'react';
-import PropTypes from 'prop-types';
-
-// ### classNames
+import React, { useCallback, useContext, useMemo, SyntheticEvent, ReactNode } from 'react';
 import classNames from 'classnames';
-
-// ### find
 import find from 'lodash.find';
 
-// ## Children
 import Checkbox from '../../checkbox';
 import Radio from '../../radio';
 
-// ## Constants
 import {
 	DATA_TABLE_ROW,
 	DATA_TABLE_ROW_ACTIONS,
@@ -23,54 +15,62 @@ import {
 } from '../../../utilities/constants';
 
 import InteractiveElement from '../interactive-element';
-import CellContext from '../private/cell-context';
-import TableContext from '../private/table-context';
+import CellContext from './cell-context';
+import TableContext from './table-context';
 import useContextHelper from './context-helper';
 
-const InteractiveCheckbox = InteractiveElement(Checkbox);
-const InteractiveRadio = InteractiveElement(Radio);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const InteractiveCheckbox = InteractiveElement(Checkbox as any) as React.ComponentType<any>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const InteractiveRadio = InteractiveElement(Radio as any) as React.ComponentType<any>;
 
-const propTypes = {
-	assistiveText: PropTypes.shape({
-		actionsHeader: PropTypes.string,
-		columnSort: PropTypes.string,
-		columnSortedAscending: PropTypes.string,
-		columnSortedDescending: PropTypes.string,
-		selectAllRows: PropTypes.string,
-		selectRow: PropTypes.string,
-	}),
-	canSelectRows: PropTypes.oneOfType([
-		PropTypes.bool,
-		PropTypes.oneOf(['checkbox', 'radio']),
-	]),
-	className: PropTypes.string,
-	columns: PropTypes.arrayOf(
-		PropTypes.shape({
-			Cell: PropTypes.func,
-			props: PropTypes.object,
-		})
-	),
-	/**
-	 * Use this if you are creating an advanced table (selectable, sortable, or resizable rows)
-	 */
-	fixedLayout: PropTypes.bool,
-	id: PropTypes.string.isRequired,
-	item: PropTypes.object.isRequired,
-	onToggle: PropTypes.func,
-	rowActions: PropTypes.element,
-	selection: PropTypes.array,
-	tableId: PropTypes.string,
-	disabledSelection: PropTypes.array,
-};
+interface DataTableItem {
+	id: string;
+	[key: string]: unknown;
+}
+
+interface DataTableColumnConfig {
+	Cell: React.ComponentType<Record<string, unknown>>;
+	props: {
+		property?: string;
+		truncate?: boolean;
+		primaryColumn?: boolean;
+		width?: string;
+		[key: string]: unknown;
+	};
+}
+
+interface AssistiveText {
+	selectRow?: string;
+	[key: string]: unknown;
+}
+
+export interface DataTableRowProps {
+	assistiveText?: AssistiveText;
+	canSelectRows?: boolean | 'checkbox' | 'radio';
+	className?: string;
+	columns?: DataTableColumnConfig[];
+	fixedLayout?: boolean;
+	id: string;
+	index?: number;
+	item: DataTableItem;
+	onToggle?: (item: DataTableItem, selected: boolean, event: SyntheticEvent) => void;
+	rowActions?: ReactNode;
+	selection?: DataTableItem[];
+	disabledSelection?: DataTableItem[];
+	tableId?: string;
+	rowIndex?: number;
+	stacked?: boolean;
+}
 
 /**
  * Used internally, provides row rendering to the DataTable.
  */
-const DataTableRow = (props) => {
+const DataTableRow: React.FC<DataTableRowProps> = (props) => {
 	const tableContext = useContext(TableContext);
 	const selectRowCellContext = useMemo(
 		() => ({
-			rowIndex: props.rowIndex,
+			rowIndex: props.rowIndex ?? 0,
 			columnIndex: 0,
 		}),
 		[props.rowIndex]
@@ -83,7 +83,11 @@ const DataTableRow = (props) => {
 
 	const { item, onToggle } = props;
 	const handleToggle = useCallback(
-		(e, { checked }) => onToggle(item, checked, e),
+		(_e: SyntheticEvent, { checked }: { checked: boolean }) => {
+			if (onToggle) {
+				onToggle(item, checked, _e);
+			}
+		},
 		[item, onToggle]
 	);
 
@@ -92,7 +96,7 @@ const DataTableRow = (props) => {
 		props.disabledSelection && !!find(props.disabledSelection, item);
 
 	const ariaProps = useMemo(() => {
-		const result = {};
+		const result: { 'aria-selected'?: 'true' | 'false' } = {};
 
 		if (props.canSelectRows) {
 			result['aria-selected'] = isSelected ? 'true' : 'false';
@@ -100,12 +104,12 @@ const DataTableRow = (props) => {
 		return result;
 	}, [isSelected, props.canSelectRows]);
 
-	const radionSelection = useMemo(
+	const radioSelection = useMemo(
 		() =>
 			isDisabled ? (
 				<Radio
 					assistiveText={{
-						label: `${props.assistiveText.selectRow} ${
+						label: `${props.assistiveText?.selectRow} ${
 							Number(props.index) + 1
 						}`,
 					}}
@@ -120,7 +124,7 @@ const DataTableRow = (props) => {
 			) : (
 				<InteractiveRadio
 					assistiveText={{
-						label: `${props.assistiveText.selectRow} ${
+						label: `${props.assistiveText?.selectRow} ${
 							Number(props.index) + 1
 						}`,
 					}}
@@ -138,7 +142,7 @@ const DataTableRow = (props) => {
 			handleToggle,
 			isSelected,
 			isDisabled,
-			props.assistiveText.selectRow,
+			props.assistiveText?.selectRow,
 			props.id,
 			props.index,
 			props.tableId,
@@ -150,7 +154,7 @@ const DataTableRow = (props) => {
 			isDisabled ? (
 				<Checkbox
 					assistiveText={{
-						label: `${props.assistiveText.selectRow} ${
+						label: `${props.assistiveText?.selectRow} ${
 							Number(props.index) + 1
 						}`,
 					}}
@@ -158,13 +162,13 @@ const DataTableRow = (props) => {
 					checked={isSelected}
 					id={`${props.id}-SelectRow`}
 					labelId={`${props.id}-SelectRow-label`}
-					name={`SelectRow${props.index + 1}`}
+					name={`SelectRow${(props.index ?? 0) + 1}`}
 					disabled={isDisabled}
 				/>
 			) : (
 				<InteractiveCheckbox
 					assistiveText={{
-						label: `${props.assistiveText.selectRow} ${
+						label: `${props.assistiveText?.selectRow} ${
 							Number(props.index) + 1
 						}`,
 					}}
@@ -172,7 +176,7 @@ const DataTableRow = (props) => {
 					checked={isSelected}
 					id={`${props.id}-SelectRow`}
 					labelId={`${props.id}-SelectRow-label`}
-					name={`SelectRow${props.index + 1}`}
+					name={`SelectRow${(props.index ?? 0) + 1}`}
 					onChange={handleToggle}
 					disabled={isDisabled}
 				/>
@@ -181,14 +185,13 @@ const DataTableRow = (props) => {
 			handleToggle,
 			isSelected,
 			isDisabled,
-			props.assistiveText.selectRow,
+			props.assistiveText?.selectRow,
 			props.id,
 			props.index,
 			props.tableId,
 		]
 	);
 
-	// i18n
 	return (
 		<tr
 			{...ariaProps}
@@ -200,11 +203,10 @@ const DataTableRow = (props) => {
 		>
 			{useMemo(
 				() => (
-					<React.Fragment>
+					<>
 						{props.canSelectRows ? (
-							// eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
 							<td
-								role={props.fixedLayout ? 'gridcell' : null}
+								role={props.fixedLayout ? 'gridcell' : undefined}
 								className="slds-text-align_right"
 								data-label={props.stacked ? 'Select Row' : undefined}
 								style={{ width: '3.25rem' }}
@@ -219,12 +221,12 @@ const DataTableRow = (props) => {
 							>
 								<CellContext.Provider value={selectRowCellContext}>
 									{props.canSelectRows === 'radio'
-										? radionSelection
+										? radioSelection
 										: checkboxSelection}
 								</CellContext.Provider>
 							</td>
 						) : null}
-						{props.columns.map((column, index) => {
+						{props.columns?.map((column, index) => {
 							const { Cell } = column;
 							const cellId = `${props.id}-${DATA_TABLE_CELL}-${column.props.property}`;
 
@@ -233,12 +235,12 @@ const DataTableRow = (props) => {
 									key={cellId}
 									value={{
 										columnIndex: props.canSelectRows ? index + 1 : index,
-										rowIndex: props.rowIndex,
+										rowIndex: props.rowIndex ?? 0,
 									}}
 								>
 									<Cell
 										{...column.props}
-										className={column.props.truncate ? 'slds-truncate' : null}
+										className={column.props.truncate ? 'slds-truncate' : undefined}
 										fixedLayout={props.fixedLayout}
 										rowHeader={column.props.primaryColumn}
 										id={cellId}
@@ -247,7 +249,7 @@ const DataTableRow = (props) => {
 										headerId={item.headerId}
 										columns={props.columns}
 									>
-										{item[column.props.property]}
+										{item[column.props.property || '']}
 									</Cell>
 								</CellContext.Provider>
 							);
@@ -255,20 +257,27 @@ const DataTableRow = (props) => {
 						<CellContext.Provider
 							value={{
 								columnIndex: props.canSelectRows
-									? props.columns.length + 1
-									: props.columns.length,
-								rowIndex: props.rowIndex,
+									? (props.columns?.length ?? 0) + 1
+									: props.columns?.length ?? 0,
+								rowIndex: props.rowIndex ?? 0,
 							}}
 						>
 							{props.rowActions
-								? React.cloneElement(props.rowActions, {
-										id: `${props.id}-${DATA_TABLE_ROW_ACTIONS}`,
-										item,
-										fixedLayout: props.fixedLayout,
-								  })
+								? React.cloneElement(
+										props.rowActions as React.ReactElement<{
+											id?: string;
+											item?: DataTableItem;
+											fixedLayout?: boolean;
+										}>,
+										{
+											id: `${props.id}-${DATA_TABLE_ROW_ACTIONS}`,
+											item,
+											fixedLayout: props.fixedLayout,
+										}
+								  )
 								: null}
 						</CellContext.Provider>
-					</React.Fragment>
+					</>
 				),
 				[
 					handleFocus,
@@ -285,7 +294,7 @@ const DataTableRow = (props) => {
 					props.stacked,
 					selectRowCellContext,
 					checkboxSelection,
-					radionSelection,
+					radioSelection,
 				]
 			)}
 		</tr>
@@ -293,5 +302,5 @@ const DataTableRow = (props) => {
 };
 
 DataTableRow.displayName = DATA_TABLE_ROW;
-DataTableRow.propTypes = propTypes;
+
 export default DataTableRow;

@@ -1,57 +1,45 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-// ### React
-import React, { useContext } from 'react';
-import PropTypes from 'prop-types';
+import React, { useContext, SyntheticEvent, ReactNode } from 'react';
 import classNames from 'classnames';
 
-// ## Children
 import CellFixed from './cell-fixed';
 import Checkbox from '../../checkbox';
 import HeaderCell from './header-cell';
 import InteractiveElement from '../interactive-element';
-import CellContext from '../private/cell-context';
-import TableContext from '../private/table-context';
+import CellContext from './cell-context';
+import TableContext from './table-context';
 import useContextHelper from './context-helper';
 
-// ## Constants
 import { DATA_TABLE_HEAD } from '../../../utilities/constants';
 
-const InteractiveCheckbox = InteractiveElement(Checkbox);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const InteractiveCheckbox = InteractiveElement(Checkbox as any) as React.ComponentType<any>;
 
-// ### Prop Types
-const propTypes = {
-	assistiveText: PropTypes.shape({
-		actionsHeader: PropTypes.string,
-		columnSort: PropTypes.string,
-		columnSortedAscending: PropTypes.string,
-		columnSortedDescending: PropTypes.string,
-		selectAllRows: PropTypes.string,
-		selectRow: PropTypes.string,
-	}),
-	allSelected: PropTypes.bool,
-	headerRefs: PropTypes.func,
-	isHidden: PropTypes.bool,
-	indeterminateSelected: PropTypes.bool,
-	canSelectRows: PropTypes.oneOfType([
-		PropTypes.bool,
-		PropTypes.oneOf(['checkbox', 'radio']),
-	]),
-	columns: PropTypes.arrayOf(
-		PropTypes.shape({
-			Cell: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-			props: PropTypes.object,
-		})
-	),
-	fixedHeader: PropTypes.bool,
-	id: PropTypes.string,
-	onToggleAll: PropTypes.func,
-	onSort: PropTypes.func,
-	showRowActions: PropTypes.bool,
-};
+interface DataTableColumnConfig {
+	Cell: React.ComponentType<Record<string, unknown>>;
+	props: Record<string, unknown>;
+}
 
-const ActionsHeader = (props) => {
+interface AssistiveText {
+	actionsHeader?: string;
+	selectAllRows?: string;
+	selectRowGroup?: string;
+	columnSort?: string;
+	columnSortedAscending?: string;
+	columnSortedDescending?: string;
+}
+
+interface ActionsHeaderProps {
+	assistiveText?: string;
+	columnIndex: number;
+	fixedLayout?: boolean;
+	fixedHeader?: boolean;
+	headerRefs?: (ref: HTMLElement | null, index: 'action' | 'select' | number) => void;
+}
+
+const ActionsHeader: React.FC<ActionsHeaderProps> = (props) => {
 	const tableContext = useContext(TableContext);
 	const cellContext = { columnIndex: props.columnIndex, rowIndex: 0 };
 	const { tabIndex, hasFocus, handleFocus, handleKeyDown } = useContextHelper(
@@ -60,7 +48,8 @@ const ActionsHeader = (props) => {
 		props.fixedLayout
 	);
 	const { fixedHeader } = props;
-	const getContent = (style) => (
+
+	const getContent = (style?: React.CSSProperties) => (
 		<div className="slds-th__action" style={style}>
 			<span className="slds-assistive-text">{props.assistiveText}</span>
 		</div>
@@ -79,8 +68,8 @@ const ActionsHeader = (props) => {
 			}}
 			scope="col"
 			style={{
-				height: fixedHeader ? 0 : null,
-				lineHeight: fixedHeader ? 0 : null,
+				height: fixedHeader ? 0 : undefined,
+				lineHeight: fixedHeader ? 0 : undefined,
 				width: '3.25rem',
 			}}
 			onFocus={handleFocus}
@@ -96,7 +85,7 @@ const ActionsHeader = (props) => {
 							paddingTop: 0,
 							visibility: 'hidden',
 					  }
-					: null
+					: undefined
 			)}
 			{fixedHeader ? (
 				<CellFixed>
@@ -110,7 +99,22 @@ const ActionsHeader = (props) => {
 	);
 };
 
-const SelectHeader = (props) => {
+interface SelectHeaderProps {
+	allSelected?: boolean;
+	assistiveText?: {
+		selectAllRows?: string;
+		selectRowGroup?: string;
+	};
+	canSelectRows?: boolean | 'checkbox' | 'radio';
+	fixedHeader?: boolean;
+	fixedLayout?: boolean;
+	headerRefs?: (ref: HTMLElement | null, index: 'action' | 'select' | number) => void;
+	id?: string;
+	indeterminateSelected?: boolean;
+	onToggleAll?: (event: SyntheticEvent, data: { checked: boolean }) => void;
+}
+
+const SelectHeader: React.FC<SelectHeaderProps> = (props) => {
 	const tableContext = useContext(TableContext);
 	const cellContext = { columnIndex: 0, rowIndex: 0 };
 	const { tabIndex, hasFocus, handleFocus, handleKeyDown } = useContextHelper(
@@ -119,24 +123,32 @@ const SelectHeader = (props) => {
 		props.fixedLayout
 	);
 	const { fixedHeader, canSelectRows } = props;
-	const getContent = (idSuffix, style, ariaHidden) => {
-		let render = null;
 
+	const getContent = (
+		idSuffix: string,
+		style?: React.CSSProperties,
+		ariaHidden?: boolean
+	): ReactNode => {
 		if (canSelectRows === 'radio') {
-			render = !ariaHidden ? (
-				<div
-					className="slds-truncate slds-assistive-text"
-					id={`${props.id}-column-group-header-row-select`}
-					title={props.assistiveText.selectRowGroup}
-				>
-					{props.assistiveText.selectRowGroup}
-				</div>
-			) : null;
-		} else if (canSelectRows === true || canSelectRows === 'checkbox') {
-			render = (
+			if (!ariaHidden) {
+				return (
+					<div
+						className="slds-truncate slds-assistive-text"
+						id={`${props.id}-column-group-header-row-select`}
+						title={props.assistiveText?.selectRowGroup}
+					>
+						{props.assistiveText?.selectRowGroup}
+					</div>
+				);
+			}
+			return null;
+		}
+
+		if (canSelectRows === true || canSelectRows === 'checkbox') {
+			return (
 				<div
 					className="slds-th__action slds-th__action_form"
-					aria-hidden={ariaHidden && true}
+					aria-hidden={ariaHidden ? true : undefined}
 					style={style}
 				>
 					{!ariaHidden ? (
@@ -144,17 +156,16 @@ const SelectHeader = (props) => {
 							id={`${props.id}-column-group-header-row-select`}
 							className="slds-assistive-text"
 						>
-							{props.assistiveText.selectAllRows}
+							{props.assistiveText?.selectAllRows}
 						</span>
 					) : null}
 					<InteractiveCheckbox
 						assistiveText={{
-							label: props.assistiveText.selectAllRows,
+							label: props.assistiveText?.selectAllRows,
 						}}
 						checked={props.allSelected}
 						indeterminate={props.indeterminateSelected}
 						id={`${props.id}-${idSuffix}`}
-						// There is a checkbox for user interaction and a checkbox for positioning. ariaHidden is for the checkbox for positioning and it should be removed from the accessibility tree.
 						name={!ariaHidden ? 'SelectAll' : undefined}
 						onChange={props.onToggleAll}
 					/>
@@ -162,8 +173,9 @@ const SelectHeader = (props) => {
 			);
 		}
 
-		return render;
+		return null;
 	};
+
 	return (
 		<th
 			className={classNames('slds-text-align_right', {
@@ -179,8 +191,8 @@ const SelectHeader = (props) => {
 			}}
 			scope="col"
 			style={{
-				height: fixedHeader ? 0 : null,
-				lineHeight: fixedHeader ? 0 : null,
+				height: fixedHeader ? 0 : undefined,
+				lineHeight: fixedHeader ? 0 : undefined,
 				width: '3.25rem',
 			}}
 			onFocus={handleFocus}
@@ -199,8 +211,8 @@ const SelectHeader = (props) => {
 								paddingTop: 0,
 								visibility: 'hidden',
 						  }
-						: null,
-					fixedHeader && 'ariaHidden'
+						: undefined,
+					fixedHeader
 				)}
 				{fixedHeader ? (
 					<CellFixed>
@@ -217,21 +229,38 @@ const SelectHeader = (props) => {
 	);
 };
 
+export interface DataTableHeadProps {
+	assistiveText?: AssistiveText;
+	allSelected?: boolean;
+	headerRefs?: (ref: HTMLElement | null, index: 'action' | 'select' | number) => void;
+	isHidden?: boolean;
+	indeterminateSelected?: boolean;
+	canSelectRows?: boolean | 'checkbox' | 'radio';
+	columns?: DataTableColumnConfig[];
+	fixedHeader?: boolean;
+	fixedLayout?: boolean;
+	id?: string;
+	onToggleAll?: (event: SyntheticEvent, data: { checked: boolean }) => void;
+	onSort?: (
+		data: { property: string; sortDirection: 'asc' | 'desc' },
+		event: SyntheticEvent
+	) => void;
+	showRowActions?: boolean;
+}
+
 /**
  * Used internally, provides header row rendering to the DataTable.
  */
-const DataTableHead = (props) => {
+const DataTableHead: React.FC<DataTableHeadProps> = (props) => {
 	const getActionsHeader = () => {
-		let actionsHeader = null;
-
 		if (props.showRowActions) {
-			actionsHeader = (
+			return (
 				<ActionsHeader
-					assistiveText={props.assistiveText.actionsHeader}
+					assistiveText={props.assistiveText?.actionsHeader}
 					columnIndex={
 						props.canSelectRows
-							? props.columns.length + 1
-							: props.columns.length
+							? (props.columns?.length ?? 0) + 1
+							: props.columns?.length ?? 0
 					}
 					fixedLayout={props.fixedLayout}
 					fixedHeader={props.fixedHeader}
@@ -239,23 +268,19 @@ const DataTableHead = (props) => {
 				/>
 			);
 		}
-
-		return actionsHeader;
+		return null;
 	};
 
 	const getSelectHeader = () => {
-		const { canSelectRows } = props;
-		let selectHeader = null;
-
-		if (canSelectRows) {
-			selectHeader = (
+		if (props.canSelectRows) {
+			return (
 				<SelectHeader
 					allSelected={props.allSelected}
 					assistiveText={{
-						selectAllRows: props.assistiveText.selectAllRows,
-						selectRowGroup: props.assistiveText.selectRowGroup,
+						selectAllRows: props.assistiveText?.selectAllRows,
+						selectRowGroup: props.assistiveText?.selectRowGroup,
 					}}
-					canSelectRows={canSelectRows}
+					canSelectRows={props.canSelectRows}
 					fixedHeader={props.fixedHeader}
 					fixedLayout={props.fixedLayout}
 					headerRefs={props.headerRefs}
@@ -265,8 +290,7 @@ const DataTableHead = (props) => {
 				/>
 			);
 		}
-
-		return selectHeader;
+		return null;
 	};
 
 	const actionsHeader = getActionsHeader();
@@ -280,7 +304,7 @@ const DataTableHead = (props) => {
 		>
 			<tr className="slds-line-height_reset">
 				{selectHeader}
-				{props.columns.map((column, index) => (
+				{props.columns?.map((column, index) => (
 					<CellContext.Provider
 						key={`${props.id}-${column.props.property}`}
 						value={{
@@ -296,6 +320,7 @@ const DataTableHead = (props) => {
 								}
 							}}
 							fixedHeader={props.fixedHeader}
+							fixedLayout={props.fixedLayout}
 							id={`${props.id}-${column.props.property}`}
 							onSort={props.onSort}
 							{...column.props}
@@ -308,9 +333,6 @@ const DataTableHead = (props) => {
 	);
 };
 
-// ### Display Name
-// Always use the canonical component name as the React display name.
 DataTableHead.displayName = DATA_TABLE_HEAD;
-DataTableHead.propTypes = propTypes;
 
 export default DataTableHead;
