@@ -2,6 +2,16 @@
 
 ### Accessible, localization-friendly, presentational React components
 
+**Now with SLDS 2 and Dark Mode support!**
+
+## Highlights
+
+- **SLDS 2 Compatible** — Works with the latest Salesforce Lightning Design System
+- **Dark Mode** — Built-in dark mode support with `prefers-color-scheme` detection
+- **React 19** — Modern React with functional components and hooks
+- **TypeScript** — Full type definitions for improved developer experience
+- **Accessible** — WCAG 2.1 AA compliant with keyboard navigation and screen reader support
+
 ## Install
 
 ```bash
@@ -57,6 +67,20 @@ This library does not include CSS. Add the SLDS stylesheet to your page:
   href="/node_modules/@salesforce-ux/design-system/assets/styles/salesforce-lightning-design-system.min.css" 
 />
 ```
+
+### Dark Mode
+
+Dark mode is supported out of the box. Components automatically respond to SLDS dark mode styling when you apply the appropriate theme class:
+
+```html
+<!-- Light mode (default) -->
+<div class="slds-scope">...</div>
+
+<!-- Dark mode -->
+<div class="slds-scope slds-theme_dark">...</div>
+```
+
+Components also respect the user's system preference via `prefers-color-scheme` when configured with the SLDS theme tokens.
 
 ### Icons
 
