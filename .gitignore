@@ -1,5 +1,8 @@
 ### Project files ###
 
+# Internal planning and agent-generated docs (not for public)
+.planning/
+
 # Only used for release server authentication
 /.npmrc
 
