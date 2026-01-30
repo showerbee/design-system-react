@@ -17,14 +17,15 @@
 ## Install
 
 ```bash
-npm install @salesforce-ux/design-system @salesforce/design-system-react
+npm install @salesforce/design-system-react
 ```
+
+> **Note:** SLDS 2 styles are currently bundled with this package. When the official SLDS 2 npm package is released, you'll install it separately.
 
 ## Requirements
 
 - **Node.js**: >= 20.19.0 (or >= 22.12.0)
 - **React**: 19.x
-- **@salesforce-ux/design-system**: 2.25.x
 
 ## Getting Started
 
@@ -61,7 +62,21 @@ import IconSettings from '@salesforce/design-system-react/components/icon-settin
 
 ## Styling
 
-This library does not include CSS. Add the SLDS stylesheet to your page:
+Add the SLDS stylesheet to your page. This library currently bundles SLDS+ (SLDS 2) styles:
+
+```html
+<link 
+  rel="stylesheet" 
+  href="/node_modules/@salesforce/design-system-react/assets/styles/slds-plus.css" 
+/>
+```
+
+> **Note:** The bundled `slds-plus.css` is temporary. When SLDS 2 is published to npm as a separate package, you'll import styles from there instead. We'll update these instructions when the official package is available.
+
+<details>
+<summary>Using SLDS 1 instead?</summary>
+
+If you need SLDS 1 compatibility, use the original design system package:
 
 ```html
 <link 
@@ -69,6 +84,8 @@ This library does not include CSS. Add the SLDS stylesheet to your page:
   href="/node_modules/@salesforce-ux/design-system/assets/styles/salesforce-lightning-design-system.min.css" 
 />
 ```
+
+</details>
 
 ### Dark Mode
 
