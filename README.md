@@ -62,7 +62,7 @@ import IconSettings from '@salesforce/design-system-react/components/icon-settin
 
 ## Styling
 
-Add the SLDS stylesheet to your page. This library currently bundles SLDS+ (SLDS 2) styles:
+Add the SLDS stylesheet to your page. This library currently bundles SLDS 2 styles:
 
 ```html
 <link 

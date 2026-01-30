@@ -66,7 +66,7 @@
 
 1. **Node.js Requirement** — Requires Node.js >= 20.19.0 (or >= 22.12.0)
 2. **React 19 Only** — No backward compatibility with React 16/17/18
-3. **Bundled SLDS+ CSS** — SLDS 2 styles are temporarily bundled in `assets/styles/slds-plus.css`. This will be replaced with an npm dependency when the official SLDS 2 package is published.
+3. **Bundled SLDS 2 CSS** — SLDS 2 styles are temporarily bundled in `assets/styles/slds-plus.css`. This will be replaced with an npm dependency when the official SLDS 2 package is published.
 4. **Popper.js v1** — Tooltip and Popover still use Popper.js v1 (migration to @floating-ui planned)
 
 ---
