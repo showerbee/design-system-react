@@ -2,6 +2,8 @@
 
 ### Accessible, localization-friendly, presentational React components
 
+> **🚧 Modernization in Progress** — This library is being updated to React 19, TypeScript, and modern tooling. Most components are ready, but some features are still being completed. See [ROADMAP.md](ROADMAP.md) for details.
+
 **Now with SLDS 2 and Dark Mode support!**
 
 ## Highlights
