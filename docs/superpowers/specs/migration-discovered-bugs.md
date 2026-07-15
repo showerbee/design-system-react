@@ -4,6 +4,28 @@ These are genuine pre-existing bugs surfaced (not caused) by the Enzyme→RTL mi
 The migration `it.skip(...)`s the affected tests with a NOTE so the suite stays green;
 each must be fixed in P2 (real TS + hooks conversion) and the skipped tests re-enabled.
 
+## Status — all discovered runtime bugs FIXED ✅
+
+Every React-19 runtime bug found during the migration is now fixed and its tests
+re-enabled. Suite: **696 passed, 11 skipped, 0 failed; `tsc --noEmit` clean.**
+
+Fixed (details below): Portal (createPortal), lookup string ref, menu-dropdown/menu-picklist
+keyboard nav, data-table + visual-picker Fragment prop leaks, react-highlighter-ts React-19
+mismatch (npm `overrides`), global-header Fragment-child drop.
+
+Also proven false and re-enabled (test-harness/assumption bugs, not real limitations):
+split-view multi-select (3), data-table keyboard nav + actionable mode (2), app-launcher
+title highlight (3). Added a modal Escape-close test.
+
+The **11 remaining skips are genuine jsdom limitations**, not bugs:
+- modal (3): Tab focus traversal / focus trap / Enter-activates-button — jsdom doesn't
+  move focus on Tab or synthesize click from Enter.
+- data-table (2): keyboard column resize — `column-resizer` needs real element widths
+  (0 in jsdom).
+- app-launcher (6): description / more-link / tooltip / description-highlight — all render
+  through `Truncate`, which measures text via the Canvas API + `getBoundingClientRect`.
+These need a browser-mode runner (e.g. Vitest browser mode / Playwright), tracked for later.
+
 ## ✅ FIXED (P2) — Portal used React APIs REMOVED in React 19
 
 - **File:** `components/utilities/dialog/portal.jsx`
