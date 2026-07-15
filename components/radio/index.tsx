@@ -191,7 +191,7 @@ const Radio = ({
 				htmlFor={id}
 			>
 				<span>
-					<Swatch label={labels.label} style={style} color={value} />
+					<Swatch label={labels.label} style={style} color={value ?? ''} />
 				</span>
 			</label>
 		);

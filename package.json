@@ -53,14 +53,16 @@
   "bugs": {
     "url": "https://github.com/salesforce/design-system-react/issues"
   },
-  "main": "dist/design-system-react.umd.js",
+  "main": "dist/design-system-react.cjs",
   "module": "dist/design-system-react.es.js",
   "types": "dist/types/index.d.ts",
+  "sideEffects": false,
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/design-system-react.es.js",
-      "require": "./dist/design-system-react.umd.js",
-      "types": "./dist/types/index.d.ts"
+      "require": "./dist/design-system-react.cjs",
+      "default": "./dist/design-system-react.es.js"
     }
   },
   "homepage": "https://react.lightningdesignsystem.com",
