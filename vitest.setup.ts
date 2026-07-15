@@ -33,3 +33,36 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
 }));
 
+// Mock IntersectionObserver (used by overlays, carousel, lazy content)
+global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+  takeRecords: vi.fn().mockReturnValue([]),
+  root: null,
+  rootMargin: '',
+  thresholds: [],
+})) as unknown as typeof IntersectionObserver;
+
+// jsdom does not implement layout — stub the APIs overlay/positioning code
+// (popover, combobox, date-picker, menu, tooltip, dialog) relies on.
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = vi.fn();
+} else {
+  Element.prototype.scrollIntoView = vi.fn();
+}
+
+if (!Element.prototype.getBoundingClientRect) {
+  Element.prototype.getBoundingClientRect = vi.fn(() => ({
+    width: 0,
+    height: 0,
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    x: 0,
+    y: 0,
+    toJSON: () => {},
+  })) as unknown as typeof Element.prototype.getBoundingClientRect;
+}
+
