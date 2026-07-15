@@ -282,20 +282,29 @@ describe('SLDSModal', () => {
 	});
 
 	describe('Keyboard behavior', () => {
-		it.skip('first tab focuses close button', () => {
-			// NOTE: Focus management and tab trapping in jsdom is difficult to test
-			// without real browser environment. This test is skipped but the
-			// functionality works in real browsers.
+		it('closes on the Escape key', () => {
+			const onRequestClose = vi.fn();
+			renderModal({
+				isOpen: true,
+				dismissible: true,
+				onRequestClose,
+			});
+
+			const modal = getModalNode();
+			fireEvent.keyDown(modal, { key: 'Escape', keyCode: 27 });
+
+			expect(onRequestClose).toHaveBeenCalledTimes(1);
 		});
 
-		it.skip('enter on close button works', () => {
-			// NOTE: Skipped - simulating enter on close button requires
-			// complex focus and event simulation that jsdom doesn't fully support
-		});
+		// NOTE: The following need real browser focus behavior. jsdom does not move
+		// focus on Tab (so focus-order and focus-trap assertions can't be made) and
+		// does not synthesize a click from Enter/Space on a focused <button>. These
+		// work in real browsers and are covered by manual / Storybook interaction
+		// testing. (Escape-to-close, above, is a keyboard path jsdom *can* test.)
+		it.skip('first tab focuses close button (needs real focus traversal — jsdom limitation)', () => {});
 
-		it.skip('traps focus inside Modal', () => {
-			// NOTE: Focus trapping requires real browser focus behavior
-			// which jsdom cannot fully simulate
-		});
+		it.skip('enter on close button works (jsdom does not fire click from Enter on a button)', () => {});
+
+		it.skip('traps focus inside Modal (needs real focus traversal — jsdom limitation)', () => {});
 	});
 });
