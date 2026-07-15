@@ -64,8 +64,27 @@ const VisualPicker = ({
 		return <div className="slds-form-element__control">{children}</div>;
 	}
 
-	const options = React.Children.map(children, (option, index) => {
+	// Clone the picker props onto each real option element. When an option is a
+	// `React.Fragment` (e.g. children grouped with `<>...</>`), the injected props
+	// must NOT land on the Fragment — it only accepts `key`/`children` — so recurse
+	// into its children instead.
+	const decorateOption = (
+		option: ReactNode,
+		index: number | string
+	): ReactNode => {
 		if (!React.isValidElement(option)) return option;
+
+		if (option.type === React.Fragment) {
+			const fragmentProps = option.props as { children?: ReactNode };
+			return React.cloneElement(
+				option as ReactElement<{ children?: ReactNode }>,
+				undefined,
+				React.Children.map(fragmentProps.children, (child, childIndex) =>
+					decorateOption(child, `${index}-${childIndex}`)
+				)
+			);
+		}
+
 		return React.cloneElement(option as ReactElement<VisualPickerChildProps>, {
 			index: `${id}-${index}`,
 			coverable,
@@ -74,7 +93,11 @@ const VisualPicker = ({
 			size,
 			vertical: !!vertical,
 		});
-	});
+	};
+
+	const options = React.Children.map(children, (option, index) =>
+		decorateOption(option, index)
+	);
 
 	return (
 		<fieldset id={id} className={classNames('slds-form-element', className as string)}>

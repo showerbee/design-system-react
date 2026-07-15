@@ -63,27 +63,34 @@ each must be fixed in P2 (real TS + hooks conversion) and the skipped tests re-e
 - **Re-enabled tests:** all 5 menu-dropdown keyboard tests (27/27) **and** the 3
   menu-picklist tests (8/8) that share the same code path.
 
-## data-table — `style` prop passed to `React.Fragment`
+## ✅ FIXED (P2) — data-table `style` prop passed to `React.Fragment`
 
-- **File:** `components/data-table/` (fixed-header, resizable-column, and
-  infinite-scroll render paths)
-- **Symptom:** React warns that `style` (and other invalid props) are passed to
-  `React.Fragment`, which only accepts `key` and `children`.
-- **Impact:** warning only (no crash), but indicates a stray wrapper prop that should
-  target a real DOM element, not a Fragment.
-- **Skipped tests (in `components/data-table/__tests__/data-table.test.jsx`):** 5 total —
+- **File:** `components/data-table/private/header-cell.tsx` (`getHeaderCellContent`)
+- **Was:** on the `fixedLayout`/`fixedHeader` path, `getHeaderCellContent` wrapped its
+  single child in a Fragment (`<>{getFixedLayoutSubRenders()}</>`). Callers then
+  `React.cloneElement(..., { style })` onto that result — so `style` landed on the
+  Fragment, which React ignores (and warns about). The fixed-header cell styles
+  therefore never applied (latent visual bug, not just a warning).
+- **Fix (done):** return `getFixedLayoutSubRenders(isHidden)` directly (it's already a
+  single element — a sort link or span, both of which accept `style`).
+- **Verified:** 0 Fragment warnings across the data-table suite; 31 passed / 5 skipped.
+- **Remaining skips (in `components/data-table/__tests__/data-table.test.jsx`):** 5 total —
   2 column-resize keyboard tests, 2 keyboard-navigation mode tests (both require Enzyme
   instance/state access unavailable in RTL), and 1 HighlightCell test hitting a
   React-version mismatch in the test env. These are jsdom/RTL limitations, not the
   Fragment bug; re-evaluate during P2 when data-table is converted off the class component.
 - **Action:** fix the Fragment prop leak in P2; reassess the 5 skips after conversion.
 
-## visual-picker — `index` prop passed to `React.Fragment`
+## ✅ FIXED (P2) — visual-picker `index` prop passed to `React.Fragment`
 
-- **File:** `components/visual-picker/`
-- **Symptom:** React warns `index` is passed to `React.Fragment` (only `key`/`children`
-  are valid). Warning only. Same class of bug as the data-table Fragment leak.
-- **Action:** fix in P2.
+- **File:** `components/visual-picker/index.tsx`
+- **Was:** `React.Children.map` cloned the picker props (`index`, `coverable`, `name`,
+  `size`, `vertical`) onto each child. When children were grouped in a `React.Fragment`
+  (`<>...</>`), those props landed on the Fragment (warned + ignored) instead of the
+  real option elements — so `index`/`name` never reached the wrapped Radios/Checkboxes.
+- **Fix (done):** added a `decorateOption` helper that recurses into a Fragment's
+  children and clones the props onto the real elements inside it.
+- **Verified:** 0 Fragment warnings; 2/2 tests pass.
 
 ## Highlighter / React-version mismatch (tree searchTerm, data-table HighlightCell)
 

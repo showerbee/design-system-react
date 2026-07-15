@@ -186,9 +186,13 @@ const DataTableHeaderCell: React.FC<DataTableHeaderCellProps> = (props) => {
 		);
 	};
 
+	// `getFixedLayoutSubRenders` already returns a single element (a sort link or a
+	// span), so return it directly rather than wrapping it in a Fragment. The
+	// callers below `cloneElement` this result to inject `style`, which React only
+	// applies to real elements — a Fragment silently drops it (and warns).
 	const getHeaderCellContent = (isHidden?: boolean): React.ReactElement =>
 		props.fixedLayout ? (
-			<>{getFixedLayoutSubRenders(isHidden)}</>
+			getFixedLayoutSubRenders(isHidden)
 		) : (
 			<div
 				className="slds-truncate"
