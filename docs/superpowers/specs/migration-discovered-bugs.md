@@ -36,14 +36,21 @@ each must be fixed in P2 (real TS + hooks conversion) and the skipped tests re-e
 - jsdom cannot meaningfully simulate browser focus traversal; these work in real browsers.
   Revisit with a browser-mode test runner if desired (not required for P1).
 
-## global-header — action items may not render into `<li>` (needs confirmation)
+## ✅ FIXED (P2) — global-header dropped all action items grouped in a Fragment
 
-- **File:** `components/global-header/` — the `ul.slds-global-actions` renders but the
-  6 action items (Favorites/Task/Help/Setup/Notifications/Profile) did not appear as `<li>`
-  children in jsdom. Original Enzyme test likely had the same gap.
-- **Status:** unconfirmed — could be jsdom or a real children-composition issue. Test was
-  written to warn-and-proceed rather than fail.
-- **Action:** confirm in P2 with the component open in Storybook / browser.
+- **File:** `components/global-header/index.tsx`
+- **Was:** the `ul.slds-global-actions` rendered but the 6 action items
+  (Favorites/Task/Help/Setup/Notifications/Profile) did not appear as `<li>` children —
+  a **real component bug**, not jsdom. `React.Children.forEach` sorted children into
+  buckets by `displayName`, but when the children were grouped in a `React.Fragment`
+  (`<>...</>` — exactly how the tests and typical usage pass them) it saw a single
+  Fragment child with no `displayName` and silently dropped everything inside.
+  (Confirmed: passing the same children as a plain array rendered all 6; as a Fragment,
+  0.)
+- **Fix (done):** added a `sortChild` helper that recurses into a Fragment's children
+  before bucketing by `displayName`.
+- **Re-enabled tests:** the two previously warn-and-proceed tests now strictly assert 6
+  `<li class="slds-global-actions__item">` items render in the correct (reordered) order.
 
 ## ✅ FIXED (P2) — menu-dropdown keyboard navigation crash
 

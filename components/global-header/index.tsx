@@ -90,16 +90,30 @@ const GlobalHeader = ({
 	};
 	let search: ReactElement | null = null;
 
-	React.Children.forEach(children, (child) => {
-		if (child && React.isValidElement(child)) {
-			const displayName = (child.type as { displayName?: string }).displayName;
-			if (displayName === GLOBAL_HEADER_SEARCH) {
-				search = child;
-			} else if (displayName && actionsByType[displayName]) {
-				actionsByType[displayName].push(child);
-			}
+	// Sort each child into its bucket by `displayName`. Children grouped in a
+	// `React.Fragment` (`<>...</>`) must be recursed into — `React.Children.forEach`
+	// treats a Fragment as a single child with no `displayName`, which would
+	// otherwise silently drop every action inside it.
+	const sortChild = (child: ReactNode) => {
+		if (!child || !React.isValidElement(child)) {
+			return;
 		}
-	});
+		if (child.type === React.Fragment) {
+			React.Children.forEach(
+				(child.props as { children?: ReactNode }).children,
+				sortChild
+			);
+			return;
+		}
+		const displayName = (child.type as { displayName?: string }).displayName;
+		if (displayName === GLOBAL_HEADER_SEARCH) {
+			search = child;
+		} else if (displayName && actionsByType[displayName]) {
+			actionsByType[displayName].push(child);
+		}
+	};
+
+	React.Children.forEach(children, sortChild);
 
 	const actions = [
 		...actionsByType[GLOBAL_HEADER_FAVORITES],

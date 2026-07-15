@@ -57,20 +57,13 @@ describe('SLDSGlobalHeader', () => {
 			const actionsList = container.querySelector('ul.slds-global-actions');
 			expect(actionsList).toBeInTheDocument();
 
-			// Expected order: Favorites, Task, Help, Setup, Notifications, Profile
-			// NOTE: The components may not render if they have errors or missing dependencies
+			// Each action renders as a `<li class="slds-global-actions__item">`,
+			// and GlobalHeader reorders them regardless of the source order:
+			// Favorites, Task, Help, Setup, Notifications, Profile.
 			const actionItems = container.querySelectorAll(
 				'ul.slds-global-actions li.slds-global-actions__item'
 			);
 
-			// If no action items rendered, that's a potential component bug, not a test issue
-			if (actionItems.length === 0) {
-				console.warn('WARNING: No action items rendered. This may indicate a component issue.');
-				// Skip the order test if nothing rendered
-				return;
-			}
-
-			// Check order of rendered items
 			const order = [
 				'div.slds-global-actions__favorites',
 				'button.slds-global-actions__task',
@@ -80,12 +73,11 @@ describe('SLDSGlobalHeader', () => {
 				'button.slds-global-actions__avatar',
 			];
 
-			expect(actionItems.length).toBeLessThanOrEqual(order.length);
+			expect(actionItems).toHaveLength(order.length);
 
-			// Verify the items that did render are in the correct order
+			// Verify the rendered items appear in the correct (reordered) sequence
 			actionItems.forEach((item, index) => {
-				const expectedSelector = order[index];
-				const element = item.querySelector(expectedSelector);
+				const element = item.querySelector(order[index]);
 				expect(element).toBeInTheDocument();
 			});
 		});
@@ -354,21 +346,13 @@ describe('SLDSGlobalHeader', () => {
 				</>
 			);
 
-			const actionItems = container.querySelectorAll('.slds-global-actions__item');
-
-			// NOTE: Components may not render if there are issues with dependencies
-			// The original test expected 6 items, but in jsdom they don't render.
-			// This is a suspected component bug - the GlobalHeader may not properly
-			// handle children in jsdom environment. Verify the structure exists at minimum.
 			const actionsList = container.querySelector('ul.slds-global-actions');
 			expect(actionsList).toBeInTheDocument();
 
-			// If items do render, verify count
-			if (actionItems.length > 0) {
-				expect(actionItems).toHaveLength(6);
-			} else {
-				console.warn('SUSPECTED COMPONENT BUG: GlobalHeader action items not rendering in jsdom');
-			}
+			// All six actions render, including when grouped in a Fragment (the
+			// GlobalHeader now recurses into Fragment children when sorting them).
+			const actionItems = container.querySelectorAll('.slds-global-actions__item');
+			expect(actionItems).toHaveLength(6);
 		});
 
 		it('handles empty children', () => {
