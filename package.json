@@ -19,7 +19,8 @@
     "typecheck": "tsc --noEmit",
     "start": "npm run dev",
     "storybook": "storybook dev -p 6007",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "prepack": "npm run build"
   },
   "husky": {
     "hooks": {
@@ -55,11 +56,17 @@
   },
   "main": "dist/design-system-react.cjs",
   "module": "dist/design-system-react.es.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/types/components/index.d.ts",
   "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE.txt",
+    "RELEASENOTES.md"
+  ],
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
+      "types": "./dist/types/components/index.d.ts",
       "import": "./dist/design-system-react.es.js",
       "require": "./dist/design-system-react.cjs",
       "default": "./dist/design-system-react.es.js"

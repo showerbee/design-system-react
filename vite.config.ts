@@ -10,10 +10,32 @@ export default defineConfig({
   plugins: [
     react(),
     dts({
-      insertTypesEntry: true,
+      // Emit declarations for the real published surface: the components barrel
+      // and its sidecar .d.ts / .tsx types, the utilities, and the shared types
+      // folder. Restricted to TS/TSX/d.ts so the 600+ untyped .jsx files are not
+      // churned (they contribute no types yet — see the modernization roadmap).
+      entryRoot: '.',
       outDir: 'dist/types',
-      include: ['types/**/*.ts'],
-      exclude: ['**/*.test.*', '**/*.spec.*', '**/__tests__/**', '**/__examples__/**', '**/__docs__/**'],
+      // Copy hand-written .d.ts (e.g. the components/index.d.ts barrel and the
+      // sidecar component declarations) into the output — the plugin only
+      // *generates* from .ts/.tsx and would otherwise drop these.
+      copyDtsFiles: true,
+      include: [
+        'components/**/*.ts',
+        'components/**/*.tsx',
+        'components/**/*.d.ts',
+        'utilities/**/*.ts',
+        'utilities/**/*.d.ts',
+        'types/**/*.ts',
+      ],
+      exclude: [
+        '**/*.test.*',
+        '**/*.spec.*',
+        '**/*.browser-test.*',
+        '**/__tests__/**',
+        '**/__examples__/**',
+        '**/__docs__/**',
+      ],
     }),
   ],
   resolve: {
