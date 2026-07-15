@@ -65,8 +65,7 @@ describe('SLDSLookup', () => {
 			expect(label).toBeInTheDocument();
 		});
 
-		it.skip('isOpen=true renders open dropdown', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('isOpen=true renders open dropdown', () => {
 			const { container } = renderLookup({ isOpen: true });
 			const input = container.querySelector('input');
 			expect(input).toHaveAttribute('aria-expanded', 'true');
@@ -91,16 +90,14 @@ describe('SLDSLookup', () => {
 			expect(input).toHaveAttribute('aria-expanded', 'false');
 		});
 
-		it.skip('aria-expanded is true when clicking on input field', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('aria-expanded is true when clicking on input field', () => {
 			const { container } = renderLookup();
 			const input = container.querySelector('input');
 			fireEvent.click(input);
 			expect(input).toHaveAttribute('aria-expanded', 'true');
 		});
 
-		it.skip('LookupWithSelection - aria-expanded is true when deleting selection', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('LookupWithSelection - aria-expanded is true when deleting selection', () => {
 			const { container } = renderLookup({ selectedItem: 1 });
 			const deleteBtn = container.querySelector('button');
 			fireEvent.keyDown(deleteBtn, {
@@ -114,8 +111,7 @@ describe('SLDSLookup', () => {
 	});
 
 	describe('selecting item works', () => {
-		it.skip('no fixed header: focuses correct item', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('no fixed header: focuses correct item', () => {
 			const { container } = renderLookup();
 			const input = container.querySelector('input');
 			fireEvent.click(input);
@@ -133,8 +129,7 @@ describe('SLDSLookup', () => {
 			expect(ariaActiveDescendant).toBe('item-1');
 		});
 
-		it.skip('with fixed header: focuses correct item', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('with fixed header: focuses correct item', () => {
 			const { container } = renderLookup({ headerRenderer: Header });
 			const input = container.querySelector('input');
 			fireEvent.click(input);
@@ -152,8 +147,7 @@ describe('SLDSLookup', () => {
 			expect(ariaActiveDescendant).toBe('item-0');
 		});
 
-		it.skip('no header: selects correct item', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('no header: selects correct item', () => {
 			const { container } = renderLookup();
 			const input = container.querySelector('input');
 			fireEvent.click(input);
@@ -181,8 +175,7 @@ describe('SLDSLookup', () => {
 			expect(selected).toHaveTextContent('Paper St. Soap Company');
 		});
 
-		it.skip('with header: selects correct item', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('with header: selects correct item', () => {
 			const { container } = renderLookup({ headerRenderer: Header });
 			const input = container.querySelector('input');
 			fireEvent.click(input);
@@ -210,8 +203,7 @@ describe('SLDSLookup', () => {
 			expect(selected).toHaveTextContent('Tyrell Corp');
 		});
 
-		it.skip('closes lookup menu on esc', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('closes lookup menu on esc', () => {
 			const { container } = renderLookup();
 			const input = container.querySelector('input');
 			fireEvent.click(input);
@@ -224,8 +216,7 @@ describe('SLDSLookup', () => {
 			expect(input).toHaveAttribute('aria-expanded', 'false');
 		});
 
-		it.skip('aria-expanded is false after selecting item', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('aria-expanded is false after selecting item', () => {
 			const { container } = renderLookup();
 			const input = container.querySelector('input');
 			fireEvent.click(input);
@@ -243,8 +234,7 @@ describe('SLDSLookup', () => {
 			expect(menu).not.toBeInTheDocument();
 		});
 
-		it.skip('focusedItem has correct style', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('focusedItem has correct style', () => {
 			const { container } = renderLookup();
 			const input = container.querySelector('input');
 			fireEvent.click(input);
@@ -267,8 +257,7 @@ describe('SLDSLookup', () => {
 	});
 
 	describe('expanded', () => {
-		it.skip('filters its items', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('filters its items', () => {
 			const { container } = renderLookup();
 			const input = container.querySelector('input');
 			fireEvent.click(input);
@@ -277,8 +266,7 @@ describe('SLDSLookup', () => {
 			expect(items).toHaveLength(3);
 		});
 
-		it.skip('filters its items all the way!', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('filters its items all the way!', () => {
 			const { container } = renderLookup();
 			const input = container.querySelector('input');
 			fireEvent.click(input);
@@ -287,8 +275,7 @@ describe('SLDSLookup', () => {
 			expect(items).toHaveLength(1); // 1 cause of add-item
 		});
 
-		it.skip('unfilters its items if no val', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('unfilters its items if no val', () => {
 			const { container } = renderLookup();
 			const input = container.querySelector('input');
 			fireEvent.click(input);
@@ -297,8 +284,7 @@ describe('SLDSLookup', () => {
 			expect(items).toHaveLength(7);
 		});
 
-		it.skip('displays no items when item count is 0', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('displays no items when item count is 0', () => {
 			const { container } = renderLookup();
 			const input = container.querySelector('input');
 			fireEvent.click(input);
@@ -313,8 +299,7 @@ describe('SLDSLookup', () => {
 	});
 
 	describe('custom filter', () => {
-		it.skip('filters its items by case sensitive first letter', () => {
-			// SKIP REASON: Component bug - React 19 ref handling issue when menu opens
+		it('filters its items by case sensitive first letter', () => {
 			const { container } = renderLookup({
 				filterWith: (text, i) => text === i.label[0],
 			});

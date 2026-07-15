@@ -18,19 +18,17 @@ each must be fixed in P2 (real TS + hooks conversion) and the skipped tests re-e
   (stable across repeated runs).
 
 
-## ⚠️ HIGH PRIORITY — lookup menu crashes on React 19 ref validation
+## ✅ FIXED (P2) — lookup menu crashed on React 19 ref validation
 
-- **Files:** `components/lookup/lookup.jsx` and the forwardRef wrapper `components/lookup/index.jsx`
-- **Symptom:** when the menu opens (state change → re-render), React 19 throws
-  "Expected ref to be a function, an object returned by React.createRef(), or
-  undefined/null". Closed/initial render is fine; opening the menu crashes.
-- **Cause (suspected):** ref handling for the Header/Footer components passed down through
-  Menu uses a legacy ref pattern React 19 rejects (e.g. string refs or an invalid ref object).
-- **Skipped tests (in `components/lookup/__tests__/lookup.test.jsx`):** 15 — every test that
-  opens the menu (click input, filter, select item).
-- **Action:** fix ref forwarding in P2 (the index.jsx wrapper was already modernized to a
-  functional forwardRef + useClickOutside; the crash is deeper, inside lookup.jsx / its Menu
-  Header/Footer refs). Re-enable the 15 skipped tests after the fix.
+- **File:** `components/lookup/private/item.jsx`
+- **Was:** the menu item anchor used a **string ref** (`ref={id}`, line 120). String refs
+  were **removed in React 19**, so opening the menu threw "Expected ref to be a function,
+  an object returned by React.createRef(), or undefined/null". (Not the Header/Footer refs
+  as first suspected — those are valid class-component refs.)
+- **Fix (done):** removed the string ref. It was dead — `this.refs` is never read anywhere,
+  and the anchor's `id` attribute (used by `aria-activedescendant`) is set independently.
+- **Re-enabled tests:** all 15 `components/lookup/__tests__/lookup.test.jsx` tests that open
+  the menu now pass (21/21 in the suite).
 
 ## modal — focus-trap tests (jsdom limitation, not a bug)
 

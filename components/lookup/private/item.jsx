@@ -117,7 +117,6 @@ class Item extends React.Component {
 					id={id}
 					onClick={this.handleClick}
 					onMouseDown={EventUtil.trapImmediate}
-					ref={id}
 					role="option"
 					tabIndex="-1"
 				>
