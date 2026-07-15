@@ -119,7 +119,7 @@ class List extends React.Component {
 							key={`${id}-${option.value}`}
 							labelRenderer={this.props.itemRenderer}
 							onSelect={this.props.onSelect}
-							ref={(listItem) => this.props.itemRefs(listItem, index)}
+							nodeRef={(listItem) => this.props.itemRefs(listItem, index)}
 							tooltipTemplate={this.props.tooltipMenuItem}
 						/>
 					);

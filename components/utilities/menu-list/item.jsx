@@ -56,6 +56,14 @@ class ListItem extends React.Component {
 			category: PropTypes.string,
 			name: PropTypes.string,
 		}),
+		/**
+		 * Callback ref that receives the root `<li>` DOM node (or `null` on
+		 * unmount). Used by parents that need the list item's DOM element for
+		 * keyboard focus/scroll management. A DOM node is forwarded here rather
+		 * than attaching a `ref` to this class component, which would yield the
+		 * component instance instead of an element.
+		 */
+		nodeRef: PropTypes.func,
 		onSelect: PropTypes.func.isRequired,
 		rightIcon: PropTypes.shape({
 			category: PropTypes.string,
@@ -151,6 +159,7 @@ class ListItem extends React.Component {
 			case 'header': {
 				return (
 					<li
+						ref={this.props.nodeRef}
 						className={classNames(
 							'slds-dropdown__header',
 							{
@@ -170,6 +179,7 @@ class ListItem extends React.Component {
 			case 'divider': {
 				return (
 					<li
+						ref={this.props.nodeRef}
 						className={classNames('slds-has-divider', this.props.className)}
 						onMouseDown={this.handleMouseDown}
 						role="separator"
@@ -222,6 +232,7 @@ class ListItem extends React.Component {
 					/* eslint-disable jsx-a11y/role-supports-aria-props */
 					// disabled eslint, but using aria-selected on presentation role seems suspicious...
 					<li
+						ref={this.props.nodeRef}
 						aria-selected={
 							this.props.checkmark === null ? this.props.isSelected : null
 						}

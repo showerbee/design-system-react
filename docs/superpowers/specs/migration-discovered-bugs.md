@@ -45,21 +45,23 @@ each must be fixed in P2 (real TS + hooks conversion) and the skipped tests re-e
   written to warn-and-proceed rather than fail.
 - **Action:** confirm in P2 with the component open in Storybook / browser.
 
-## menu-dropdown — keyboard navigation crash
+## ✅ FIXED (P2) — menu-dropdown keyboard navigation crash
 
-- **File:** `components/menu-dropdown/menu-dropdown.tsx:609` (`focusMenuItem`)
-- **Error:** `TypeError: menuItem.getElementsByTagName is not a function`
-- **Trigger:** opening the menu via Enter or Down arrow, or navigating items with arrow
-  keys after opening. Mouse/click paths are unaffected.
-- **Cause (suspected):** `focusMenuItem` expects an `HTMLLIElement` but receives something
-  else (null/undefined or a ref wrapper) during keyboard navigation.
-- **Skipped tests (in `components/menu-dropdown/__tests__/dropdown.test.jsx`):**
-  1. opens menu with enter
-  2. opens menu with down arrow key
-  3. selects an item with keyboard
-  4. moves focus to next item after keyboard selection
-  5. Tooltip shows when focused on menu item (depends on keyboard nav)
-- **Action:** fix in P2, re-enable the 5 skipped tests.
+- **File:** `components/menu-dropdown/menu-dropdown.tsx:609` (`focusMenuItem`),
+  `components/utilities/menu-list/{index,item}.jsx`, `utilities/keyboard-navigate.js`
+- **Was:** `TypeError: menuItem.getElementsByTagName is not a function` when opening the
+  menu via Enter/Down or navigating with arrows. Three compounding React-19 causes:
+  1. `menu-list` attached `ref=` to the `ListItem` **class component**, so `itemRefs`
+     received the class *instance* (no `getElementsByTagName`) instead of the `<li>` DOM
+     node. Fixed by adding a `nodeRef` callback prop to `ListItem`, attaching it to all
+     three `<li>` roots, and changing `menu-list/index.jsx` to pass `nodeRef=` (forwards
+     the real DOM node). This also fixes menu-picklist's identical latent bug.
+  2. `keyboard-navigate.js` used `ReactDOM.findDOMNode`, **removed in React 19**. Replaced
+     with a `resolveTriggerNode` helper (trigger is already a DOM node via callback ref).
+  3. `openMenuKeys` omitted `KEYS.DOWN`, so the Down-arrow-opens-menu WAI-ARIA pattern
+     never fired. Added it.
+- **Re-enabled tests:** all 5 menu-dropdown keyboard tests (27/27) **and** the 3
+  menu-picklist tests (8/8) that share the same code path.
 
 ## data-table — `style` prop passed to `React.Fragment`
 

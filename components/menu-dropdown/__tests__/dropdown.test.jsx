@@ -330,10 +330,9 @@ describe('SLDSMenuDropdown', () => {
 	});
 
 	describe('Keyboard behavior', () => {
-		// NOTE: Component bug - opening menu with keyboard triggers menuItem.getElementsByTagName error
 		// The focusMenuItem callback is called during menu opening and expects HTMLLIElement
 		// but receives something else (possibly null or undefined)
-		it.skip('opens menu with enter', async () => {
+		it('opens menu with enter', async () => {
 			const { container } = renderDropdown();
 
 			const button = container.querySelector('button');
@@ -346,8 +345,7 @@ describe('SLDSMenuDropdown', () => {
 			});
 		});
 
-		// NOTE: Component bug - same as above
-		it.skip('opens menu with down arrow key', async () => {
+		it('opens menu with down arrow key', async () => {
 			const { container } = renderDropdown();
 
 			const button = container.querySelector('button');
@@ -360,10 +358,9 @@ describe('SLDSMenuDropdown', () => {
 			});
 		});
 
-		// NOTE: Component bug - menuItem.getElementsByTagName is not a function
 		// The focusMenuItem callback in menu-dropdown.tsx:609 expects an HTMLLIElement
 		// but receives something else during keyboard navigation
-		it.skip('selects an item with keyboard', async () => {
+		it('selects an item with keyboard', async () => {
 			let selected;
 			const { container } = renderDropdown({
 				onSelect: (selectedOption) => {
@@ -433,8 +430,7 @@ describe('SLDSMenuDropdown', () => {
 			expect(firstNode).toHaveAttribute('role', 'menuitemcheckbox');
 		});
 
-		// NOTE: Component bug - same menuItem.getElementsByTagName issue as keyboard navigation test
-		it.skip('moves focus to next item after keyboard selection', async () => {
+		it('moves focus to next item after keyboard selection', async () => {
 			const { container } = renderDropdown({ multiple: true, checkmark: true });
 
 			const trigger = container.querySelector('.slds-dropdown-trigger');
@@ -587,9 +583,7 @@ describe('SLDSMenuDropdown', () => {
 	});
 
 	describe('Tooltips function as expected', () => {
-		// NOTE: Tooltip test depends on keyboard navigation which has component bugs
-		// The menu opens but keyboard navigation within it triggers the menuItem.getElementsByTagName error
-		it.skip('Tooltip component shows when focused on menu item', async () => {
+		it('Tooltip component shows when focused on menu item', async () => {
 			const { container } = renderDropdown({
 				options: [
 					{ label: 'Test item A', value: 'A0' },
