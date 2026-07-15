@@ -1,154 +1,131 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import { Component, Children } from 'react';
+import { useContext, useEffect, useRef, useState, Children } from 'react';
 import PropTypes from 'prop-types';
-import ReactDOM from 'react-dom';
+import { createPortal } from 'react-dom';
 import { PortalSettingsContext } from '../../portal-settings';
 
 /*
  * This component mounts its children within a disconnected render tree (portal).
+ *
+ * Reimplemented on top of React 18/19's `ReactDOM.createPortal`. The previous
+ * implementation relied on `ReactDOM.unstable_renderSubtreeIntoContainer` and
+ * `ReactDOM.unmountComponentAtNode`, both of which were removed in React 19.
  */
 
 const documentDefined = typeof document !== 'undefined';
-class Portal extends Component {
-	constructor(props) {
-		super(props);
-		this.portalNode = null;
-		this.state = {
-			isOpen: false,
-		};
-	}
 
-	componentDidMount() {
-		this.renderPortal();
-	}
+const Portal = (props) => {
+	const {
+		renderTag = 'span',
+		renderTo = null,
+		id,
+		className,
+		style,
+		onMount,
+		onOpen,
+		onUpdate,
+		children,
+	} = props;
 
-	componentDidUpdate() {
-		this.renderPortal();
-	}
+	const context = useContext(PortalSettingsContext);
+	const portalNodeRef = useRef(null);
+	const portalNodeInstanceRef = useRef(null);
+	const [isMounted, setIsMounted] = useState(false);
 
-	componentWillUnmount() {
-		this.unmountPortal();
-	}
-
-	getChildren() {
-		return Children.only(this.props.children);
-	}
-
-	getPortalParentNode() {
-		let element;
-		if (typeof this.props.renderTo === 'string') {
-			element = document.querySelector(this.props.renderTo);
-		} else if (
-			this.context &&
-			typeof this.context.renderTo === 'string' &&
-			document.querySelectorAll(this.context.renderTo) &&
-			document.querySelectorAll(this.context.renderTo)[0]
+	// Resolve where the portal's DOM node should be appended. Precedence matches
+	// the legacy implementation: explicit `renderTo` selector/node > context
+	// `renderTo` selector > `document.body`.
+	const getPortalParentNode = () => {
+		if (typeof renderTo === 'string') {
+			return document.querySelector(renderTo);
+		}
+		if (
+			context &&
+			typeof context.renderTo === 'string' &&
+			document.querySelectorAll(context.renderTo)[0]
 		) {
-			[element] = document.querySelectorAll(this.context.renderTo);
-		} else {
-			element = this.props.renderTo || (documentDefined && document.body);
+			return document.querySelectorAll(context.renderTo)[0];
 		}
-		return element;
-	}
+		return renderTo || (documentDefined && document.body);
+	};
 
-	setupPortalNode() {
-		const parentParentNode = this.getPortalParentNode();
-		this.portalNode = {};
-
-		if (documentDefined) {
-			this.portalNode = document.createElement(this.props.renderTag);
-			this.portalNode.setAttribute(
-				'style',
-				'display: block; height: 0px; width: 0px;'
-			);
-			this.portalNode.setAttribute('className', 'design-system-react-portal');
-			parentParentNode.appendChild(this.portalNode);
-			this.portalNodeInstance = this.props.onMount
-				? this.props.onMount(undefined, { portal: this.portalNode })
-				: this.portalNode;
-		}
-	}
-
-	unmountPortal() {
-		if (this.portalNode) {
-			ReactDOM.unmountComponentAtNode(this.portalNode);
-			this.portalNode.parentNode.removeChild(this.portalNode);
-		}
-		this.portalNode = null;
-	}
-
-	updatePortal() {
-		if (this.props.id) {
-			this.portalNode.id = this.props.id;
+	// Create the portal container node, append it to the parent, and tear it
+	// down on unmount. Runs once (mount/unmount lifecycle).
+	useEffect(() => {
+		if (!documentDefined) {
+			return undefined;
 		}
 
-		if (this.props.className) {
-			this.portalNode.className = this.props.className;
+		const node = document.createElement(renderTag);
+		node.setAttribute('style', 'display: block; height: 0px; width: 0px;');
+		node.className = 'design-system-react-portal';
+
+		const parent = getPortalParentNode();
+		if (parent) {
+			parent.appendChild(node);
 		}
 
-		if (this.props.style) {
-			Object.keys(this.props.style).forEach((key) => {
-				this.portalNode.style[key] = this.props.style[key];
-			});
+		portalNodeRef.current = node;
+		portalNodeInstanceRef.current = onMount
+			? onMount(undefined, { portal: node })
+			: node;
+
+		setIsMounted(true);
+
+		if (onOpen) {
+			onOpen(undefined, { portal: children });
 		}
 
-		if (this.props.onUpdate) {
-			this.portalNodeInstance = this.props.onUpdate(this.portalNodeInstance);
-		}
-	}
+		return () => {
+			if (node.parentNode) {
+				node.parentNode.removeChild(node);
+			}
+			portalNodeRef.current = null;
+			portalNodeInstanceRef.current = null;
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
-	renderPortal() {
-		// if no portal contents, then unmount
-		if (!this.getChildren() || !documentDefined) {
-			this.unmountPortal();
+	// Keep the container node's id/className/style in sync with props, and fire
+	// `onUpdate` after each render (matches the legacy `updatePortal` behavior).
+	useEffect(() => {
+		const node = portalNodeRef.current;
+		if (!node) {
 			return;
 		}
 
-		if (!this.portalNode) {
-			this.setupPortalNode();
+		if (id) {
+			node.id = id;
 		}
-
-		if (this.props.portalMount) {
-			this.props.portalMount({
-				instance: this,
-				reactElement: this.getChildren(),
-				domContainerNode: this.portalNode,
-				updateCallback: () => {
-					this.updatePortal(); // update after subtree renders
-				},
+		if (className) {
+			node.className = className;
+		}
+		if (style) {
+			Object.keys(style).forEach((key) => {
+				node.style[key] = style[key];
 			});
-		} else {
-			// actual render
-			ReactDOM.unstable_renderSubtreeIntoContainer(
-				this,
-				this.getChildren(),
-				this.portalNode,
-				() => {
-					this.updatePortal(); // update after subtree renders
-
-					if (this.state.isOpen === false) {
-						if (this.props.onOpen) {
-							this.props.onOpen(undefined, { portal: this.getChildren() });
-						}
-						this.setState({ isOpen: true });
-					}
-				}
-			);
 		}
-	}
+		if (onUpdate) {
+			portalNodeInstanceRef.current = onUpdate(portalNodeInstanceRef.current);
+		}
+	});
 
-	render() {
+	const child = children ? Children.only(children) : null;
+
+	if (!isMounted || !portalNodeRef.current || !child) {
 		return null;
 	}
-}
+
+	return createPortal(child, portalNodeRef.current);
+};
 
 Portal.displayName = 'Portal';
 
 Portal.propTypes = {
 	/*
-	 * What tag to use for the portal, defaults to `div`.
+	 * What tag to use for the portal, defaults to `span`.
 	 */
 	renderTag: PropTypes.string,
 	/*
@@ -164,7 +141,7 @@ Portal.propTypes = {
 	 */
 	children: PropTypes.node,
 	/*
-	 * ClassName added to .
+	 * ClassName added to the portal node.
 	 */
 	className: PropTypes.any,
 	/*
@@ -172,7 +149,7 @@ Portal.propTypes = {
 	 */
 	style: PropTypes.object,
 	/*
-	 * Triggers when Portal render tree mounts. Pass in an undefined event and `{ portal: [node] }``
+	 * Triggers when Portal render tree mounts. Pass in an undefined event and `{ portal: [node] }`
 	 */
 	onMount: PropTypes.func,
 	/*
@@ -183,32 +160,6 @@ Portal.propTypes = {
 	 * Triggers when Portal re-renders its tree.
 	 */
 	onUpdate: PropTypes.func,
-	/**
-	 * If a dialog is `positione="overflowBoundaryElement"`, it will be rendered in a portal or separate render tree. This `portalMount` callback will be triggered instead of the the default `ReactDOM.unstable_renderSubtreeIntoContainer` and the function will mount the portal itself. Consider the following code that bypasses the internal mount and uses an Enzyme wrapper to mount the React root tree to the DOM.
-	 *
-	 * ```
-	 * <Popover
-	 *   isOpen
-	 *   portalMount={({ instance, reactElement, domContainerNode }) => {
-	 *     portalWrapper = Enzyme.mount(reactElement, { attachTo: domContainerNode });
-	 *   }}
-	 *   onOpen={() => {
-	 *     expect(portalWrapper.find(`#my-heading`)).to.exist;
-	 *     done();
-	 *   }}
-	 * />
-	 * ```
-	 */
-	portalMount: PropTypes.func,
 };
 
-Portal.defaultProps = {
-	renderTag: 'span',
-	renderTo: null,
-	onMount: () => null,
-	onOpen: () => null,
-	onUpdate: () => null,
-	onUnmount: () => null,
-};
-Portal.contextType = PortalSettingsContext;
 export default Portal;

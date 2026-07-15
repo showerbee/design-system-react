@@ -4,19 +4,18 @@ These are genuine pre-existing bugs surfaced (not caused) by the Enzyme→RTL mi
 The migration `it.skip(...)`s the affected tests with a NOTE so the suite stays green;
 each must be fixed in P2 (real TS + hooks conversion) and the skipped tests re-enabled.
 
-## ⚠️ HIGH PRIORITY — Portal uses React APIs REMOVED in React 19
+## ✅ FIXED (P2) — Portal used React APIs REMOVED in React 19
 
 - **File:** `components/utilities/dialog/portal.jsx`
-- **Symptom:** uses `unstable_renderSubtreeIntoContainer` and `unmountComponentAtNode` —
-  both **removed in React 19**. This is a real runtime blocker (not test-only): any overlay
-  that renders through this Portal (filter+popover, and likely tooltip/popover/dialog paths)
-  will crash on modern React, not just in jsdom.
-- **Fix:** rewrite to `ReactDOM.createPortal()`; drop `unmountComponentAtNode` (React unmounts
-  the portal when the owning component unmounts / is conditionally rendered).
-- **Skipped tests (in `components/filter/__tests__/filter.test.jsx`):** 2 — "takes popover as
-  a prop", "onClick callback" (both open a Filter+Popover through the Portal).
-- **Action:** promote to P2 early — this likely unblocks tooltip/popover/dialog behavior
-  broadly, not just filter. Re-enable the 2 skipped tests after the rewrite.
+- **Was:** used `unstable_renderSubtreeIntoContainer` and `unmountComponentAtNode` —
+  both **removed in React 19**. A real runtime blocker (not test-only): any overlay
+  rendering through this Portal (filter+popover, and the dialog `overflowBoundaryElement`
+  position path) would crash on modern React.
+- **Fix (done):** rewritten as a function component on `ReactDOM.createPortal` with
+  `useEffect`-managed container node creation/teardown; React now unmounts the portal
+  content automatically when the owner unmounts. Sole consumer is `dialog/index.jsx`.
+- **Re-enabled tests:** the 2 `components/filter/__tests__/filter.test.jsx` tests now pass
+  (stable across repeated runs).
 
 
 ## ⚠️ HIGH PRIORITY — lookup menu crashes on React 19 ref validation

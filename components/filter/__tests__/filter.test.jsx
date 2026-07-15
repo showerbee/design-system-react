@@ -30,10 +30,7 @@ class DemoComponent extends React.Component {
 
 describe('SLDSFilter', () => {
 	describe('Add custom props to Filter Popover', () => {
-		it.skip('Filter could take popover as a prop and use the props of popover to render, verifies the custom popover className', async () => {
-			// NOTE: Skipped due to Portal component using deprecated React 18 APIs
-			// (unstable_renderSubtreeIntoContainer) which are not available in jsdom.
-			// This is a component bug that should be fixed by updating Portal to use createPortal.
+		it('Filter could take popover as a prop and use the props of popover to render, verifies the custom popover className', async () => {
 			const demoPopover = (
 				<DemoComponent
 					className="custom-filter-popover"
@@ -61,10 +58,7 @@ describe('SLDSFilter', () => {
 	});
 
 	describe('On click handler when clicking on filter', () => {
-		it.skip('Filter could take onClick prop and trigger this callback during filter click', () => {
-			// NOTE: Skipped due to Portal component using deprecated React 18 APIs.
-			// Clicking the filter button opens a Popover, which uses Portal internally,
-			// triggering the unstable_renderSubtreeIntoContainer bug.
+		it('Filter could take onClick prop and trigger this callback during filter click', async () => {
 			const onClick = vi.fn();
 
 			const { container } = render(
@@ -82,7 +76,12 @@ describe('SLDSFilter', () => {
 			const filterButton = container.querySelector('.slds-filters__item .slds-button_reset');
 			fireEvent.click(filterButton);
 
-			expect(onClick).toHaveBeenCalledTimes(1);
+			// Clicking opens a Popover, which mounts through the Portal
+			// asynchronously; wait for React to flush that state update so the
+			// callback assertion isn't racing an in-flight render.
+			await waitFor(() => {
+				expect(onClick).toHaveBeenCalledTimes(1);
+			});
 		});
 	});
 });
