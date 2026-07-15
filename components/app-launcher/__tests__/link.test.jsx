@@ -112,10 +112,7 @@ describe('SLDS APP LAUNCHER LINK', () => {
 			expect(onClick).toHaveBeenCalledTimes(1);
 		});
 
-		// NOTE: Original test included search/highlight functionality using react-highlighter-ts
-		// which causes React version compatibility issues in jsdom. The highlighting feature
-		// works in real browsers but cannot be tested in this environment.
-		it.skip('search string highlights link children', () => {
+		it('search string highlights link children', () => {
 			const { container } = renderLink({
 				children: 'Accounts',
 				className: 'this-is-a-custom-class',

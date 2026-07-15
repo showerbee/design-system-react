@@ -93,9 +93,10 @@ describe('SLDS APP LAUNCHER TILE', () => {
 			expect(container.textContent).toContain('Support Cloud');
 		});
 
-		// NOTE: Description rendering depends on Truncate component which requires canvas API
-		// unavailable in jsdom. The component renders title correctly but description may not display.
-		it.skip('renders custom app description', () => {
+		// NOTE: The description renders through the `Truncate` component, which measures
+		// text with the Canvas API + `getBoundingClientRect` — both no-ops in jsdom — so
+		// the description text never renders here. Covered by Storybook / real-browser.
+		it.skip('renders custom app description (needs layout/canvas — jsdom limitation)', () => {
 			const { container } = renderTile({
 				className: 'this-is-a-custom-class',
 				description: 'Fluffy support',
@@ -168,18 +169,45 @@ describe('SLDS APP LAUNCHER TILE', () => {
 			expect(container.querySelector('.this-is-a-custom-class')).toBeInTheDocument();
 		});
 
-		// NOTE: Original tests for search string highlighting skipped due to react-highlighter-ts
-		// compatibility issues in jsdom (see link.test.jsx for details)
-		it.skip('tile can be passed a search string', () => {
-			// Test skipped - search prop triggers react-highlighter-ts which has React version issues
+		it('tile can be passed a search string', () => {
+			const { container } = renderTile({
+				search: 'Sup',
+				title: 'Support Cloud',
+			});
+
+			// The search term highlights inside the tile title link.
+			const mark = container.querySelector('.slds-app-launcher__tile-body a mark');
+			expect(mark).toBeInTheDocument();
 		});
 
-		it.skip('search string highlights title', () => {
-			// Test skipped - search prop triggers react-highlighter-ts which has React version issues
+		it('search string highlights title', () => {
+			const { container } = renderTile({
+				search: 'Cloud',
+				title: 'Support Cloud',
+			});
+
+			const mark = container.querySelector('.slds-app-launcher__tile-body a mark');
+			expect(mark).toBeInTheDocument();
+			expect(mark.textContent).toBe('Cloud');
+
+			// The non-matching portion of the title is still present.
+			const link = container.querySelector('.slds-app-launcher__tile-body a');
+			expect(link.textContent).toContain('Support');
 		});
 
-		it.skip('search string highlights description', () => {
-			// Test skipped - search prop triggers react-highlighter-ts which has React version issues
+		// NOTE: The description renders through the `Truncate` component, which measures
+		// text width with the Canvas API and `getBoundingClientRect` — both unavailable
+		// in jsdom, so the description text (and its search highlight) never render here.
+		// Covered by Storybook / real-browser testing instead.
+		it.skip('search string highlights description (needs layout/canvas — jsdom limitation)', () => {
+			const { container } = renderTile({
+				search: 'Fluffy',
+				description: 'Fluffy support',
+				title: 'Support Cloud',
+			});
+
+			const body = container.querySelector('.slds-app-launcher__tile-body');
+			expect(body.querySelector('mark')).toBeInTheDocument();
 		});
 	});
 
@@ -197,10 +225,10 @@ describe('SLDS APP LAUNCHER TILE', () => {
 			// No-op for consistency
 		});
 
-		// NOTE: Truncation and "more" button functionality requires canvas API and real layout
-		// calculations which are not available in jsdom. These tests verify the basic structure
-		// but cannot test the truncation behavior itself.
-		it.skip('renders more link', () => {
+		// NOTE: The "more" link only appears once `Truncate` decides the text overflows,
+		// which requires Canvas text measurement + real layout — both unavailable in jsdom.
+		// These three are covered by Storybook / real-browser testing.
+		it.skip('renders more link (needs layout/canvas — jsdom limitation)', () => {
 			const { container } = renderTile({
 				title: 'Call Center',
 				description,
@@ -214,7 +242,7 @@ describe('SLDS APP LAUNCHER TILE', () => {
 			expect(moreButton).toBeInTheDocument();
 		});
 
-		it.skip('renders custom more link', () => {
+		it.skip('renders custom more link (needs layout/canvas — jsdom limitation)', () => {
 			const { container } = renderTile({
 				title: 'Call Center',
 				description,
@@ -228,7 +256,7 @@ describe('SLDS APP LAUNCHER TILE', () => {
 			expect(moreButton.textContent).toContain(moreLabel);
 		});
 
-		it.skip('long descriptions use Tooltip activated by hover', async () => {
+		it.skip('long descriptions use Tooltip activated by hover (needs layout/canvas — jsdom limitation)', async () => {
 			const { container } = renderTile({
 				title: 'Call Center',
 				description,
@@ -250,9 +278,20 @@ describe('SLDS APP LAUNCHER TILE', () => {
 			fireEvent.mouseLeave(moreButton);
 		});
 
-		// NOTE: Search highlighting in tooltip skipped due to react-highlighter-ts issues
-		it.skip('search string highlights tooltip content', () => {
-			// Test skipped - search prop triggers react-highlighter-ts which has React version issues
+		// NOTE: The tooltip only mounts via the `Truncate` "more" affordance, which needs
+		// Canvas measurement + layout (jsdom limitation). The highlighter itself is now
+		// React-19 compatible; only the truncation trigger is untestable here.
+		it.skip('search string highlights tooltip content (needs layout/canvas — jsdom limitation)', () => {
+			const { container } = renderTile({
+				search: 'call',
+				description,
+				isOpenTooltip: true,
+				moreLabel,
+				title: 'Call Center',
+			});
+
+			const tooltip = document.querySelector('.slds-popover_tooltip');
+			expect(tooltip?.querySelector('mark')).toBeInTheDocument();
 		});
 	});
 
