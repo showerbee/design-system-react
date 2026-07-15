@@ -1,90 +1,79 @@
 # Modernization Roadmap
 
-> **Status: Work in Progress**
-> 
-> This library is undergoing a major modernization effort to support React 19, SLDS 2, and modern tooling. Most components are ready for use, but some features are still being completed.
+> **Status: Experimental — scaffolding in progress. Do NOT treat as production-ready.**
+>
+> This branch (`feat/typescript-modernization`) begins a major modernization toward React 19,
+> SLDS 2, and modern tooling (Vite / Vitest / TypeScript / Storybook 10). The **toolchain
+> configuration** is in place, but the migration itself is at an early stage: as of the
+> 2026-07-15 audit, **1 of 71 components** (`button`) is genuinely, fully migrated. The build,
+> test suite, type-check gate, and publish pipeline are **not yet functional**.
+>
+> A full evidence-backed audit and the detailed plan behind this roadmap live in
+> [`docs/superpowers/specs/2026-07-15-modernization-audit-and-roadmap.md`](docs/superpowers/specs/2026-07-15-modernization-audit-and-roadmap.md).
 
-## What's Ready
+## Honest Status Snapshot (2026-07-15)
 
-### Core Infrastructure ✅
+| Area | State | Notes |
+|------|-------|-------|
+| TypeScript entry points | 48 full-ts, 17 partial-ts, 6 js-only | 607 `.jsx` vs 112 `.tsx`; **416 files still `extends React.Component`** |
+| Genuinely complete components | **1 / 71** (`button`) | Real TSX + Vitest/RTL test + CSF story. The migration template. |
+| Tests | **1** collectable Vitest test | ~47 components still on Enzyme (no React 18/19 adapter); 55 `browser-test.jsx` uncollected |
+| Type-checking | **Not enforced** | No root `tsconfig.json`; `tsc --noEmit` covers nothing meaningful |
+| Build / publish | **Broken** | npm-publish CI runs Node 14 + a nonexistent script + deleted Babel `.tmp-npm` |
+| Clean install | **Fails without `--legacy-peer-deps`** | `react-onclickoutside` caps its peer at React 18 |
+| SLDS 2 CSS | **Vendored stopgap** | 952 KB internal `slds-plus.css`; library ships no CSS to consumers |
 
-- **React 19** — All components updated to work with React 19
-- **TypeScript** — 63 components converted with full type definitions
-- **Vite** — Modern build system replacing Webpack
-- **Vitest** — Modern test framework replacing Karma/Mocha
-- **Storybook 10** — Updated documentation with CSF stories
+## Prioritized Plan
 
-### Component Status
+Work is dependency-ordered — earlier phases unblock later ones.
 
-| Category | Status |
-|----------|--------|
-| Core (Button, Input, Checkbox, etc.) | ✅ 100% |
-| Navigation (GlobalHeader, Tabs, Menu, etc.) | ✅ 100% |
-| Overlay (Modal, Popover, DatePicker, etc.) | ✅ 100% |
-| Specialized (Avatar, Card, Carousel, etc.) | ✅ 100% |
-| Layout (Accordion, Panel, Modal, etc.) | 88% |
-| Data (DataTable, Tree, Combobox, etc.) | 83% |
-| Feedback (Alert, Toast, Progress, etc.) | 86% |
+### P0 — Make the branch coherent and verifiable
+- [ ] Add a root `tsconfig.json` covering `components/**` so type-checking actually runs
+- [ ] Drop `react-onclickoutside` (finish the `useClickOutside` migration in `lookup`); declare `prop-types` explicitly → clean `npm install`
+- [ ] Fix CJS output (`.cjs`) and `vite-plugin-dts` `include` so the package builds and ships correctly
+- [ ] Add real CI (Node 20): install → lint → typecheck → test → build on PR
 
-### Features
+### P1 — Restore the test safety net
+- [ ] Rewrite the ~47 Enzyme suites to Vitest + React Testing Library (template: `components/button/__tests__/button.test.jsx`)
+- [ ] Add jsdom polyfills (IntersectionObserver, scrollIntoView, getBoundingClientRect)
+- [ ] Delete `karma.conf.js` and the storyshots/puppeteer harness
 
-- **Dark Mode** — Storybook dark mode toggle, SLDS dark theme support
-- **Accessibility** — WCAG 2.1 AA compliant, keyboard navigation, screen reader tested
-- **Tree Shaking** — Individual component imports for smaller bundles
+### P2 — Finish the real TS + hooks conversion
+- [ ] Convert the 17 partial-ts internals and 6 js-only components
+- [ ] Delete `@ts-ignore` re-export stubs (`data-table`, `menu-dropdown`); rewrite the `data-table` class (XL)
+- [ ] Replace the 98 sidecar `.d.ts` shims with real `.tsx`
+- [ ] Fix `input` extension-resolution so `index.tsx` ships instead of the legacy `index.jsx`
+- [ ] Remove or re-wire the orphaned `check-props.js` files (restores lost deprecation warnings)
 
----
+### P3 — Positioning + SLDS 2
+- [ ] Migrate the Dialog positioning layer off `popper.js` v1 to `@floating-ui/react` (shared by popover, combobox, date-picker, menu, tooltip, dialog)
+- [ ] Swap the bundled `slds-plus.css` for the official package: `npm install @salesforce-ux/design-system-2` (latest `2.0.4`), CSS at `dist/css/bundled/slds2.cosmos.css`. Keep `@salesforce-ux/design-system` / `@salesforce-ux/icons` for icon assets.
+- [ ] Restore design-token regeneration; decide on a runtime theming API (ThemeProvider) vs documented consumer responsibility
 
-## What's In Progress
-
-### Components
-
-- **Lookup** — Deprecated, will be removed (use Combobox instead)
-- **Notification** — Deprecated, will be removed (use Toast or Alert instead)
-- **AccordionPanel** — Internal component, TypeScript migration pending
-
-### Infrastructure
-
-- [ ] GitHub Actions CI/CD (replacing CircleCI)
-- [ ] Automated npm publishing
-- [ ] Visual regression testing
-
-### Documentation
-
-- [ ] Migration guide from v0.x
-- [ ] MDX documentation pages in Storybook
-- [ ] TypeDoc API documentation
-
-### Theming
-
-- [ ] ThemeProvider component for runtime theme switching
-- [ ] SLDS version toggle (SLDS 1 vs SLDS 2)
-- [ ] localStorage theme persistence
-
----
+### P4 — Publish, hygiene, docs
+- [ ] Rewrite npm-publish for Node 20 + Vite build + `files`/`prepack`; add `sideEffects`
+- [ ] Upgrade toolchain: ESLint 9 (flat config), Vitest 3, Vite 6/7, typescript-eslint 8
+- [ ] Delete dead scripts / `eslint-plugin/`; fix CODEOWNERS and `dependabot.yml`; wire husky (`.husky/` + `prepare`)
+- [ ] Migration guide from v0.x; MDX docs; TypeDoc API docs
 
 ## Known Limitations
 
-1. **Node.js Requirement** — Requires Node.js >= 20.19.0 (or >= 22.12.0)
-2. **React 19 Only** — No backward compatibility with React 16/17/18
-3. **Bundled SLDS 2 CSS** — SLDS 2 styles are temporarily bundled in `assets/styles/slds-plus.css`. This will be replaced with an npm dependency when the official SLDS 2 package is published.
-4. **Popper.js v1** — Tooltip and Popover still use Popper.js v1 (migration to @floating-ui planned)
-
----
+1. **Node.js** — Requires Node.js >= 20.19.0 (or >= 22.12.0).
+2. **React 19 only** — No backward compatibility with React 16/17/18.
+3. **Install requires `--legacy-peer-deps`** until `react-onclickoutside` is removed (P0).
+4. **No shipped CSS** — the published package currently ships no SLDS CSS; styling is only wired up in Storybook via a vendored, internal-only `slds-plus.css`. Real package swap is P3.
+5. **Popper.js v1** — all overlay positioning still uses the deprecated Popper.js v1 (P3).
+6. **Tests do not run** — the suite collects one file; Enzyme cannot run on React 19 (P1).
 
 ## How to Help
 
 We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-**Good first issues:**
-- Add missing TypeScript types
-- Write Vitest tests for components
-- Improve Storybook documentation
-- Report accessibility issues
-
----
+**Good first issues (P1/P2 template-driven work):**
+- Rewrite a component's Enzyme test to Vitest + RTL using `button` as the template
+- Convert a partial-ts component's internals to real `.tsx`
+- Migrate a `storiesOf` story to CSF format
 
 ## Timeline
 
-This is a community-driven project without fixed deadlines. Progress depends on contributor availability.
-
-For detailed technical planning, see the internal `.planning/` folder (not included in published package).
+Community-driven, no fixed deadlines. Progress depends on contributor availability.
