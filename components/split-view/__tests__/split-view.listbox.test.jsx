@@ -216,45 +216,36 @@ describe('SLDSSplitView - Listbox', () => {
 		});
 
 		describe('and multiple select enabled', () => {
-			let currentSelection;
 			let container;
-			let rerender;
+
+			// A controlled wrapper that actually re-renders on every selection change.
+			// (The prior harness re-rendered once with a no-op onSelect, so the second
+			// interaction's state change never reached the DOM — which is why these
+			// were skipped, not any jsdom limitation.)
+			const ControlledListbox = ({ initialSelection = [] }) => {
+				const [selection, setSelection] = React.useState(initialSelection);
+				return (
+					<IconSettings iconPath="/assets/icons">
+						<SplitViewListbox
+							multiple
+							options={listOptions}
+							selection={selection}
+							events={{
+								onSelect: (event, { selectedItems }) => {
+									setSelection(selectedItems);
+								},
+							}}
+						/>
+					</IconSettings>
+				);
+			};
 
 			beforeEach(() => {
-				currentSelection = [];
-
-				const rendered = renderListbox({
-					multiple: true,
-					options: listOptions,
-					selection: currentSelection,
-					events: {
-						onSelect: (event, { selectedItems }) => {
-							currentSelection = selectedItems;
-							rerender(
-								<IconSettings iconPath="/assets/icons">
-									<SplitViewListbox
-										multiple={true}
-										options={listOptions}
-										selection={currentSelection}
-										events={{
-											onSelect: (event, { selectedItems }) => {
-												currentSelection = selectedItems;
-											},
-										}}
-									/>
-								</IconSettings>
-							);
-						},
-					},
-				});
-
+				const rendered = render(<ControlledListbox />);
 				container = rendered.container;
-				rerender = rendered.rerender;
 			});
 
-			// NOTE: These tests rely on complex state management and synchronous DOM updates
-			// which can be unreliable in jsdom. Component works correctly in browser.
-			it.skip('should select multiple items when clicked and the metaKey is pressed', () => {
+			it('should select multiple items when clicked and the metaKey is pressed', () => {
 				const anchors = container.querySelectorAll('li > a');
 
 				fireEvent.click(anchors[2]);
@@ -263,7 +254,7 @@ describe('SLDSSplitView - Listbox', () => {
 				expectItemSelected(container, [2, 3]);
 			});
 
-			it.skip('should select multiple items when clicked and the shiftKey is pressed', () => {
+			it('should select multiple items when clicked and the shiftKey is pressed', () => {
 				const anchors = container.querySelectorAll('li > a');
 
 				fireEvent.click(anchors[1]);
@@ -280,31 +271,15 @@ describe('SLDSSplitView - Listbox', () => {
 					expectItemSelected(container, [0, 1, 2, 3]);
 				});
 
-				// NOTE: Deselect all requires complex state management and timing in jsdom
-				it.skip('should de-select all list items when all the list items are already selected', () => {
-					// First select all
+				it('should de-select all list items when all the list items are already selected', () => {
 					const ul = container.querySelector('ul');
+
+					// First ctrl+a selects all...
 					fireEvent.keyDown(ul, { key: 'a', ctrlKey: true });
+					expectItemSelected(container, [0, 1, 2, 3]);
 
-					// Then deselect all
-					currentSelection = listOptions;
-					rerender(
-						<IconSettings iconPath="/assets/icons">
-							<SplitViewListbox
-								multiple={true}
-								options={listOptions}
-								selection={currentSelection}
-								events={{
-									onSelect: (event, { selectedItems }) => {
-										currentSelection = selectedItems;
-									},
-								}}
-							/>
-						</IconSettings>
-					);
-
+					// ...second ctrl+a deselects all.
 					fireEvent.keyDown(ul, { key: 'a', ctrlKey: true });
-
 					expectItemSelected(container, []);
 				});
 			});
