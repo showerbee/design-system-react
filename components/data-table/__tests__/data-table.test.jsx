@@ -883,18 +883,18 @@ describe('DataTable', () => {
 	});
 
 	describe('Column resizing', () => {
-		// NOTE: Column resizing tests with keyboard interaction require Enzyme's .simulate() to trigger
-		// component instance methods and state changes. In RTL/jsdom, we can verify the resize grips are
-		// rendered but cannot test the actual resize behavior without real DOM layout and component internals.
-		it.skip('Resize functionality should work with left key', () => {
-			// NOTE: This test requires Enzyme's wrapper.simulate() to trigger internal keyboard navigation
-			// state and resize mode. RTL cannot access component instance state or trigger the complex
-			// interaction flow (focus -> navigate to header -> enter resize mode -> resize).
+		// NOTE: Column resizing is driven by the `column-resizer` library, which reads
+		// real element widths via `getBoundingClientRect`/`offsetWidth` — all zero in
+		// jsdom — so a keyboard resize produces no observable width change here. The
+		// grip rendering IS covered below; the resize *behavior* needs a browser-mode
+		// runner. (These are the only two remaining data-table skips; the keyboard
+		// navigation/actionable-mode flows are now real, passing RTL tests above.)
+		it.skip('Resize functionality should work with left key (needs real layout — jsdom limitation)', () => {
+			// Requires column-resizer to measure real column widths, which jsdom reports as 0.
 		});
 
-		it.skip('Resize functionality should work with right key', () => {
-			// NOTE: This test requires Enzyme's wrapper.simulate() to trigger internal keyboard navigation
-			// state and resize mode. RTL cannot access component instance state.
+		it.skip('Resize functionality should work with right key (needs real layout — jsdom limitation)', () => {
+			// Requires column-resizer to measure real column widths, which jsdom reports as 0.
 		});
 
 		it('renders resize grips when resizable is enabled', () => {
@@ -1044,22 +1044,82 @@ describe('DataTable', () => {
 	});
 
 	describe('Keyboard Navigation', () => {
-		// NOTE: Keyboard navigation tests require Enzyme's wrapper.simulate() to trigger component
-		// internal state changes for navigation and actionable modes. RTL's fireEvent does not update
-		// component state in the same way. We can verify the structure but not the full interaction flow.
+		it('moves the active cell when using keyboard arrow keys', () => {
+			const { container } = renderTable(
+				<DataTable {...defaultProps} fixedLayout keyboardNavigation>
+					{columns.map((columnProps) => (
+						<DataTableColumn {...columnProps} key={columnProps.property} />
+					))}
+				</DataTable>
+			);
 
-		it.skip('moves selection when using keyboard up/down/left/right keys', () => {
-			// NOTE: This test requires Enzyme's wrapper.simulate() to trigger internal keyboard navigation
-			// state (activeCell, tabIndex updates). RTL's fireEvent.keyDown does not trigger the component's
-			// internal state management for cell focus tracking. The component uses internal state to track
-			// which cell is active and updates tabIndex accordingly, which is not observable without accessing
-			// component instance state or using Enzyme's simulation that triggers the full event flow.
+			// Exactly one body cell is focusable in navigation mode; arrow keys move
+			// that `tabindex="0"` marker across cells.
+			const cellTabIndexes = () =>
+				Array.from(container.querySelectorAll('tbody td')).map((td) =>
+					td.getAttribute('tabindex')
+				);
+
+			const startIndex = cellTabIndexes().indexOf('0');
+			expect(startIndex).toBeGreaterThanOrEqual(0);
+
+			// ArrowRight moves the active cell one column to the right...
+			fireEvent.keyDown(container.querySelector('tbody td[tabindex="0"]'), {
+				key: 'ArrowRight',
+				keyCode: 39,
+			});
+			expect(cellTabIndexes().indexOf('0')).toBe(startIndex + 1);
+
+			// ...and ArrowLeft moves it back.
+			fireEvent.keyDown(container.querySelector('tbody td[tabindex="0"]'), {
+				key: 'ArrowLeft',
+				keyCode: 37,
+			});
+			expect(cellTabIndexes().indexOf('0')).toBe(startIndex);
 		});
 
-		it.skip('enters actionable mode when using keyboard enter key; and enters navigation mode when using keyboard escape key', () => {
-			// NOTE: This test requires Enzyme's wrapper.simulate() to trigger internal mode state changes
-			// (navigation mode vs actionable mode) and tabIndex updates on cells and interactive elements.
-			// RTL cannot access the component's internal mode state.
+		it('enters actionable mode on enter and returns to navigation mode on escape', () => {
+			const { container } = renderTable(
+				<DataTable {...defaultProps} fixedLayout keyboardNavigation>
+					{[
+						...columns.map((columnProps) => (
+							<DataTableColumn {...columnProps} key={columnProps.property} />
+						)),
+						<DataTableRowActions
+							key="actions"
+							options={[{ id: 0, label: 'Add to Group', value: '1' }]}
+							onAction={() => {}}
+							dropdown={<Dropdown length="5" />}
+						/>,
+					]}
+				</DataTable>
+			);
+
+			// In navigation mode the interactive row-action controls are out of the
+			// tab order (tabindex="-1").
+			const actionTabIndexes = () =>
+				Array.from(
+					container.querySelectorAll('tbody td button, tbody td a')
+				).map((el) => el.getAttribute('tabindex'));
+			expect(actionTabIndexes().every((t) => t === '-1')).toBe(true);
+
+			// Enter switches to actionable mode: interactive controls become tabbable.
+			fireEvent.keyDown(container.querySelector('tbody td[tabindex="0"]'), {
+				key: 'Enter',
+				keyCode: 13,
+			});
+			expect(actionTabIndexes().some((t) => t === '0')).toBe(true);
+
+			// Escape returns to navigation mode: a cell regains tabindex="0" and the
+			// interactive controls go back to tabindex="-1".
+			fireEvent.keyDown(container.querySelector('[tabindex="0"]'), {
+				key: 'Escape',
+				keyCode: 27,
+			});
+			expect(
+				container.querySelectorAll('tbody td[tabindex="0"]').length
+			).toBeGreaterThan(0);
+			expect(actionTabIndexes().every((t) => t === '-1')).toBe(true);
 		});
 
 		it('renders interactive cells with proper structure for keyboard navigation', () => {
