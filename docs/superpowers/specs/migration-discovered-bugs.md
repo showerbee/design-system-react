@@ -92,15 +92,17 @@ each must be fixed in P2 (real TS + hooks conversion) and the skipped tests re-e
   children and clones the props onto the real elements inside it.
 - **Verified:** 0 Fragment warnings; 2/2 tests pass.
 
-## Highlighter / React-version mismatch (tree searchTerm, data-table HighlightCell)
+## ✅ FIXED (P2) — Highlighter / React-version mismatch (tree searchTerm, data-table HighlightCell)
 
 - **Files:** `components/tree/` (`searchTerm` highlight path), `components/data-table/`
-  (HighlightCell), likely via `react-highlighter-ts`.
-- **Symptom:** rendering the highlight path throws an "older version of React" style error
-  in the vitest/jsdom env. Reproduces in two components → shared dependency, not per-component.
-- **Skipped tests:** tree "search term highlighting" (1); data-table HighlightCell (counted
-  above).
-- **Suspected cause:** `react-highlighter-ts@^2.2.0` internally referencing a React API
-  incompatible with React 19 (e.g. legacy `findDOMNode`/`ReactDOM` usage).
-- **Action:** investigate in P2/P3 — either patch/replace the highlighter or wrap it; then
-  re-enable both skipped tests.
+  (HighlightCell), both via `react-highlighter-ts`.
+- **Was:** rendering the highlight path threw "A React Element from an older version of
+  React was rendered." Root cause: `react-highlighter-ts@2.2.0` declares `react@^17` as a
+  hard **dependency** (not a peer), so npm installed a nested React 17 under it; its
+  `react/jsx-runtime` produced React-17 elements that React 19 rejects. (Confirmed by
+  temporarily removing the nested copy → all tests passed.)
+- **Fix (done):** added a package.json `overrides` block pinning `react`/`react-dom` to
+  `^19.2.0`, so no nested copy is installed. Also added `resolve.dedupe: ['react',
+  'react-dom']` to both `vite.config.ts` and `vitest.config.ts` as belt-and-suspenders.
+- **Re-enabled tests:** tree "highlights the matching search term with a `<mark>`" (10/10)
+  and data-table "marks the appropriate text in a cell" HighlightCell test.

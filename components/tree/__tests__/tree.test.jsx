@@ -185,10 +185,7 @@ describe('Tree', () => {
 	});
 
 	describe('Search term is highlighted', () => {
-		it.skip('item calls itemClicked - React version incompatibility', () => {
-			// NOTE: Skipping due to React version error in test
-			// "A React Element from an older version of React was rendered"
-			// The searchTerm highlighting feature may need component investigation
+		it('highlights the matching search term with a <mark>', () => {
 			const { container } = render(
 				<DefaultExample log={() => {}} searchTerm="fruit" />
 			);

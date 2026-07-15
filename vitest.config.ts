@@ -29,6 +29,11 @@ export default defineConfig({
     },
   },
   resolve: {
+    // Force a single copy of React/ReactDOM. `react-highlighter-ts` declares
+    // `react@^17` as a hard dependency (not a peer). A package.json `overrides`
+    // entry now forces it onto the root React 19 (no nested copy), and deduping
+    // keeps a single React instance regardless.
+    dedupe: ['react', 'react-dom'],
     alias: {
       '~': path.resolve(__dirname, './'),
       '@components': path.resolve(__dirname, './components'),

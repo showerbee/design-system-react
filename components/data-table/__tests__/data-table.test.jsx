@@ -731,10 +731,7 @@ describe('DataTable', () => {
 	});
 
 	describe('w/ HighlightCell', () => {
-		// NOTE: HighlightCell test is skipped due to React version compatibility issue in the test environment.
-		// The component renders a React Element that triggers "older version of React" error in vitest/jsdom.
-		// This appears to be a test environment issue rather than a component bug.
-		it.skip('marks the appropriate text in a cell', () => {
+		it('marks the appropriate text in a cell', () => {
 			const { container } = renderTable(
 				<DataTable {...defaultProps} search="Cloud">
 					{columns.map((columnProps) => (
