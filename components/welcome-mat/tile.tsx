@@ -3,8 +3,7 @@
 
 // Implements the [Welcome Mat Tile design pattern](https://lightningdesignsystem.com/components/welcome-mat/) in React.
 // Based on SLDS v2.4.0
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import Icon from '../icon';
@@ -14,59 +13,56 @@ import generateId from '../../utilities/generate-id';
 
 const displayName = WELCOME_MAT_TILE;
 
-const propTypes = {
+export type WelcomeMatTileVariant =
+	| 'steps'
+	| 'info-only'
+	| 'splash'
+	| 'trailhead-connected';
+
+export interface WelcomeMatTileProps {
 	/**
 	 * **Assistive text for accessibility.**
 	 * This object is merged with the default props object on every render.
-	 * * `completeIcon`: Text that is visually hidden but read aloud by screenreaders to tell the user what the complete icon means.
+	 * * `completedIcon`: Text that is visually hidden but read aloud by screenreaders to tell the user what the complete icon means.
 	 */
-	assistiveText: PropTypes.shape({
-		completedIcon: PropTypes.string,
-	}),
+	assistiveText?: {
+		completedIcon?: string;
+	};
 	/**
 	 * CSS class names to be added to the container element. `array`, `object`, or `string` are accepted.
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
-	/**
-	 * HTML id for component.
-	 */
-	id: PropTypes.string,
-	/**
-	 * Title for the tile component.
-	 */
-	title: PropTypes.string,
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * Description for the tile component.
 	 */
-	description: PropTypes.string,
+	description?: string;
 	/**
 	 * Href for the tile link
 	 */
-	href: PropTypes.string,
+	href?: string;
 	/**
 	 * Icon for the tile
 	 */
-	icon: PropTypes.node,
+	icon?: ReactNode;
+	/**
+	 * HTML id for component.
+	 */
+	id?: string;
 	/**
 	 * Whether the tile is completed
 	 */
-	isComplete: PropTypes.bool,
+	isComplete?: boolean;
+	/**
+	 * Title for the tile component.
+	 */
+	title?: string;
 	/**
 	 * Variant of the Welcome Mat Tile
 	 */
-	variant: PropTypes.oneOf([
-		'steps',
-		'info-only',
-		'splash',
-		'trailhead-connected',
-	]),
-};
+	variant?: WelcomeMatTileVariant;
+}
 
-const defaultProps = {
+const defaultProps: Partial<WelcomeMatTileProps> = {
 	assistiveText: {
 		completedIcon: 'Completed',
 	},
@@ -77,8 +73,14 @@ const defaultProps = {
 /**
  * Tile component item represents a tile in a Welcome Mat
  */
-class Tile extends React.Component {
-	constructor(props) {
+class Tile extends React.Component<WelcomeMatTileProps> {
+	static displayName = displayName;
+
+	static defaultProps = defaultProps;
+
+	generatedId: string;
+
+	constructor(props: WelcomeMatTileProps) {
 		super(props);
 
 		this.generatedId = generateId();
@@ -143,7 +145,7 @@ class Tile extends React.Component {
 					this.props.isComplete && this.props.variant !== 'info-only'
 						? 'slds-welcome-mat__tile_complete'
 						: null,
-					this.props.className
+					this.props.className as string
 				)}
 			>
 				{this.props.variant === 'info-only' ? (
@@ -160,9 +162,5 @@ class Tile extends React.Component {
 		);
 	}
 }
-
-Tile.displayName = displayName;
-Tile.propTypes = propTypes;
-Tile.defaultProps = defaultProps;
 
 export default Tile;
