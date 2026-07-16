@@ -1,11 +1,16 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import PropTypes from 'prop-types';
-
 export const DISPLAY_NAME = 'SLDSSplitViewListItemContent';
 
-const propTypes = {
+export interface SplitViewListItem {
+	label?: string;
+	topRightText?: string;
+	bottomLeftText?: string;
+	bottomRightText?: string;
+}
+
+export interface SplitViewListItemContentProps {
 	/**
 	 * **Item to be displayed**
 	 * * `label`: The main label displayed on the top left.
@@ -13,15 +18,12 @@ const propTypes = {
 	 * * `bottomLeftText`: The text displayed on the bottom left.
 	 * * `bottomRightText`: The text displayed on the bottom right.
 	 */
-	item: PropTypes.shape({
-		label: PropTypes.string,
-		topRightText: PropTypes.string,
-		bottomLeftText: PropTypes.string,
-		bottomRightText: PropTypes.string,
-	}),
-};
+	item?: SplitViewListItem;
+}
 
-const SplitViewListItemContent = ({ item }) => (
+const SplitViewListItemContent = ({
+	item = {},
+}: SplitViewListItemContentProps) => (
 	<div>
 		<div className="slds-grid slds-wrap">
 			<span
@@ -52,6 +54,5 @@ const SplitViewListItemContent = ({ item }) => (
 );
 
 SplitViewListItemContent.displayName = DISPLAY_NAME;
-SplitViewListItemContent.propTypes = propTypes;
 
 export default SplitViewListItemContent;

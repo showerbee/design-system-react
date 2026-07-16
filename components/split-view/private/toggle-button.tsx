@@ -1,46 +1,44 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import PropTypes from 'prop-types';
+import { type MouseEvent } from 'react';
 import classNames from 'classnames';
 import Button from '../../button';
+import { type SplitViewAssistiveText } from '../index';
 
 export const DISPLAY_NAME = 'SLDSSplitViewToggleButton';
 export const TOGGLE_BUTTON_WIDTH = '0.75rem';
 
-const propsTypes = {
+export interface ToggleButtonProps {
+	/**
+	 * Unique html id placed on the button for aria-controls
+	 */
+	ariaControls: string;
 	/**
 	 * **Assistive text for accessibility**
 	 * * `toggleButtonOpen`: The button used to open the split view.
 	 * * `toggleButtonClose`: The button used to close the split view.
 	 */
-	assistiveText: PropTypes.shape({
-		toggleButtonOpen: PropTypes.string.isRequired,
-		toggleButtonClose: PropTypes.string.isRequired,
-	}),
-	/**
-	 * Unique html id placed on the button for aria-controls
-	 */
-	ariaControls: PropTypes.string.isRequired,
-	/**
-	 * Determines if the panel is open
-	 */
-	isOpen: PropTypes.bool.isRequired,
+	assistiveText?: SplitViewAssistiveText;
 	/**
 	 * **Event Callbacks**
 	 * * `onClick`: Called when the button is clicked.
 	 */
-	events: PropTypes.shape({
-		onClick: PropTypes.func.isRequired,
-	}),
-};
+	events: {
+		onClick: (event: MouseEvent<HTMLButtonElement>) => void;
+	};
+	/**
+	 * Determines if the panel is open
+	 */
+	isOpen: boolean;
+}
 
 const SplitViewToggleButton = ({
 	isOpen,
-	assistiveText,
+	assistiveText = {},
 	ariaControls,
 	events,
-}) => {
+}: ToggleButtonProps) => {
 	const toggleAssistiveText = isOpen
 		? assistiveText.toggleButtonOpen
 		: assistiveText.toggleButtonClose;
@@ -65,6 +63,5 @@ const SplitViewToggleButton = ({
 };
 
 SplitViewToggleButton.displayName = DISPLAY_NAME;
-SplitViewToggleButton.propTypes = propsTypes;
 
 export default SplitViewToggleButton;
