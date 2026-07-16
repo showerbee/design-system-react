@@ -2,8 +2,7 @@
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
 // ### React
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type FocusEvent, type MouseEvent } from 'react';
 
 // ### classNames
 // [github.com/JedWatson/classnames](https://github.com/JedWatson/classnames)
@@ -12,20 +11,76 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import { CAROUSEL_INDICATORS } from '../../../utilities/constants';
+import { type CarouselItemData } from '../index';
+
+export interface CarouselIndicatorsProps {
+	/**
+	 * Carousel HTML ID
+	 */
+	carouselId?: string;
+	/**
+	 * CSS classes that are applied to the component
+	 */
+	className?: string | string[] | Record<string, boolean>;
+	/**
+	 * Selected indicator
+	 */
+	currentIndex?: number;
+	/**
+	 * Function to generate the panel HTML `id`.
+	 */
+	getPanelId?: (params: { carouselId: string; itemId: string }) => string;
+	/**
+	 * Passed from carousel parent state, dictates if indicator currently has focus
+	 */
+	hasFocus?: boolean;
+	/**
+	 * Array of objects with shape, needed for building a carousel items
+	 */
+	items?: CarouselItemData[];
+	/**
+	 * Number of items to be displayed at a time in the carousel
+	 */
+	itemsPerPanel?: number;
+	/**
+	 * Number of indicators to be displayed (corresponds to the number of panels in the carousel)
+	 */
+	noOfIndicators: number;
+	/**
+	 * Fires on indicator blur, allows parent carousel to adjust indicatorsHaveFocus state accordingly
+	 */
+	onBlur?: () => void;
+	/**
+	 * Triggered when the indicator is clicked.
+	 */
+	onClick?: (event: MouseEvent, panel: number) => void;
+	/**
+	 * Fires on indicator focus, allows parent carousel to adjust indicatorsHaveFocus state accordingly
+	 */
+	onFocus?: (event: FocusEvent) => void;
+}
 
 /**
  * CarouselIndicators is used to display the list of indicators associated to the number of panels
  * a carousel has
  */
-class CarouselIndicators extends React.Component {
+class CarouselIndicators extends React.Component<CarouselIndicatorsProps> {
+	static displayName = CAROUSEL_INDICATORS;
+
+	static defaultProps: Partial<CarouselIndicatorsProps> = {
+		currentIndex: 0,
+	};
+
+	indicators: Array<HTMLAnchorElement | null> = [];
+
 	componentDidUpdate() {
-		if (this.props.hasFocus && this[`indicator${this.props.currentIndex}`]) {
-			this[`indicator${this.props.currentIndex}`].focus();
+		if (this.props.hasFocus && this.indicators[this.props.currentIndex ?? 0]) {
+			this.indicators[this.props.currentIndex ?? 0]?.focus();
 		}
 	}
 
-	onFocus = (event) => {
-		this[`indicator${this.props.currentIndex}`].focus();
+	onFocus = (event: FocusEvent) => {
+		this.indicators[this.props.currentIndex ?? 0]?.focus();
 		if (this.props.onFocus) {
 			this.props.onFocus(event);
 		}
@@ -56,12 +111,12 @@ class CarouselIndicators extends React.Component {
 						// eslint-disable-next-line prefer-destructuring
 						id = props.items[index].id;
 
-						const startItemIndex = index * props.itemsPerPanel;
+						const startItemIndex = index * (props.itemsPerPanel ?? 0);
 						let autoIndicatorText = '';
 
 						for (
 							let i = startItemIndex;
-							i < startItemIndex + props.itemsPerPanel;
+							i < startItemIndex + (props.itemsPerPanel ?? 0);
 							i += 1
 						) {
 							if (props.items[i] && props.items[i].heading) {
@@ -87,20 +142,20 @@ class CarouselIndicators extends React.Component {
 						>
 							<a
 								ref={(component) => {
-									this[`indicator${index}`] = component;
+									this.indicators[index] = component;
 								}}
 								id={`indicator-id-${props.carouselId}-${index}`}
 								className={indicatorActionClassName}
 								role="tab"
-								tabIndex={isSelectedPanel ? '0' : '-1'}
+								tabIndex={isSelectedPanel ? 0 : -1}
 								aria-selected={isSelectedPanel}
-								aria-controls={props.getPanelId({
+								aria-controls={props.getPanelId?.({
 									carouselId: props.carouselId,
 									itemId: id,
-								})}
+								} as { carouselId: string; itemId: string })}
 								title={title}
 								onBlur={props.onBlur}
-								onClick={(event) => props.onClick(event, index)}
+								onClick={(event) => props.onClick?.(event, index)}
 								onFocus={this.onFocus}
 							>
 								<span className="slds-assistive-text">{assistiveText}</span>
@@ -112,59 +167,5 @@ class CarouselIndicators extends React.Component {
 		);
 	}
 }
-
-CarouselIndicators.displayName = CAROUSEL_INDICATORS;
-
-CarouselIndicators.defaultProps = {
-	currentIndex: 0,
-};
-
-// ### Prop Types
-CarouselIndicators.propTypes = {
-	/**
-	 * Carousel HTML ID
-	 */
-	carouselId: PropTypes.string,
-	/**
-	 * CSS classes that are applied to the component
-	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
-	/**
-	 * Selected indicator
-	 */
-	currentIndex: PropTypes.number,
-	/**
-	 * Passed from carousel parent state, dictates if indicator currently has focus
-	 */
-	hasFocus: PropTypes.bool,
-	/**
-	 * Array of objects with shape, needed for building a carousel items
-	 */
-	items: PropTypes.array,
-	/**
-	 * Number of items to be displayed at a time in the carousel
-	 */
-	itemsPerPanel: PropTypes.number,
-	/**
-	 * Number of indicators to be displayed (corresponds to the number of panels in the carousel)
-	 */
-	noOfIndicators: PropTypes.number.isRequired,
-	/**
-	 * Fires on indicator blur, allows parent carousel to adjust indicatorsHaveFocus state accordingly
-	 */
-	onBlur: PropTypes.func,
-	/**
-	 * Triggered when the indicator is clicked.
-	 */
-	onClick: PropTypes.func,
-	/**
-	 * Fires on indicator focus, allows parent carousel to adjust indicatorsHaveFocus state accordingly
-	 */
-	onFocus: PropTypes.func,
-};
 
 export default CarouselIndicators;

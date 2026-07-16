@@ -2,9 +2,28 @@
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
 // ### React
-import PropTypes from 'prop-types';
+import { type MouseEvent } from 'react';
 import Button from '../../../components/button';
 import { CAROUSEL_AUTOPLAY_BUTTON } from '../../../utilities/constants';
+
+export interface AutoplayButtonProps {
+	/**
+	 * Description of the start/pause autoplay button for screen-readers.
+	 */
+	assistiveText?: string;
+	/**
+	 * Indicates whether the autoplay button is disabled.
+	 */
+	isDisabled?: boolean;
+	/**
+	 * Indicates whether autoplay is enabled
+	 */
+	isAutoplayOn?: boolean;
+	/**
+	 * Triggered when the autoplay button is clicked.
+	 */
+	onClick?: (event: MouseEvent) => void;
+}
 
 /**
  *  AutoplayButton is used to start/pause the autoplay iteration of the carousel
@@ -14,7 +33,7 @@ const AutoplayButton = ({
 	isDisabled,
 	isAutoplayOn = false,
 	onClick,
-}) => (
+}: AutoplayButtonProps) => (
 	<span className="slds-carousel__autoplay" style={{ left: '66px' }}>
 		<Button
 			assistiveText={{ icon: assistiveText }}
@@ -30,21 +49,5 @@ const AutoplayButton = ({
 	</span>
 );
 AutoplayButton.displayName = CAROUSEL_AUTOPLAY_BUTTON;
-
-// ### Prop Types
-AutoplayButton.propTypes = {
-	/**
-	 * Description of the start/pause autoplay button for screen-readers.
-	 */
-	assistiveText: PropTypes.string,
-	/**
-	 * Indicates whether autoplay is enabled
-	 */
-	isAutoplayOn: PropTypes.bool,
-	/**
-	 * Triggered when the autoplay button is clicked.
-	 */
-	onClick: PropTypes.func,
-};
 
 export default AutoplayButton;
