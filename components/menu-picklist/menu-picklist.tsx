@@ -18,10 +18,14 @@ import classNames from 'classnames';
 import checkProps from './check-props';
 import Dialog from '../utilities/dialog';
 import Icon from '../icon';
-// @ts-expect-error - Module declaration doesn't match relative import
-import List from '../utilities/menu-list';
-// @ts-expect-error - Module declaration doesn't match relative import
+import BaseList from '../utilities/menu-list';
 import ListItemLabel from '../utilities/menu-list/item-label';
+
+// The menu-list `List` accepts additional legacy consumer props (`onCancel`) and
+// is passed a callback `ref` typed against the DOM element by historical callers.
+// Alias to a permissive type here rather than widen the public MenuListProps.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const List = BaseList as unknown as React.ComponentType<any>;
 // @ts-expect-error - Module declaration doesn't match relative import
 import Pill from '../utilities/pill';
 

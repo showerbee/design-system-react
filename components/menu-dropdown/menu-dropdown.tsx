@@ -26,13 +26,15 @@ import isFunction from 'lodash.isfunction';
 import Dialog from '../utilities/dialog';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - Legacy JS module
-import List from '../utilities/menu-list';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - Legacy JS module
+import BaseList from '../utilities/menu-list';
 import ListItem from '../utilities/menu-list/item';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - Legacy JS module
 import ListItemLabel from '../utilities/menu-list/item-label';
+
+// The menu-list `List` accepts additional legacy consumer props (`onCancel`) and
+// is passed a callback `ref` typed against the DOM element by historical callers.
+// Alias to a permissive type here rather than widen the public MenuListProps.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const List = BaseList as unknown as React.ComponentType<any>;
 
 // This is the default Dropdown Trigger, which expects one button as a child.
 import DefaultTrigger from './button-trigger';

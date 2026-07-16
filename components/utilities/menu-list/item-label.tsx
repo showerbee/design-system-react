@@ -6,15 +6,26 @@
 // ## Dependencies
 
 // ### React
-import PropTypes from 'prop-types';
+import { type ReactNode } from 'react';
 
 // ## Constants
 import { LIST_ITEM_LABEL } from '../../../utilities/constants';
 
+export interface ListItemLabelProps {
+	data?: Record<string, unknown>;
+	icon?: ReactNode;
+	index?: number;
+	inverted?: boolean;
+	isSelected?: boolean;
+	label?: string;
+	checkmark?: boolean;
+	value?: unknown;
+}
+
 /**
  * Component description.
  */
-const ListItemLabel = ({ label = '', icon }) => (
+const ListItemLabel = ({ label = '', icon }: ListItemLabelProps) => (
 	<span className="slds-truncate" title={label}>
 		{icon}
 		{label}
@@ -22,15 +33,5 @@ const ListItemLabel = ({ label = '', icon }) => (
 );
 
 ListItemLabel.displayName = LIST_ITEM_LABEL;
-
-ListItemLabel.propTypes = {
-	data: PropTypes.object,
-	icon: PropTypes.node,
-	index: PropTypes.number,
-	inverted: PropTypes.bool,
-	isSelected: PropTypes.bool,
-	label: PropTypes.string,
-	value: PropTypes.any,
-};
 
 export default ListItemLabel;

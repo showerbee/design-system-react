@@ -8,9 +8,7 @@
 // ## Dependencies
 
 // ### React
-import React from 'react';
-
-import PropTypes from 'prop-types';
+import React, { type ComponentType, type ReactNode } from 'react';
 
 // ### classNames
 import classNames from 'classnames';
@@ -19,7 +17,7 @@ import classNames from 'classnames';
 import Icon from '../../icon';
 
 // ## Children
-import ListItemLabelRenderer from './item-label';
+import ListItemLabelRenderer, { type ListItemLabelProps } from './item-label';
 
 // ### Event Helpers
 import EventUtil from '../../../utilities/event';
@@ -27,55 +25,51 @@ import EventUtil from '../../../utilities/event';
 // ## Constants
 import { LIST_ITEM } from '../../../utilities/constants';
 
+interface MenuListIconConfig {
+	category?: string;
+	name?: string;
+}
+
+export interface ListItemProps {
+	'aria-disabled'?: boolean;
+	className?: unknown[] | Record<string, unknown> | string;
+	checkmark?: boolean;
+	data?: Record<string, unknown>;
+	disabled?: boolean;
+	divider?: 'top' | 'bottom';
+	groupedBy?: string;
+	href?: string;
+	id: string;
+	index: number;
+	inverted?: boolean;
+	isSelected?: boolean;
+	isCheckmarkVariant?: boolean;
+	label?: string;
+	labelRenderer?: ComponentType<ListItemLabelProps>;
+	leftIcon?: MenuListIconConfig;
+	/**
+	 * Callback ref that receives the root `<li>` DOM node (or `null` on
+	 * unmount). Used by parents that need the list item's DOM element for
+	 * keyboard focus/scroll management. A DOM node is forwarded here rather
+	 * than attaching a `ref` to this class component, which would yield the
+	 * component instance instead of an element.
+	 */
+	nodeRef?: (node: HTMLLIElement | null) => void;
+	onSelect: (index: number) => void;
+	rightIcon?: MenuListIconConfig;
+	tooltipContent?: ReactNode | string;
+	tooltipTemplate?: React.ReactElement;
+	type?: string;
+	value?: unknown;
+}
+
 /**
  * Component description.
  */
-class ListItem extends React.Component {
+class ListItem extends React.Component<ListItemProps> {
 	static displayName = LIST_ITEM;
 
-	static propTypes = {
-		'aria-disabled': PropTypes.bool,
-		className: PropTypes.oneOfType([
-			PropTypes.array,
-			PropTypes.object,
-			PropTypes.string,
-		]),
-		checkmark: PropTypes.bool,
-		data: PropTypes.object,
-		disabled: PropTypes.bool,
-		divider: PropTypes.oneOf(['top', 'bottom']),
-		href: PropTypes.string,
-		id: PropTypes.string.isRequired,
-		index: PropTypes.number.isRequired,
-		inverted: PropTypes.bool,
-		isSelected: PropTypes.bool,
-		isCheckmarkVariant: PropTypes.bool,
-		label: PropTypes.string,
-		labelRenderer: PropTypes.func,
-		leftIcon: PropTypes.shape({
-			category: PropTypes.string,
-			name: PropTypes.string,
-		}),
-		/**
-		 * Callback ref that receives the root `<li>` DOM node (or `null` on
-		 * unmount). Used by parents that need the list item's DOM element for
-		 * keyboard focus/scroll management. A DOM node is forwarded here rather
-		 * than attaching a `ref` to this class component, which would yield the
-		 * component instance instead of an element.
-		 */
-		nodeRef: PropTypes.func,
-		onSelect: PropTypes.func.isRequired,
-		rightIcon: PropTypes.shape({
-			category: PropTypes.string,
-			name: PropTypes.string,
-		}),
-		tooltipContent: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
-		tooltipTemplate: PropTypes.node,
-		type: PropTypes.string,
-		value: PropTypes.any,
-	};
-
-	static defaultProps = {
+	static defaultProps: Partial<ListItemProps> = {
 		data: {},
 		href: '#',
 		inverted: false,
@@ -86,7 +80,7 @@ class ListItem extends React.Component {
 	};
 
 	getLabel = () => {
-		const Label = this.props.labelRenderer;
+		const Label = this.props.labelRenderer ?? ListItemLabelRenderer;
 		return (
 			<Label
 				checkmark={this.props.checkmark}
@@ -101,9 +95,10 @@ class ListItem extends React.Component {
 		);
 	};
 
-	getIcon = (position) => {
+	getIcon = (position: 'left' | 'right') => {
 		const classnames = ['slds-icon-text-default'];
-		let iconProps = this.props[`${position}Icon`];
+		let iconProps: MenuListIconConfig | undefined =
+			position === 'left' ? this.props.leftIcon : this.props.rightIcon;
 
 		if (position === 'left') {
 			if (this.props.isCheckmarkVariant) {
@@ -120,20 +115,21 @@ class ListItem extends React.Component {
 		}
 
 		if (iconProps) {
-			return (
-				<Icon
-					className={classNames(classnames)}
-					position={position}
-					size="x-small"
-					{...iconProps}
-				/>
-			);
+			// `position` is not part of Icon's public props but is preserved for
+			// backwards-compatible runtime behavior; spread through a permissive cast.
+			const iconElementProps = {
+				className: classNames(classnames),
+				position,
+				size: 'x-small',
+				...iconProps,
+			} as Record<string, unknown>;
+			return <Icon {...iconElementProps} />;
 		}
 
 		return null;
 	};
 
-	handleClick = (event) => {
+	handleClick = (event: React.MouseEvent) => {
 		if (
 			this.props.type !== 'link' ||
 			this.props.href === 'javascript:void(0);' || // eslint-disable-line no-script-url
@@ -147,7 +143,7 @@ class ListItem extends React.Component {
 		}
 	};
 
-	handleMouseDown = (event) => {
+	handleMouseDown = (event: React.MouseEvent) => {
 		EventUtil.trapImmediate(event);
 	};
 
@@ -197,7 +193,7 @@ class ListItem extends React.Component {
 						data-index={this.props.index}
 						onClick={this.handleClick}
 						role={this.props.checkmark ? 'menuitemcheckbox' : 'menuitem'}
-						tabIndex="-1"
+						tabIndex={-1}
 					>
 						{this.props.groupedBy && (
 							<span className="slds-assistive-text">{`-${this.props.groupedBy}`}</span>
@@ -208,14 +204,18 @@ class ListItem extends React.Component {
 				);
 
 				if (this.props.tooltipContent && this.props.tooltipTemplate) {
-					const { ...tooltipTemplateProps } = this.props.tooltipTemplate.props;
+					const { ...tooltipTemplateProps } = this.props.tooltipTemplate
+						.props as Record<string, unknown>;
 					const tooltipProps = {
 						...tooltipTemplateProps,
 						content: this.props.tooltipContent,
 						id: `${this.props.id}-tooltip`,
 						triggerStyle: {
 							width: '100%',
-							...(tooltipTemplateProps.triggerStyle || {}),
+							...((tooltipTemplateProps.triggerStyle as Record<
+								string,
+								unknown
+							>) || {}),
 						},
 					};
 					itemContents = React.cloneElement(
@@ -231,7 +231,9 @@ class ListItem extends React.Component {
 					<li
 						ref={this.props.nodeRef}
 						aria-selected={
-							this.props.checkmark === null ? this.props.isSelected : null
+							this.props.checkmark === null
+								? this.props.isSelected
+								: undefined
 						}
 						className={classNames(
 							'slds-dropdown__item',
