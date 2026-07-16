@@ -18,7 +18,6 @@ import Button from '../button';
 import Input from '../input';
 // @ts-expect-error - Tabs module declaration doesn't match relative import
 import Tabs from '../tabs';
-// @ts-expect-error - TabsPanel module declaration doesn't match relative import
 import TabsPanel from '../tabs/panel';
 import Popover from '../popover';
 
@@ -472,7 +471,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 		if (variant !== 'base' && variant !== 'swatches') return null;
 
 		return (
-			<TabsPanel label={labels.swatchTab}>
+			<TabsPanel label={labels.swatchTab ?? ""}>
 				<SwatchPicker
 					color={workingColor}
 					labels={labels}
@@ -487,7 +486,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 		if (variant !== 'base' && variant !== 'custom') return null;
 
 		return (
-			<TabsPanel label={labels.customTab}>
+			<TabsPanel label={labels.customTab ?? ""}>
 				<CustomColor
 					assistiveText={assistiveText}
 					id={componentId}
