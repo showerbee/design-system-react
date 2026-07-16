@@ -34,7 +34,9 @@ export interface TabChildProps {
 	label: ReactNode;
 	disabled?: boolean;
 	hasError?: boolean;
-	assistiveText?: string;
+	assistiveText?: {
+		withErrorIcon?: string;
+	};
 	children?: ReactNode;
 	key?: string | number;
 }
