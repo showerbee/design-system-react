@@ -1,51 +1,75 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import { Component, type ReactNode } from 'react';
 
 import classNames from 'classnames';
-import Button from '../button';
+import Button, { type ButtonIconSize } from '../button';
 import Icon from '../icon';
+import type { IconCategory } from '../../types/common';
 import checkProps from './check-props';
 
 const displayName = 'Notification';
-const propTypes = {
-	iconCategory: PropTypes.string,
+
+export type NotificationTheme = 'success' | 'warning' | 'error' | 'offline';
+export type NotificationVariant = 'alert' | 'toast';
+
+export interface NotificationProps {
+	/**
+	 * Category of the icon. Defaults to `'utility'`.
+	 */
+	iconCategory?: IconCategory;
 	/**
 	 * Custom classes applied to Notification element.
 	 */
-	className: PropTypes.string,
+	className?: string;
 	/**
 	 * Message for Notification.
 	 */
-	content: PropTypes.node.isRequired,
+	content: ReactNode;
 	/**
 	 * If true, close button appears for users to dismiss Notification.
 	 */
-	dismissible: PropTypes.bool,
+	dismissible?: boolean;
 	/**
 	 * If duration exists, the Notification will disappear after that amount of time.
 	 */
-	duration: PropTypes.number,
+	duration?: number;
 	/**
 	 * Name of the icon. Visit <a href='http://www.lightningdesignsystem.com/resources/icons'>Lighning Design System Icons</a> to reference icon names.
 	 */
-	iconName: PropTypes.string,
-	isOpen: PropTypes.bool.isRequired,
-	onDismiss: PropTypes.func,
+	iconName?: string;
+	/**
+	 * Controls the open state of the Notification.
+	 */
+	isOpen: boolean;
+	/**
+	 * Callback invoked when the Notification is dismissed.
+	 */
+	onDismiss?: () => void;
+	/**
+	 * Suppresses the deprecation warning logged in development.
+	 */
+	silenceDeprecationWarning?: boolean;
 	/**
 	 * Styling for Notification background.
 	 */
-	texture: PropTypes.bool,
+	texture?: boolean;
 	/**
 	 * Styling for Notification background color. Please reference <a href='http://www.lightningdesignsystem.com/components/utilities/themes/#color'>Lighning Design System Themes > Color</a>.
 	 */
-	theme: PropTypes.oneOf(['success', 'warning', 'error', 'offline']),
-	variant: PropTypes.oneOf(['alert', 'toast']).isRequired,
-};
+	theme?: NotificationTheme;
+	/**
+	 * Notification variant, either an inline `alert` or a `toast`.
+	 */
+	variant: NotificationVariant;
+}
 
-const defaultProps = {
+interface NotificationState {
+	returnFocusTo?: HTMLElement | null;
+}
+
+const defaultProps: Partial<NotificationProps> = {
 	iconCategory: 'utility',
 	dismissible: true,
 	isOpen: false,
@@ -57,15 +81,23 @@ const defaultProps = {
  * The Notification component is the Alert and Toast variants of the Lightning Design System Notification component. For prompt notifications, use the <a href='#/modal'>Modal</a> component with <code>prompt={true}</code>.
  * The Notification opens from a state change outside of the component itself (pass this state to the <code>isOpen</code> prop).
  */
-class Notification extends React.Component {
-	constructor(props) {
+class Notification extends Component<NotificationProps, NotificationState> {
+	static displayName = displayName;
+
+	static defaultProps = defaultProps;
+
+	timeout: ReturnType<typeof setTimeout> | null;
+
+	dismissBtnRef?: HTMLButtonElement | null;
+
+	constructor(props: NotificationProps) {
 		super(props);
 		this.state = {};
 		this.timeout = null;
 	}
 
 	componentDidMount() {
-		checkProps('Notification', this.props);
+		checkProps('Notification', this.props as unknown as Record<string, unknown>);
 
 		if (this.props.duration) {
 			this.timeout = setTimeout(() => {
@@ -75,7 +107,7 @@ class Notification extends React.Component {
 	}
 
 	// eslint-disable-next-line camelcase, react/sort-comp
-	UNSAFE_componentWillReceiveProps(nextProps) {
+	UNSAFE_componentWillReceiveProps(nextProps: NotificationProps) {
 		if (nextProps.duration) {
 			if (this.timeout) {
 				clearTimeout(this.timeout);
@@ -87,11 +119,11 @@ class Notification extends React.Component {
 			}
 		}
 		if (nextProps.isOpen !== this.props.isOpen) {
-			this.setState({ returnFocusTo: document.activeElement });
+			this.setState({ returnFocusTo: document.activeElement as HTMLElement });
 		}
 	}
 
-	componentDidUpdate(prevProps) {
+	componentDidUpdate(prevProps: NotificationProps) {
 		if (prevProps.isOpen !== this.props.isOpen) {
 			const btn = this.dismissBtnRef;
 			if (btn) btn.focus();
@@ -139,7 +171,7 @@ class Notification extends React.Component {
 
 	renderClose() {
 		if (this.props.dismissible) {
-			let size = null;
+			let size: ButtonIconSize | undefined;
 			if (this.props.variant === 'toast') size = 'large';
 
 			// i18n
@@ -224,7 +256,7 @@ class Notification extends React.Component {
 					: { width: '100%' };
 		}
 
-		const alertStyles = !this.props.isOpen ? { display: 'none' } : null;
+		const alertStyles = !this.props.isOpen ? { display: 'none' } : undefined;
 		return (
 			<div className="slds-notify-container" style={styles}>
 				<div
@@ -239,9 +271,5 @@ class Notification extends React.Component {
 		);
 	}
 }
-
-Notification.displayName = displayName;
-Notification.propTypes = propTypes;
-Notification.defaultProps = defaultProps;
 
 export default Notification;

@@ -6,10 +6,19 @@
 // This function will deliver a warning message to the browser console about the component being a deprecated component.
 import lowPriorityWarning from './low-priority-warning';
 
-let isPrototype = function isPrototypeFunction() {};
+type DeprecationProps = { silenceDeprecationWarning?: boolean } & Record<
+	string,
+	unknown
+>;
+
+let isPrototype: (
+	control: string,
+	props: DeprecationProps,
+	comment?: string
+) => void = function isPrototypeFunction() {};
 
 if (process.env.NODE_ENV !== 'production') {
-	const hasWarned = {};
+	const hasWarned: Record<string, boolean> = {};
 
 	isPrototype = function isPrototypeFunction(control, props, comment) {
 		const additionalComment = comment ? ` ${comment}` : '';
