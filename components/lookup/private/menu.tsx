@@ -3,44 +3,70 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ComponentType, type ReactNode } from 'react';
 import Item from './item';
 
 /* eslint-disable react/no-did-update-set-state */
 
 const displayName = 'Lookup-Menu';
-const propTypes = {
-	boldRegex: PropTypes.instanceOf(RegExp),
-	emptyMessage: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-	filterWith: PropTypes.func,
-	focusIndex: PropTypes.number,
-	getListLength: PropTypes.func,
-	iconCategory: PropTypes.string,
-	items: PropTypes.array,
-	label: PropTypes.string,
-	listLength: PropTypes.number,
-	searchTerm: PropTypes.string,
-	setFocus: PropTypes.func,
-};
-const defaultProps = {
-	emptyMessage: 'No matches found.',
-};
-class Menu extends React.Component {
-	constructor(props) {
+
+interface LookupMenuItemModel {
+	id?: string;
+	label?: ReactNode;
+	data?: { type?: string; subTitle?: ReactNode } & Record<string, unknown>;
+}
+
+export interface LookupMenuProps {
+	boldRegex?: RegExp;
+	emptyMessage?: string | React.ReactElement;
+	filter?: unknown;
+	filterWith?: (searchTerm: string | undefined, item: LookupMenuItemModel) => boolean;
+	focusIndex?: number;
+	footer?: ReactNode;
+	getListLength?: (length: number) => void;
+	header?: ReactNode;
+	iconCategory?: string;
+	iconInverse?: boolean;
+	iconName?: string;
+	items?: LookupMenuItemModel[];
+	label?: string;
+	listItemLabelRenderer?: ComponentType<Record<string, unknown>>;
+	listLength?: number;
+	onSelect?: (id: string | undefined, data: Record<string, unknown> | undefined) => void;
+	searchTerm?: string;
+	sectionDivider?: ReactNode;
+	sectionDividerRenderer?: ComponentType<Record<string, unknown>>;
+	setFocus?: (id: string | undefined) => void;
+}
+
+interface LookupMenuState {
+	filteredItems: LookupMenuItemModel[];
+}
+
+class Menu extends React.Component<LookupMenuProps, LookupMenuState> {
+	static displayName = displayName;
+
+	static defaultProps: Partial<LookupMenuProps> = {
+		emptyMessage: 'No matches found.',
+	};
+
+	listRef: HTMLUListElement | null = null;
+
+	constructor(props: LookupMenuProps) {
 		super(props);
 		this.state = { filteredItems: this.filteredItems() };
 	}
 
 	// Set filtered list length in parent to determine active indexes for aria-activedescendent
-	componentDidUpdate(prevProps) {
+	componentDidUpdate(prevProps: LookupMenuProps) {
 		// make an array of the children of the list but only count the actual items (but include section dividers)
-		const childFilter = (child) =>
+		const childFilter = (child: Element) =>
 			child.className.indexOf('js-slds-lookup__item') > -1 ||
 			child.className.indexOf('slds-lookup__divider') > -1;
-		const list = [].slice.call(this.listRef.children).filter(childFilter)
-			.length;
-		this.props.getListLength(list);
+		const list = [].slice
+			.call(this.listRef?.children ?? [])
+			.filter(childFilter).length;
+		this.props.getListLength?.(list);
 		if (
 			prevProps.items !== this.props.items ||
 			prevProps.filter !== this.props.filter ||
@@ -53,7 +79,7 @@ class Menu extends React.Component {
 		}
 	}
 
-	getFilteredItemForIndex(i) {
+	getFilteredItemForIndex(i: number) {
 		if (
 			i > -1 &&
 			this.state.filteredItems &&
@@ -64,13 +90,15 @@ class Menu extends React.Component {
 		return null;
 	}
 
-	filter(item) {
-		return this.props.filterWith(this.props.searchTerm, item);
+	filter(item: LookupMenuItemModel) {
+		return this.props.filterWith
+			? this.props.filterWith(this.props.searchTerm, item)
+			: true;
 	}
 
 	// eslint-disable-next-line class-methods-use-this
-	filterEmptySections(items) {
-		const result = [];
+	filterEmptySections(items: LookupMenuItemModel[]) {
+		const result: LookupMenuItemModel[] = [];
 		items.forEach((item, index) => {
 			if (item && item.data && item.data.type === 'section') {
 				if (index + 1 < items.length) {
@@ -87,11 +115,13 @@ class Menu extends React.Component {
 	}
 
 	filteredItems() {
-		return this.filterEmptySections(this.props.items.filter(this.filter, this));
+		return this.filterEmptySections(
+			(this.props.items ?? []).filter(this.filter, this)
+		);
 	}
 
 	// Scroll menu up/down when using mouse keys
-	handleItemFocus = (itemIndex, itemHeight) => {
+	handleItemFocus = (itemIndex: number, itemHeight: number) => {
 		if (this.listRef) {
 			this.listRef.scrollTop = itemIndex * itemHeight;
 		}
@@ -130,7 +160,7 @@ class Menu extends React.Component {
 			} else {
 				isActive = focusIndex === i;
 			}
-			if (component.data.type === 'section') {
+			if (component.data && component.data.type === 'section') {
 				if (this.props.sectionDividerRenderer) {
 					const SectionDivider = this.props.sectionDividerRenderer;
 					return (
@@ -144,17 +174,23 @@ class Menu extends React.Component {
 			}
 			return (
 				<Item
-					boldRegex={this.props.boldRegex}
 					data={component.data}
 					handleItemFocus={this.handleItemFocus}
-					iconCategory={this.props.iconCategory}
+					iconCategory={
+						this.props.iconCategory as
+							| React.ComponentProps<typeof Item>['iconCategory']
+					}
 					iconInverse={this.props.iconInverse}
 					iconName={this.props.iconName}
 					id={id}
 					index={i}
 					isActive={isActive}
 					key={id}
-					listItemLabelRenderer={this.props.listItemLabelRenderer}
+					listItemLabelRenderer={
+						this.props.listItemLabelRenderer as React.ComponentProps<
+							typeof Item
+						>['listItemLabelRenderer']
+					}
 					onSelect={this.props.onSelect}
 					searchTerm={this.props.searchTerm}
 					setFocus={this.props.setFocus}
@@ -190,9 +226,5 @@ class Menu extends React.Component {
 		);
 	}
 }
-
-Menu.displayName = displayName;
-Menu.propTypes = propTypes;
-Menu.defaultProps = defaultProps;
 
 export default Menu;
