@@ -4,7 +4,6 @@
 // Implements the [Files design pattern](https://lightningdesignsystem.com/components/files/) in React.
 // Based on SLDS v2.4.0
 import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import { FILES_MORE } from '../../utilities/constants';
@@ -12,49 +11,47 @@ import generateId from '../../utilities/generate-id';
 
 const displayName = FILES_MORE;
 
-const propTypes = {
+export interface MoreFilesAssistiveText {
+	count?: string;
+	image?: string;
+	link?: string;
+}
+
+export interface MoreFilesProps {
 	/**
 	 * **Assistive text for accessibility**
 	 *  * count - description for the more files count
 	 *  * image - description for the image
 	 *  * link - description for the more files link
 	 */
-	assistiveText: PropTypes.shape({
-		count: PropTypes.string,
-		image: PropTypes.string,
-		link: PropTypes.string,
-	}),
+	assistiveText?: MoreFilesAssistiveText;
 	/**
 	 * CSS class names to be added to the container element. `array`, `object`, or `string` are accepted.
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
-	/**
-	 * HTML id for component.
-	 */
-	id: PropTypes.string,
-	/**
-	 * Controls different cropping aspect ratios for the component
-	 */
-	crop: PropTypes.oneOf(['16-by-9', '4-by-3', '1-by-1']),
-	/**
-	 * Link to thumbnail image
-	 */
-	image: PropTypes.string,
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * Controls the number of additional files that is displayed
 	 */
-	count: PropTypes.string,
+	count?: string;
+	/**
+	 * Controls different cropping aspect ratios for the component
+	 */
+	crop?: '16-by-9' | '4-by-3' | '1-by-1';
 	/**
 	 * Href attribute for image
 	 */
-	href: PropTypes.string,
-};
+	href?: string;
+	/**
+	 * HTML id for component.
+	 */
+	id?: string;
+	/**
+	 * Link to thumbnail image
+	 */
+	image?: string;
+}
 
-const defaultProps = {
+const defaultProps: Partial<MoreFilesProps> = {
 	assistiveText: {
 		count: 'more files',
 		image: 'Show more files',
@@ -67,8 +64,14 @@ const defaultProps = {
 /**
  * MoreFiles is a component that represents a number of file contents uploaded as an attachment.
  */
-class MoreFiles extends React.Component {
-	constructor(props) {
+class MoreFiles extends React.Component<MoreFilesProps> {
+	static displayName = displayName;
+
+	static defaultProps = defaultProps;
+
+	generatedId: string;
+
+	constructor(props: MoreFilesProps) {
 		super(props);
 
 		this.generatedId = generateId();
@@ -86,7 +89,10 @@ class MoreFiles extends React.Component {
 
 		return (
 			<div
-				className={classNames(`slds-file slds-file_card`, this.props.className)}
+				className={classNames(
+					`slds-file slds-file_card`,
+					this.props.className as string
+				)}
 				id={this.getId()}
 			>
 				<figure>
@@ -125,9 +131,5 @@ class MoreFiles extends React.Component {
 		);
 	}
 }
-
-MoreFiles.displayName = displayName;
-MoreFiles.propTypes = propTypes;
-MoreFiles.defaultProps = defaultProps;
 
 export default MoreFiles;

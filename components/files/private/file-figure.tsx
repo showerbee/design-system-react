@@ -5,23 +5,50 @@
 
 // Implements the [FileFigure design pattern](https://www.lightningdesignsystem.com/components/files/) in React.
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactElement } from 'react';
 
 import { FILES_FIGURE } from '../../../utilities/constants';
 
 import Spinner from '../../spinner';
+
+export interface FileFigureAssistiveText {
+	image?: string;
+	link?: string;
+	loading?: string;
+}
+
+export interface FileFigureProps {
+	assistiveText?: FileFigureAssistiveText;
+	/**
+	 *  Icon for the file, shown when there is no image and it is not loading.
+	 */
+	icon?: ReactElement<{ size?: string | null }>;
+	/**
+	 *  Image/Figure for the file
+	 */
+	image?: string;
+	/**
+	 *  Whether the file figure is loading
+	 */
+	isLoading?: boolean;
+	/**
+	 *  Labels for the file figure component
+	 */
+	labels?: {
+		title?: string;
+	};
+}
 
 /**
  * A file can have a image, an icon or a loading animation as its thumbnail
  */
 const FileFigure = ({
 	isLoading = false,
-	assistiveText,
+	assistiveText = {},
 	image,
-	labels,
+	labels = {},
 	icon,
-}) => {
+}: FileFigureProps) => {
 	if (isLoading) {
 		return (
 			<React.Fragment>
@@ -50,34 +77,16 @@ const FileFigure = ({
 				className="slds-file__icon slds-icon_container"
 				title={labels.title}
 			>
-				{React.cloneElement(icon, {
-					size: null,
-				})}
+				{icon
+					? React.cloneElement(icon, {
+							size: null,
+						})
+					: null}
 			</span>
 		</React.Fragment>
 	);
 };
 
 FileFigure.displayName = FILES_FIGURE;
-
-FileFigure.propTypes = {
-	assistiveText: PropTypes.shape({
-		image: PropTypes.string,
-	}),
-	/**
-	 *  Whether the file figure is loading
-	 */
-	isLoading: PropTypes.bool,
-	/**
-	 *  Image/Figure for the file
-	 */
-	image: PropTypes.string,
-	/**
-	 *  Labels for the file figure component
-	 */
-	labels: PropTypes.shape({
-		title: PropTypes.string.isRequired,
-	}),
-};
 
 export default FileFigure;

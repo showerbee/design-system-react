@@ -3,8 +3,7 @@
 
 // Implements the [Files design pattern](https://lightningdesignsystem.com/components/files/) in React.
 // Based on SLDS v2.4.0
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactElement, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { FILES_FILE } from '../../utilities/constants';
@@ -15,7 +14,15 @@ import FileActions from './private/file-actions';
 
 const displayName = FILES_FILE;
 
-const propTypes = {
+export interface FileAssistiveText {
+	download?: string;
+	image?: string;
+	link?: string;
+	loading?: string;
+	moreActions?: string;
+}
+
+export interface FileProps {
 	/**
 	 * **Assistive text for accessibility**
 	 *  * download - description for the download button if present
@@ -24,75 +31,65 @@ const propTypes = {
 	 *  * loading - description for the loading spinner if present
 	 *  * moreActions - description for the more actions dropdown if present
 	 */
-	assistiveText: PropTypes.shape({
-		download: PropTypes.string,
-		image: PropTypes.string,
-		link: PropTypes.string,
-		loading: PropTypes.string,
-		moreActions: PropTypes.string,
-	}),
+	assistiveText?: FileAssistiveText;
 	/**
 	 * CSS class names to be added to the container element. `array`, `object`, or `string` are accepted.
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * Controls different cropping aspect ratios for the component
 	 */
-	crop: PropTypes.oneOf(['16-by-9', '4-by-3', '1-by-1']),
-	/**
-	 * HTML id for component.
-	 */
-	id: PropTypes.string,
-	/**
-	 * Action to be done on clicking download button; doesn't show download button if empty
-	 */
-	onClickDownload: PropTypes.func,
-	/**
-	 * Function that is called when image is clicked; can be used instead of href for more advanced event handling
-	 */
-	onClickImage: PropTypes.func,
-	/**
-	 * Dropdown for more actions button; doesn't show more actions button if empty
-	 */
-	moreActionsDropdown: PropTypes.node,
-	/**
-	 * Icon associated with the file. Accepts an Icon component
-	 */
-	icon: PropTypes.node,
+	crop?: '16-by-9' | '4-by-3' | '1-by-1';
 	/**
 	 * Icon to be shown in top left corner of File component. Accepts an Icon component
 	 */
-	externalIcon: PropTypes.node,
+	externalIcon?: ReactElement<{ containerClassName?: string }>;
 	/**
-	 * Link to thumbnail image
+	 *  Controls whether the file's title should be visible
 	 */
-	image: PropTypes.string,
-	/**
-	 * Controls whether file preview is loading
-	 */
-	isLoading: PropTypes.bool,
+	hasNoVisibleTitle?: boolean;
 	/**
 	 * Href attribute for image
 	 */
-	href: PropTypes.string,
+	href?: string;
+	/**
+	 * Icon associated with the file. Accepts an Icon component
+	 */
+	icon?: ReactElement<{ size?: string | null }>;
+	/**
+	 * HTML id for component.
+	 */
+	id?: string;
+	/**
+	 * Link to thumbnail image
+	 */
+	image?: string;
+	/**
+	 * Controls whether file preview is loading
+	 */
+	isLoading?: boolean;
 	/**
 	 * Labels for the File Component
 	 * * image - title for the file. Required.
 	 */
-	labels: PropTypes.shape({
-		title: PropTypes.string.isRequired,
-	}),
+	labels?: {
+		title?: string;
+	};
 	/**
-	 *  Controls whether the file's title should be visible
+	 * Dropdown for more actions button; doesn't show more actions button if empty
 	 */
-	hasNoVisibleTitle: PropTypes.bool,
-};
+	moreActionsDropdown?: ReactElement<Record<string, unknown>>;
+	/**
+	 * Action to be done on clicking download button; doesn't show download button if empty
+	 */
+	onClickDownload?: (event: React.MouseEvent) => void;
+	/**
+	 * Function that is called when image is clicked; can be used instead of href for more advanced event handling
+	 */
+	onClickImage?: (event: React.MouseEvent) => void;
+}
 
-const defaultProps = {
+const defaultProps: Partial<FileProps> = {
 	assistiveText: {
 		download: 'download',
 		link: 'Preview:',
@@ -104,11 +101,16 @@ const defaultProps = {
 	isLoading: false,
 	hasNoVisibleTitle: false,
 };
+
 /**
  * File is a component that represents content uploaded as an attachment.
  */
-class File extends React.Component {
-	static injectMoreActionsStyles() {
+class File extends React.Component<FileProps> {
+	static displayName = displayName;
+
+	static defaultProps = defaultProps;
+
+	static injectMoreActionsStyles(): ReactNode {
 		return (
 			<style>{`
 					.dsr-file__more-actions-dropdown  ul.dropdown__list li.slds-dropdown__item > a:before
@@ -121,7 +123,9 @@ class File extends React.Component {
 		);
 	}
 
-	constructor(props) {
+	generatedId: string;
+
+	constructor(props: FileProps) {
 		super(props);
 
 		this.generatedId = generateId();
@@ -134,7 +138,7 @@ class File extends React.Component {
 		return this.props.id || this.generatedId;
 	}
 
-	handleOnClickImage = (event) => {
+	handleOnClickImage = (event: React.MouseEvent) => {
 		if (this.props.href === '#') {
 			event.preventDefault();
 		}
@@ -157,7 +161,7 @@ class File extends React.Component {
 					'slds-file',
 					'slds-file_card',
 					!this.props.hasNoVisibleTitle ? 'slds-has-title' : null,
-					this.props.className
+					this.props.className as string
 				)}
 			>
 				<figure>
@@ -172,7 +176,7 @@ class File extends React.Component {
 						<FileFigure
 							assistiveText={assistiveText}
 							labels={{
-								title: this.props.labels.title,
+								title: this.props.labels?.title,
 							}}
 							isLoading={this.props.isLoading}
 							image={this.props.image}
@@ -185,15 +189,15 @@ class File extends React.Component {
 								{this.props.icon
 									? React.cloneElement(this.props.icon, {
 											size: 'x-small',
-									  })
+										})
 									: null}
 							</div>
 							<div className="slds-media__body">
 								<span
 									className="slds-file__text slds-truncate"
-									title={this.props.labels.title}
+									title={this.props.labels?.title}
 								>
-									{this.props.labels.title}
+									{this.props.labels?.title}
 								</span>
 							</div>
 						</figcaption>
@@ -217,9 +221,5 @@ class File extends React.Component {
 		);
 	}
 }
-
-File.displayName = displayName;
-File.propTypes = propTypes;
-File.defaultProps = defaultProps;
 
 export default File;
