@@ -1,26 +1,44 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-// ### React
-import PropTypes from 'prop-types';
+import { type ComponentType, type ReactNode } from 'react';
 
 // ### ReactHighlighter
-import { Highlight as ReactHighlighter } from 'react-highlighter-ts';
+// `react-highlighter-ts` ships React-17-era types that require props React 19
+// no longer models (e.g. `placeholder`, pointer-capture handlers). Alias to a
+// permissive component type so this wrapper compiles against React 19.
+import { Highlight } from 'react-highlighter-ts';
 
 // ## Constants
 import { HIGHLIGHTER } from '../../../utilities/constants';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ReactHighlighter = Highlight as unknown as ComponentType<any>;
+
+export interface HighlighterProps {
+	/**
+	 * The full string to display.
+	 */
+	children?: ReactNode;
+	className?: string;
+	/**
+	 * The string of text (or Regular Expression) to highlight.
+	 */
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	search?: any;
+}
+
 /**
  * A utility component that highlights occurrences of a particular pattern in its contents.
  */
-const Highlighter = (props) => {
+const Highlighter = (props: HighlighterProps) => {
 	if (props.search) {
 		let children;
 		if (typeof props.children === 'string') {
 			children = (
 				<ReactHighlighter
 					className={props.className}
-					matchClass={null}
+					matchClass=""
 					matchElement="mark"
 					search={props.search}
 					title={props.children}
@@ -29,7 +47,7 @@ const Highlighter = (props) => {
 				</ReactHighlighter>
 			);
 		} else {
-			const findString = (nodeArr) =>
+			const findString = (nodeArr: ReactNode[]) =>
 				nodeArr.map((element) => {
 					let newElement;
 					if (typeof element === 'string') {
@@ -37,7 +55,7 @@ const Highlighter = (props) => {
 							<ReactHighlighter
 								key={element}
 								className={props.className}
-								matchClass={null}
+								matchClass=""
 								matchElement="mark"
 								search={props.search}
 								title={element}
@@ -51,8 +69,10 @@ const Highlighter = (props) => {
 					return newElement;
 				});
 
-			if (props.children.props) {
-				const node = props.children.props.children;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const childElement = props.children as any;
+			if (childElement && childElement.props) {
+				const node = childElement.props.children;
 				children = node instanceof Array ? findString(node) : node;
 			}
 		}
@@ -73,23 +93,5 @@ const Highlighter = (props) => {
 
 // ### Display Name
 Highlighter.displayName = HIGHLIGHTER;
-
-// ### Prop Types
-Highlighter.propTypes = {
-	/**
-	 * The full string to display.
-	 */
-	children: PropTypes.oneOfType([
-		PropTypes.string,
-		PropTypes.number,
-		PropTypes.bool,
-		PropTypes.node,
-	]),
-	className: PropTypes.string,
-	/**
-	 * The string of text (or Regular Expression) to highlight.
-	 */
-	search: PropTypes.any,
-};
 
 export default Highlighter;

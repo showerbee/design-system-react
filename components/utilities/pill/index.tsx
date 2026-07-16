@@ -4,95 +4,106 @@
 /**
  * This Pill component should be used within a listbox and differs from the standalone Pill component which is typically used for actions (such as a link) and not form fields. This component should be used in conjuction with `PillContainer`.
  */
-import PropTypes from 'prop-types';
-
 import assign from 'lodash.assign';
 
 import KEYS from '../../../utilities/key-code';
 import mapKeyEventCallbacks from '../../../utilities/key-callbacks';
 import EventUtil from '../../../utilities/event';
 
-import SLDSPill from '../../../components/pill';
+import BaseSLDSPill from '../../../components/pill';
 
-const propTypes = {
+// The listbox Pill passes DOM attributes (`tabIndex`, `aria-selected`) and
+// legacy event shapes that the standalone `PillProps` interface does not model.
+// Alias to a permissive component type so this wrapper compiles.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const SLDSPill = BaseSLDSPill as unknown as React.ComponentType<any>;
+
+export interface PillAssistiveText {
+	remove?: string;
+}
+
+export interface PillLabels {
+	label?: string;
+	remove?: string;
+	removeTitle?: string;
+}
+
+export interface PillEvents {
+	onBlur?: (event: React.FocusEvent, data?: unknown) => void;
+	onClick?: (event: React.MouseEvent, data?: unknown) => void;
+	onFocus?: (event: React.FocusEvent, data?: unknown) => void;
+	onRequestFocus?: (event: unknown, data: { ref: unknown }) => void;
+	onRequestFocusOnNextPill?: (event: unknown, data: unknown) => void;
+	onRequestFocusOnPreviousPill?: (event: unknown, data: unknown) => void;
+	onRequestRemove?: (event: unknown, data: unknown) => void;
+}
+
+export interface PillProps {
 	/**
 	 * Pill is the actively focused pill within a pill container. This will request focus on the DOM node.
 	 */
-	active: PropTypes.bool,
+	active?: boolean;
 	/**
 	 * **Assistive text for accessibility**
-	 * This object is merged with the default props object on every render.
-	 * * `pressDeleteOrBackspace`: Informs user of keyboard keys to press in order to remove a pill
+	 * * `remove`: Informs user of keyboard keys to press in order to remove a pill
 	 */
-	assistiveText: PropTypes.shape({
-		remove: PropTypes.string,
-	}),
+	assistiveText?: PillAssistiveText;
 	/**
 	 * SLDSAvatar component to show on the left of the pill.
-	 * _Tested with Mocha framework._
 	 */
-	avatar: PropTypes.element,
+	avatar?: React.ReactElement;
 	/**
 	 * Applies the bare style to the component.
-	 * _Tested with Mocha framework._
 	 */
-	bare: PropTypes.bool,
-	/*
+	bare?: boolean;
+	/**
 	 * Pills are often used for selection of a type of entity such as days in a daypicker. This prop allows you to pass in data that will be passed back to the event handler.
 	 */
-	eventData: PropTypes.object,
-	/*
+	eventData?: object;
+	/**
 	 * Callbacks for various pill events such as click, focus, etc
 	 */
-	events: PropTypes.shape({
-		onClick: PropTypes.func,
-		onFocus: PropTypes.func,
-		onRequestFocus: PropTypes.func.isRequired,
-		onRequestFocusOnNextPill: PropTypes.func.isRequired,
-		onRequestFocusOnPreviousPill: PropTypes.func.isRequired,
-		onRequestRemove: PropTypes.func.isRequired,
-	}),
+	events?: PillEvents;
 	/**
 	 * Applies the error style to the component.
-	 * _Tested with Mocha framework._
 	 */
-	hasError: PropTypes.bool,
-	/*
+	hasError?: boolean;
+	/**
 	 * The icon next to the pill label.
 	 */
-	icon: PropTypes.element,
-	/*
+	icon?: React.ReactElement;
+	/**
 	 * Pill Label
 	 */
-	labels: PropTypes.shape({
-		label: PropTypes.string.isRequired,
-		removeTitle: PropTypes.string,
-	}),
-	/*
+	labels?: PillLabels;
+	/**
 	 * If true and is active pill in listbox, will trigger `events.onRequestFocus`
 	 */
-	requestFocus: PropTypes.bool,
-	/*
+	requestFocus?: boolean;
+	/**
 	 * Pill Title
 	 */
-	title: PropTypes.string,
-	/*
+	title?: string;
+	/**
 	 * Allows the user to tab to the node
 	 */
-	tabIndex: PropTypes.number,
-};
+	tabIndex?: number;
+}
 
-const defaultProps = {
-	assistiveText: PropTypes.shape({
+const defaultProps: Partial<PillProps> = {
+	assistiveText: {
 		remove: ', Press delete or backspace to remove',
-	}),
+	},
 	labels: {
 		remove: 'Remove',
 	},
 	events: {},
 };
 
-const handleKeyDown = (event, { events, data }) => {
+const handleKeyDown = (
+	event: React.KeyboardEvent,
+	{ events, data }: { events: PillEvents; data?: unknown }
+) => {
 	// Helper function that takes an object literal of callbacks that are triggered with a key event
 	mapKeyEventCallbacks(event, {
 		callbacks: {
@@ -100,25 +111,28 @@ const handleKeyDown = (event, { events, data }) => {
 			[KEYS.DELETE]: { callback: events.onRequestRemove, data },
 			[KEYS.LEFT]: {
 				callback: events.onRequestFocusOnPreviousPill,
-				data: { ...data, direction: 'previous' },
+				data: { ...(data as object), direction: 'previous' },
 			},
 			[KEYS.RIGHT]: {
 				callback: events.onRequestFocusOnNextPill,
-				data: { ...data, direction: 'next' },
+				data: { ...(data as object), direction: 'next' },
 			},
 		},
 	});
 };
 
-const handleClickRemove = (event, { events, data }) => {
+const handleClickRemove = (
+	event: React.MouseEvent,
+	{ events, data }: { events: PillEvents; data?: unknown }
+) => {
 	EventUtil.trap(event);
-	events.onRequestRemove(event, data);
+	events.onRequestRemove?.(event, data);
 };
 
 const Pill = ({
 	assistiveText = defaultProps.assistiveText,
 	labels = defaultProps.labels,
-	events = defaultProps.events,
+	events = defaultProps.events as PillEvents,
 	avatar,
 	bare,
 	hasError,
@@ -127,7 +141,7 @@ const Pill = ({
 	eventData,
 	requestFocus,
 	active,
-}) => {
+}: PillProps) => {
 	const mergedAssistiveText = assign(
 		{},
 		defaultProps.assistiveText,
@@ -151,7 +165,7 @@ const Pill = ({
 			onBlur={events.onBlur}
 			onClick={
 				typeof events.onClick === 'function'
-					? (event) => {
+					? (event: React.MouseEvent) => {
 							if (events.onClick) {
 								events.onClick(event, {
 									...eventData,
@@ -160,29 +174,29 @@ const Pill = ({
 					  }
 					: null
 			}
-			onFocus={(event) => {
+			onFocus={(event: React.FocusEvent) => {
 				if (events.onFocus) {
 					events.onFocus(event, {
 						...eventData,
 					});
 				}
 			}}
-			onRemove={(event) => {
+			onRemove={(event: React.MouseEvent) => {
 				EventUtil.trap(event);
 				handleClickRemove(event, {
 					events,
 					data: eventData,
 				});
 			}}
-			onKeyDown={(event) => {
+			onKeyDown={(event: React.KeyboardEvent) => {
 				handleKeyDown(event, {
 					events,
 					data: eventData,
 				});
 			}}
-			ref={(component) => {
+			ref={(component: unknown) => {
 				if (requestFocus && active) {
-					events.onRequestFocus(undefined, { ref: component });
+					events.onRequestFocus?.(undefined, { ref: component });
 				}
 			}}
 		/>
@@ -190,6 +204,5 @@ const Pill = ({
 };
 
 Pill.displayName = 'Pill';
-Pill.propTypes = propTypes;
 
 export default Pill;

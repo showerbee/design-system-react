@@ -1,18 +1,16 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React from 'react';
-
-import PropTypes from 'prop-types';
+import { Component, type ReactNode } from 'react';
 
 import memoize from 'memoize-one';
 
 const documentDefined = typeof document !== 'undefined';
 
-let canvas;
-let docFragment;
-let canvasContext;
-let measureWidth = () => 0;
+let canvas: HTMLCanvasElement | undefined;
+let docFragment: DocumentFragment | undefined;
+let canvasContext: CanvasRenderingContext2D | null;
+let measureWidth: (text: string, font: string) => number = () => 0;
 
 if (documentDefined) {
 	canvas = document.createElement('canvas');
@@ -20,40 +18,52 @@ if (documentDefined) {
 		docFragment = document.createDocumentFragment();
 		docFragment.appendChild(canvas);
 		canvasContext = canvas.getContext('2d');
-		measureWidth = memoize((text, font) => {
+		measureWidth = memoize((text: string, font: string) => {
+			if (!canvasContext) {
+				return 0;
+			}
 			canvasContext.font = font;
 			return canvasContext.measureText(text).width;
 		});
 	}
 }
 
-class TextTruncate extends React.Component {
+export interface TruncateProps {
+	containerClassName?: string;
+	line?: number;
+	prefix?: string;
+	suffix?: string;
+	text?: string;
+	textTruncateChild?: ReactNode;
+	truncateText?: string;
+	wrapper?: (outputText: string, child?: ReactNode) => ReactNode;
+	// Any additional props are spread onto the rendered element.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	[key: string]: any;
+}
+
+interface TruncateState {
+	renderText?: ReactNode;
+}
+
+class TextTruncate extends Component<TruncateProps, TruncateState> {
 	static displayName = 'TextTruncate';
 
-	static propTypes = {
-		containerClassName: PropTypes.string,
-		line: PropTypes.number,
-		prefix: PropTypes.string,
-		suffix: PropTypes.string,
-		text: PropTypes.string,
-		textTruncateChild: PropTypes.node,
-		truncateText: PropTypes.string,
-		wrapper: PropTypes.func,
-	};
-
-	static defaultProps = {
+	static defaultProps: Partial<TruncateProps> = {
 		line: 1,
 		text: '',
 		truncateText: '…',
 	};
 
-	state = {};
+	state: TruncateState = {};
+
+	scope: HTMLElement | null = null;
 
 	componentDidMount() {
 		window.addEventListener('resize', this.onResize, false);
 	}
 
-	componentDidUpdate(nextProps) {
+	componentDidUpdate(nextProps: TruncateProps) {
 		if (nextProps.text !== this.props.text) {
 			this.update(nextProps);
 		}
@@ -67,7 +77,7 @@ class TextTruncate extends React.Component {
 		this.update(this.props);
 	};
 
-	getRenderText = (ref, nextProps) => {
+	getRenderText = (ref: HTMLElement | null, nextProps?: TruncateProps) => {
 		if (!ref) {
 			return;
 		}
@@ -83,7 +93,7 @@ class TextTruncate extends React.Component {
 		}
 
 		const {
-			containerClassName, // eslint-disable-line no-unused-vars
+			containerClassName, // eslint-disable-line no-unused-vars, @typescript-eslint/no-unused-vars
 			line,
 			prefix,
 			suffix,
@@ -94,13 +104,17 @@ class TextTruncate extends React.Component {
 			...props
 		} = propsToRender;
 
+		const resolvedText = text ?? '';
+		const resolvedTruncateText = truncateText ?? '…';
+		const resolvedLine = line ?? 1;
+
 		const scopeWidth = this.scope.getBoundingClientRect().width;
 		const style = window.getComputedStyle(this.scope);
 		const font = [
-			style['font-weight'],
-			style['font-style'],
-			style['font-size'],
-			style['font-family'],
+			style['font-weight' as keyof CSSStyleDeclaration],
+			style['font-style' as keyof CSSStyleDeclaration],
+			style['font-size' as keyof CSSStyleDeclaration],
+			style['font-family' as keyof CSSStyleDeclaration],
 		].join(' ');
 
 		// return if display:none
@@ -109,17 +123,17 @@ class TextTruncate extends React.Component {
 			return;
 		}
 
-		let child;
-		let outputText = text;
+		let child: ReactNode;
+		let outputText = resolvedText;
 
 		// return if all of text can be displayed
-		if (scopeWidth < measureWidth(text, font)) {
+		if (scopeWidth < measureWidth(resolvedText, font)) {
 			let currentPos = 1;
-			const maxTextLength = text.length;
+			const maxTextLength = resolvedText.length;
 			let truncatedText = '';
 			let splitPos = 0;
 			let startPos = 0;
-			let displayLine = line;
+			let displayLine = resolvedLine;
 			let width = 0;
 			let lastIsEng = false;
 			let lastSpaceIndex = -1;
@@ -128,14 +142,14 @@ class TextTruncate extends React.Component {
 				let ext = '';
 				let extraWidthDueToPrefixStyle = 0;
 
-				if (prefix && displayLine === line - 1) {
+				if (prefix && displayLine === resolvedLine - 1) {
 					ext += ` ${prefix}`;
 					// MAGIC NUMBER: (width at letter-spacing of 0.25rems - width at normal) / number of letters
 					extraWidthDueToPrefixStyle = prefix.length * 0.66;
 				}
 
 				if (!displayLine) {
-					ext += truncateText;
+					ext += resolvedTruncateText;
 
 					if (suffix) {
 						ext += ` ${suffix}`;
@@ -143,13 +157,13 @@ class TextTruncate extends React.Component {
 				}
 
 				while (currentPos <= maxTextLength) {
-					truncatedText = text.substr(startPos, currentPos);
+					truncatedText = resolvedText.substr(startPos, currentPos);
 					width =
 						measureWidth(truncatedText + ext, font) +
 						extraWidthDueToPrefixStyle;
 
 					if (width < scopeWidth) {
-						splitPos = text.indexOf(' ', currentPos + 1);
+						splitPos = resolvedText.indexOf(' ', currentPos + 1);
 						if (splitPos === -1) {
 							currentPos += 1;
 							lastIsEng = false;
@@ -161,15 +175,15 @@ class TextTruncate extends React.Component {
 						let lastWidth = 0;
 						do {
 							currentPos -= 1;
-							truncatedText = text.substr(startPos, currentPos);
+							truncatedText = resolvedText.substr(startPos, currentPos);
 							if (truncatedText[truncatedText.length - 1] === ' ') {
-								truncatedText = text.substr(startPos, currentPos - 1);
+								truncatedText = resolvedText.substr(startPos, currentPos - 1);
 							}
 							if (lastIsEng) {
 								lastSpaceIndex = truncatedText.lastIndexOf(' ');
 								if (lastSpaceIndex > -1) {
 									currentPos = lastSpaceIndex;
-									truncatedText = text.substr(startPos, currentPos);
+									truncatedText = resolvedText.substr(startPos, currentPos);
 								}
 							}
 							width =
@@ -196,7 +210,7 @@ class TextTruncate extends React.Component {
 			}
 
 			if (startPos !== maxTextLength) {
-				outputText = `${text.substr(0, startPos)}${truncateText} `;
+				outputText = `${resolvedText.substr(0, startPos)}${resolvedTruncateText} `;
 				child = textTruncateChild;
 			}
 		}
@@ -216,7 +230,7 @@ class TextTruncate extends React.Component {
 		this.setState({ renderText });
 	};
 
-	update = (nextProps) => {
+	update = (nextProps?: TruncateProps) => {
 		this.getRenderText(this.scope, nextProps);
 	};
 
