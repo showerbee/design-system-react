@@ -6,8 +6,7 @@
 // ## Dependencies
 
 // ### React
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type MouseEvent, type ReactElement, type ReactNode } from 'react';
 
 // ### classNames
 // [github.com/JedWatson/classnames](https://github.com/JedWatson/classnames)
@@ -27,69 +26,78 @@ import {
 	APP_LAUNCHER_TILE,
 } from '../../utilities/constants';
 
+export interface AppLauncherExpandableSectionAssistiveText {
+	/** Label for the icon that expands / collapses the section */
+	toggleSection?: string;
+}
+
+export interface AppLauncherExpandableSectionProps {
+	/**
+	 * **Assistive text for accessibility.**
+	 * * `toggleSection`: Label for the icon that expands / collapses the section
+	 */
+	assistiveText?: AppLauncherExpandableSectionAssistiveText;
+	/**
+	 * Contents of the section
+	 */
+	children?: ReactNode;
+	/**
+	 * Class names to be added to the `slds-section` classed node
+	 */
+	className?: unknown[] | Record<string, unknown> | string;
+	/**
+	 * Unique identifier for the expandable section. The id is automatically generated if not provided
+	 */
+	id?: string;
+	/**
+	 * Specifies whether the section is expanded or collapsed. If not provided, component will use its own state to manage this itself
+	 */
+	isOpen?: boolean;
+	/**
+	 * Specifies whether the section can be expanded or collapsed. Defaults to `false`
+	 */
+	nonCollapsible?: boolean;
+	/**
+	 * Callback for when the section is expanded or collapsed. Passes event object and data object with `isOpen` bool.
+	 */
+	onToggleOpen?: (event: MouseEvent, data: { isOpen: boolean }) => void;
+	/**
+	 * The title for the section
+	 */
+	title: string;
+}
+
+interface AppLauncherExpandableSectionState {
+	isOpen: boolean;
+}
+
 /**
  * App Launcher Sections allow users to categorize App Tiles & Links as well as toggle their display. It is a superset of components/expandable-section with content formatting.
  * All Expandable Section props are compatible with props passed to this component.
  */
-class AppLauncherExpandableSection extends React.Component {
+class AppLauncherExpandableSection extends React.Component<
+	AppLauncherExpandableSectionProps,
+	AppLauncherExpandableSectionState
+> {
 	// ### Display Name
 	// Always use the canonical component name as the React display name.
 	static displayName = APP_LAUNCHER_EXPANDABLE_SECTION;
-
-	// ### Prop Types
-	static propTypes = {
-		/**
-		 * **Assistive text for accessibility.**
-		 * * `toggleSection`: Label for the icon that expands / collapses the section
-		 */
-		assistiveText: PropTypes.shape({
-			toggleSection: PropTypes.string,
-		}),
-		/**
-		 * Contents of the section
-		 */
-		children: PropTypes.node,
-		/**
-		 * Class names to be added to the `slds-section` classed node
-		 */
-		className: PropTypes.oneOfType([
-			PropTypes.array,
-			PropTypes.object,
-			PropTypes.string,
-		]),
-		/**
-		 * Unique identifier for the expandable section. The id is automatically generated if not provided
-		 */
-		id: PropTypes.string,
-		/**
-		 * Specifies whether the section is expanded or collapsed. If not provided, component will use its own state to manage this itself
-		 */
-		isOpen: PropTypes.bool,
-		/**
-		 * Specifies whether the section can be expanded or collapsed. Defaults to `false`
-		 */
-		nonCollapsible: PropTypes.bool,
-		/**
-		 * Callback for when the section is expanded or collapsed. Passes event object and data object with `isOpen` bool.
-		 */
-		onToggleOpen: PropTypes.func,
-		/**
-		 * The title for the section
-		 */
-		title: PropTypes.string.isRequired,
-	};
 
 	state = {
 		isOpen: true,
 	};
 
-	constructor(props) {
+	constructor(props: AppLauncherExpandableSectionProps) {
 		super(props);
 
-		checkProps(APP_LAUNCHER_EXPANDABLE_SECTION, props, componentDoc);
+		(checkProps as (name: string, props: unknown, doc: unknown) => void)(
+			APP_LAUNCHER_EXPANDABLE_SECTION,
+			props,
+			componentDoc
+		);
 	}
 
-	toggleOpen = (event, data) => {
+	toggleOpen = (event: MouseEvent, data: { isOpen: boolean }) => {
 		if (this.props.onToggleOpen) {
 			this.props.onToggleOpen(event, data);
 		} else {
@@ -116,9 +124,12 @@ class AppLauncherExpandableSection extends React.Component {
 			let liClasses =
 				'slds-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-3';
 
+			const element = child as ReactElement & {
+				type?: { displayName?: string };
+			};
 			if (
-				(child && child.type && child.type.displayName !== APP_LAUNCHER_TILE) ||
-				(child && !child.type)
+				(element && element.type && element.type.displayName !== APP_LAUNCHER_TILE) ||
+				(element && !element.type)
 			) {
 				ulChildrenType = 'links';
 			}
@@ -131,7 +142,11 @@ class AppLauncherExpandableSection extends React.Component {
 		});
 
 		return (
-			<ExpandableSection {...expandableSectionProps}>
+			<ExpandableSection
+				{...(expandableSectionProps as React.ComponentProps<
+					typeof ExpandableSection
+				>)}
+			>
 				<ul
 					className={classNames('slds-grid slds-wrap', {
 						'slds-grid_pull-padded': ulChildrenType === 'tiles',

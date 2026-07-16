@@ -6,8 +6,7 @@
 // ## Dependencies
 
 // ### React
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 
 // ### classNames
 // [github.com/JedWatson/classnames](https://github.com/JedWatson/classnames)
@@ -15,53 +14,49 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 // ### Children
+// @ts-expect-error - Module declaration doesn't match relative import
 import Highlighter from '../utilities/highlighter';
 
 // ## Constants
 import { APP_LAUNCHER_LINK } from '../../utilities/constants';
 
+export interface AppLauncherLinkProps {
+	/**
+	 * Contents of the link
+	 */
+	children?: ReactNode;
+	/**
+	 * Classes to be applied to the link
+	 */
+	className?: unknown[] | Record<string, unknown> | string;
+	/**
+	 * The `href` attribute of the link. If the `onClick` callback is specified this URL will be prevented from changing the browser's location.
+	 */
+	href?: string;
+	/**
+	 * Callback for when the link is clicked. Passes back event and data object with href prop. Prevents click from changing browser's location if set.
+	 */
+	onClick?: (event: React.MouseEvent, data: { href?: string }) => void;
+	/**
+	 * Text used to highlight content in link
+	 */
+	search?: string;
+	/**
+	 * The title for the link. If not provided it will attempt to use child content if that content is a string.
+	 */
+	title?: string;
+}
+
 /**
  * App Launcher Link component creates simple links to be used in "All Items" sections
  */
-class AppLauncherLink extends React.Component {
+class AppLauncherLink extends React.Component<AppLauncherLinkProps> {
 	// ### Display Name
 	// Always use the canonical component name as the React display name.
 	static displayName = APP_LAUNCHER_LINK;
 
-	// ### Prop Types
-	static propTypes = {
-		/**
-		 * Contents of the link
-		 */
-		children: PropTypes.node,
-		/**
-		 * Classes to be applied to the link
-		 */
-		className: PropTypes.oneOfType([
-			PropTypes.array,
-			PropTypes.object,
-			PropTypes.string,
-		]),
-		/**
-		 * The `href` attribute of the link. If the `onClick` callback is specified this URL will be prevented from changing the browser's location.
-		 */
-		href: PropTypes.string,
-		/**
-		 * Callback for when the link is clicked. Passes back event and data object with href prop. Prevents click from changing browser's location if set.
-		 */
-		onClick: PropTypes.func,
-		/**
-		 * Text used to highlight content in link
-		 */
-		search: PropTypes.string,
-		/**
-		 * The title for the link. If not provided it will attempt to use child content if that content is a string.
-		 */
-		title: PropTypes.string,
-	};
-
 	// ### Default Props
-	static defaultProps = {
+	static defaultProps: Partial<AppLauncherLinkProps> = {
 		href: '#',
 	};
 
@@ -75,7 +70,7 @@ class AppLauncherLink extends React.Component {
 		return (
 			<a
 				href={this.props.href}
-				className={classNames('slds-truncate', this.props.className)}
+				className={classNames('slds-truncate', this.props.className as string)}
 				onClick={(event) => {
 					if (this.props.href === '#') {
 						event.preventDefault();

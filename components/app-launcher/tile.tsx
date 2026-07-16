@@ -7,8 +7,7 @@
 
 // ## Dependencies
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 import classNames from 'classnames';
 
 // This component's `checkProps` which issues warnings to developers about properties when in development mode (similar to React's built in development tools)
@@ -17,77 +16,77 @@ import componentDoc from './component.json';
 
 // ## Children
 import Button from '../button';
+// @ts-expect-error - Module declaration doesn't match relative import
 import Highlighter from '../utilities/highlighter';
+// @ts-expect-error - Module declaration doesn't match relative import
 import Tooltip from '../tooltip';
+// @ts-expect-error - Module declaration doesn't match relative import
 import Truncate from '../utilities/truncate';
 
 import { APP_LAUNCHER_TILE } from '../../utilities/constants';
 
-const propTypes = {
+export interface AppLauncherTileAssistiveText {
+	/** Text that describes the purpose of the drag handle icon. */
+	dragIconText?: string;
+}
+
+export interface AppLauncherTileProps {
 	/**
 	 * **Assistive text for accessibility.**
 	 * * `dragIconText`: Text that describes the purpose of the drag handle icon.
 	 */
-	assistiveText: PropTypes.shape({
-		dragIconText: PropTypes.string,
-	}),
+	assistiveText?: AppLauncherTileAssistiveText;
 	/**
 	 * Class names to be added to the tile.
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * The description of the app. Not visible on small tiles.
 	 */
-	description: PropTypes.string,
+	description?: string;
 	/**
 	 * Heading for app description. NOTE: this prop is DEPRECATED and use should be avoided
 	 */
-	descriptionHeading: PropTypes.string,
+	descriptionHeading?: string;
 	/**
 	 * The `href` attribute of the tile. Please pass in bookmarkable URLs from your routing library. If the `onClick` callback is specified this URL will be prevented from changing the browser's location.
 	 */
-	href: PropTypes.string,
+	href?: string;
 	/**
 	 * Background color to be used on the icon. Only applied if iconNode is undefined
 	 */
-	iconBackgroundColor: PropTypes.string,
+	iconBackgroundColor?: string;
 	/**
 	 * Icon node for app tile. Takes priority over `iconText`
 	 */
-	iconNode: PropTypes.node,
+	iconNode?: ReactNode;
 	/**
 	 * Text to be used as an icon. Only renders if iconNode is undefined
 	 */
-	iconText: PropTypes.string,
+	iconText?: string;
 	/**
 	 * Open the More Tooltip
 	 */
-	isOpenTooltip: PropTypes.bool,
+	isOpenTooltip?: boolean;
 	/**
 	 * The localized text for the "More information" tooltip.
 	 */
-	moreLabel: PropTypes.string,
+	moreLabel?: string;
 	/**
 	 * Function that will be executed when clicking on a tile
 	 */
-	onClick: PropTypes.func,
+	onClick?: (event: React.MouseEvent, data: { href?: string }) => void;
 	/**
 	 * Text used to highlight content in app tiles
 	 */
-	search: PropTypes.string,
+	search?: string;
 	/**
 	 * App name for the tile's title.
 	 */
-	title: PropTypes.string.isRequired,
+	title: string;
+}
 
-	// Future feature: add Highlighter to Truncate text (https://github.com/ShinyChang/React-Text-Truncate/issues/32)
-};
-
-const defaultProps = {
+const defaultProps: Partial<AppLauncherTileProps> = {
 	assistiveText: {
 		dragIconText: 'Reorder',
 	},
@@ -98,15 +97,26 @@ const defaultProps = {
 /**
  * App Launcher Tiles provide information and links to a user's apps
  */
-class AppLauncherTile extends React.Component {
-	constructor(props) {
+class AppLauncherTile extends React.Component<AppLauncherTileProps> {
+	// ### Display Name
+	// Always use the canonical component name as the React display name.
+	static displayName = APP_LAUNCHER_TILE;
+
+	// ### Default Props
+	static defaultProps = defaultProps;
+
+	constructor(props: AppLauncherTileProps) {
 		super(props);
 
 		// `checkProps` issues warnings to developers about properties (similar to React's built in development tools)
-		checkProps(APP_LAUNCHER_TILE, props, componentDoc);
+		(checkProps as (name: string, props: unknown, doc: unknown) => void)(
+			APP_LAUNCHER_TILE,
+			props,
+			componentDoc
+		);
 	}
 
-	handleClick = (event) => {
+	handleClick = (event: React.MouseEvent) => {
 		if (this.props.onClick) {
 			event.preventDefault();
 			this.props.onClick(event, { href: this.props.href });
@@ -115,7 +125,7 @@ class AppLauncherTile extends React.Component {
 
 	render() {
 		const dragButtonAriaProps = { 'aria-pressed': false };
-		const iconStyles = {};
+		const iconStyles: React.CSSProperties = {};
 
 		if (this.props.iconBackgroundColor) {
 			iconStyles.backgroundColor = this.props.iconBackgroundColor;
@@ -125,11 +135,11 @@ class AppLauncherTile extends React.Component {
 			<div
 				className={classNames(
 					'slds-app-launcher__tile slds-text-link_reset slds-is-draggable', // NOTE: while the draggable class is here for stylistic purposes, the draggable attribute is not present as draggability has not been implemented yet
-					this.props.className
+					this.props.className as string
 				)}
 				onClick={this.handleClick}
 				role="button"
-				tabIndex="0"
+				tabIndex={0}
 			>
 				<div className="slds-app-launcher__tile-figure">
 					{this.props.iconNode || (
@@ -146,11 +156,11 @@ class AppLauncherTile extends React.Component {
 					<div className="slds-m-top_xxx-small">
 						<Button
 							assistiveText={{
-								icon: this.props.assistiveText.dragIconText,
+								icon: this.props.assistiveText?.dragIconText,
 							}}
 							iconCategory="utility"
 							iconName="rows"
-							title={this.props.assistiveText.dragIconText}
+							title={this.props.assistiveText?.dragIconText}
 							variant="icon"
 							{...dragButtonAriaProps}
 						/>
@@ -193,7 +203,7 @@ class AppLauncherTile extends React.Component {
 								</Button>
 							</Tooltip>
 						}
-						wrapper={(text, textTruncateChild) => (
+						wrapper={(text: ReactNode, textTruncateChild: ReactNode) => (
 							<React.Fragment>
 								{this.props.descriptionHeading && (
 									// inline style override
@@ -215,9 +225,5 @@ class AppLauncherTile extends React.Component {
 		);
 	}
 }
-
-AppLauncherTile.displayName = APP_LAUNCHER_TILE;
-AppLauncherTile.defaultProps = defaultProps;
-AppLauncherTile.propTypes = propTypes;
 
 export default AppLauncherTile;

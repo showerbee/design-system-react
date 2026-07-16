@@ -9,9 +9,7 @@
 // ## Dependencies
 
 // ### React
-import React from 'react';
-
-import PropTypes from 'prop-types';
+import React, { type ReactElement, type ReactNode } from 'react';
 
 // ### isFunction
 import isFunction from 'lodash.isfunction';
@@ -31,7 +29,49 @@ import Button from '../button';
 // ## Constants
 import { APP_LAUNCHER_SECTION } from '../../utilities/constants';
 
-const defaultProps = {
+export interface AppLauncherSectionAssistiveText {
+	/** The assistive text for the section collapse icons. */
+	collapseSection?: string;
+}
+
+export interface AppLauncherSectionProps {
+	/**
+	 * **Assistive text for accessibility.**
+	 * This object is merged with the default props object on every render.
+	 * * `collapseSection`: The assistive text for the section collapse icons.
+	 */
+	assistiveText?: AppLauncherSectionAssistiveText;
+	/**
+	 * An array of applications to display
+	 */
+	children: ReactNode;
+	/**
+	 * Deprecated assistive text for the collapse icon. Use `assistiveText.collapseSection`.
+	 */
+	collapseSectionAssistiveText?: string;
+	/**
+	 * Controls the open/closed state of the section
+	 */
+	isOpen?: boolean;
+	/**
+	 * Callback for when section is toggled. Passes "isOpen" bool. Forces `toggleable` to true
+	 */
+	onToggleClick?: (event: React.MouseEvent, data: Record<string, unknown>) => void;
+	/**
+	 * The title for this section of apps
+	 */
+	title: string;
+	/**
+	 * Allows the user to show/hide the section
+	 */
+	toggleable?: boolean;
+}
+
+interface AppLauncherSectionState {
+	isOpen: boolean;
+}
+
+const defaultProps: Partial<AppLauncherSectionProps> = {
 	assistiveText: {
 		collapseSection: 'Toggle visibility of section',
 	},
@@ -41,48 +81,13 @@ const defaultProps = {
  * App Launcher Sections allow users to categorize App Tiles as well as toggle their display
  */
 
-class AppLauncherSection extends React.Component {
+class AppLauncherSection extends React.Component<
+	AppLauncherSectionProps,
+	AppLauncherSectionState
+> {
 	// ### Display Name
 	// Always use the canonical component name as the React display name.
 	static displayName = APP_LAUNCHER_SECTION;
-
-	// ### Prop Types
-	static propTypes = {
-		/**
-		 * **Assistive text for accessibility.**
-		 * This object is merged with the default props object on every render.
-		 * * `collapseSection`: The assistive text for the section collapse icons.
-		 */
-
-		assistiveText: PropTypes.shape({
-			collapseSection: PropTypes.string,
-		}),
-		/**
-		 * The title for this section of apps
-		 */
-
-		title: PropTypes.string.isRequired,
-		/**
-		 * Allows the user to show/hide the section
-		 */
-
-		toggleable: PropTypes.bool,
-		/**
-		 * An array of applications to display
-		 */
-
-		children: PropTypes.node.isRequired,
-		/**
-		 * Controls the open/closed state of the section
-		 */
-
-		isOpen: PropTypes.bool,
-		/**
-		 * Callback for when section is toggled. Passes "isOpen" bool. Forces `toggleable` to true
-		 */
-
-		onToggleClick: PropTypes.func,
-	};
 
 	static defaultProps = defaultProps;
 
@@ -90,13 +95,17 @@ class AppLauncherSection extends React.Component {
 		isOpen: true,
 	};
 
-	constructor(props) {
+	constructor(props: AppLauncherSectionProps) {
 		super(props);
 
-		checkProps(APP_LAUNCHER_SECTION, props, componentDoc);
+		(checkProps as (name: string, props: unknown, doc: unknown) => void)(
+			APP_LAUNCHER_SECTION,
+			props,
+			componentDoc
+		);
 	}
 
-	toggleOpen = (event) => {
+	toggleOpen = (event: React.MouseEvent) => {
 		this.setState({ isOpen: !this.state.isOpen });
 
 		if (isFunction(this.props.onToggleClick)) {
@@ -146,18 +155,22 @@ class AppLauncherSection extends React.Component {
 							sectionIsOpenClass
 						)}
 					>
-						{React.Children.map(this.props.children, (child) => (
-							<li
-								className={classNames(
-									'slds-col_padded slds-grow-none',
-									child.props.size === 'small'
-										? 'slds-size_xx-small'
-										: 'slds-size_1-of-1 slds-medium-size_1-of-3'
-								)}
-							>
-								{child}
-							</li>
-						))}
+						{React.Children.map(
+							this.props.children,
+							(child) => (
+								<li
+									className={classNames(
+										'slds-col_padded slds-grow-none',
+										(child as ReactElement<{ size?: string }>).props.size ===
+											'small'
+											? 'slds-size_xx-small'
+											: 'slds-size_1-of-1 slds-medium-size_1-of-3'
+									)}
+								>
+									{child}
+								</li>
+							)
+						)}
 					</ul>
 				</div>
 			</div>
