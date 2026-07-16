@@ -14,7 +14,6 @@ import React, {
 	useContext,
 } from 'react';
 import classNames from 'classnames';
-import isFunction from 'lodash.isfunction';
 
 import checkProps from './check-props';
 import Dialog from '../utilities/dialog';

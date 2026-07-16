@@ -82,7 +82,6 @@ export const NoLabel: Story = {
 };
 
 export const CustomOnly: Story = {
-	name: 'Custom Only',
 	args: {
 		events: { onChange: handleChange },
 		id: 'custom-only-color-picker',
@@ -92,7 +91,6 @@ export const CustomOnly: Story = {
 };
 
 export const SwatchOnly: Story = {
-	name: 'Swatch Only',
 	args: {
 		events: { onChange: handleChange },
 		id: 'swatch-only-color-picker',
@@ -102,7 +100,6 @@ export const SwatchOnly: Story = {
 };
 
 export const PredefinedColors: Story = {
-	name: 'Predefined Colors',
 	args: {
 		events: { onChange: handleChange },
 		id: 'predefined-color-picker',
@@ -123,7 +120,6 @@ export const PredefinedColors: Story = {
 };
 
 export const PredefinedColorsOnly: Story = {
-	name: 'Predefined Colors Only',
 	args: {
 		value: '#000000',
 		events: { onChange: handleChange },
@@ -145,7 +141,6 @@ export const PredefinedColorsOnly: Story = {
 };
 
 export const HiddenInput: Story = {
-	name: 'Hidden Input',
 	args: {
 		events: { onChange: handleChange },
 		hideInput: true,
@@ -155,7 +150,6 @@ export const HiddenInput: Story = {
 };
 
 export const CustomTabSelected: Story = {
-	name: 'Custom Tab Selected',
 	args: {
 		defaultSelectedTab: 'custom',
 		events: { onChange: handleChange },
@@ -188,7 +182,6 @@ export const WorkingColorErrorState: Story = {
 };
 
 export const CustomValidator: Story = {
-	name: 'Custom Validator',
 	args: {
 		events: {
 			onChange: handleChange,

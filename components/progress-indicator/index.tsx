@@ -1,7 +1,7 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React, { useId, useMemo, type ReactNode } from 'react';
+import React, { useId, useMemo } from 'react';
 import find from 'lodash.find';
 import { PROGRESS_INDICATOR } from '../../utilities/constants';
 

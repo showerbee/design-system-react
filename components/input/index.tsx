@@ -19,7 +19,6 @@ import React, {
 import classNames from 'classnames';
 
 import Button from '../button';
-import InputIcon from '../icon/input-icon/index';
 import InnerInput from './private/inner-input';
 import Label from '../utilities/label/index';
 import FieldLevelHelpTooltip from '../tooltip/private/field-level-help-tooltip';

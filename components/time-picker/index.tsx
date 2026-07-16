@@ -2,7 +2,6 @@
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
 import React, { useState, useCallback, useEffect, useMemo, type ChangeEvent } from 'react';
-import isDate from 'lodash.isdate';
 
 import checkProps from './check-props';
 import InputIcon from '../icon/input-icon';

@@ -19,7 +19,6 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 import isFunction from 'lodash.isfunction';
-import isEqual from 'lodash.isequal';
 
 // Children
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

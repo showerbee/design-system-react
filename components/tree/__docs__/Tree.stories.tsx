@@ -30,7 +30,6 @@ export default meta;
 type Story = StoryObj<typeof Tree>;
 
 export const Base: Story = {
-	name: 'Base',
 	render: () => (
 		<DefaultExample nodes={sampleNodesDynamicHashMap.base} action={action} />
 	),
@@ -52,17 +51,14 @@ export const InitialExpandedSelected: Story = {
 };
 
 export const NoBranchSelect: Story = {
-	name: 'No Branch Select',
 	render: () => <DefaultExample action={action} noBranchSelection />,
 };
 
 export const MultipleSelection: Story = {
-	name: 'Multiple Selection',
 	render: () => <DefaultExample action={action} multipleSelection />,
 };
 
 export const AssistiveHeading: Story = {
-	name: 'Assistive Heading',
 	render: () => (
 		<DefaultExample
 			action={action}
@@ -73,7 +69,6 @@ export const AssistiveHeading: Story = {
 };
 
 export const OverflowHidden: Story = {
-	name: 'Overflow Hidden',
 	render: () => (
 		<DefaultExample
 			action={action}
@@ -94,7 +89,6 @@ export const LargeDataset: Story = {
 };
 
 export const HighlightedSearch: Story = {
-	name: 'Highlighted Search',
 	render: () => <DefaultExample action={action} searchable />,
 };
 

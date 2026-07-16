@@ -1,6 +1,6 @@
 import { Component } from 'react';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { render, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
 
 import IconSettings from '../../icon-settings';
 import Datepicker from '../index';

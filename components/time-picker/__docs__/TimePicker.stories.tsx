@@ -173,7 +173,6 @@ const PreselectedComponent = () => {
 };
 
 export const PreselectedValue: Story = {
-	name: 'Preselected Value',
 	render: () => <PreselectedComponent />,
 };
 

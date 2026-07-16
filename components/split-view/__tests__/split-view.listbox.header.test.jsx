@@ -38,7 +38,6 @@ const listOptions = [
 ];
 
 describe('SLDSSplitView - Listbox header', () => {
-	let component;
 	let container;
 	let rerender;
 

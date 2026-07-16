@@ -2,8 +2,6 @@
  * Type definitions for Filter component
  */
 
-import { ReactNode } from 'react';
-
 export interface FilterAssistiveText {
 	/** Assistive text for editing a filter */
 	editFilter?: string;

@@ -101,7 +101,6 @@ export const InteractiveElementsStory: Story = {
 };
 
 export const FixedHeaderHorizontalScrolling: Story = {
-	name: 'Fixed Header Horizontal Scrolling',
 	render: () => <FixedHeaderHorizontalScroller />,
 };
 

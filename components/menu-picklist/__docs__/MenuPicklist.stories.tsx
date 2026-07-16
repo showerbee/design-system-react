@@ -110,7 +110,6 @@ export default meta;
 type Story = StoryObj<typeof Picklist>;
 
 export const Modal: Story = {
-	name: 'Modal',
 	render: () => (
 		<PicklistWrapper
 			label="Contacts"
@@ -147,7 +146,6 @@ export const ErrorState: Story = {
 };
 
 export const Multiselect: Story = {
-	name: 'Multiselect',
 	render: () => <MultipleExample />,
 };
 

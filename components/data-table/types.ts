@@ -2,7 +2,7 @@
  * Type definitions for DataTable component and subcomponents
  */
 
-import { ReactNode, CSSProperties, RefObject, SyntheticEvent } from 'react';
+import { ReactNode, CSSProperties, SyntheticEvent } from 'react';
 
 // ============================================================================
 // Core Types

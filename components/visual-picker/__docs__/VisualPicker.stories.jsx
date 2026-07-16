@@ -3,7 +3,6 @@ import IconSettings from '../../icon-settings';
 import VisualPicker from '../';
 import Radio from '../../radio';
 import Checkbox from '../../checkbox';
-import Icon from '../../icon';
 
 export default {
 	title: 'Components/VisualPicker',

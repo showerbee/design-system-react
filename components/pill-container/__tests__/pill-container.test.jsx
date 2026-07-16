@@ -1,6 +1,5 @@
-import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi } from 'vitest';
+import { render, fireEvent } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 
 import Avatar from '../../avatar';
 import Icon from '../../icon';

@@ -1,6 +1,5 @@
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
 
 import Lookup from '../'; // Use the default export (wrapper with click-outside)
 import IconSettings from '../../icon-settings';
