@@ -5,10 +5,17 @@
 
 import warning from 'warning';
 
-let hasMoved = function hasMovedFunction() {};
+interface ComponentHasMovedOptions {
+	oldFileLocation: string;
+	newFileLocation: string;
+	comment?: string;
+}
+
+let hasMoved: (control: string, options: ComponentHasMovedOptions) => void =
+	function hasMovedFunction() {};
 
 if (process.env.NODE_ENV !== 'production') {
-	const hasWarned = {};
+	const hasWarned: Record<string, boolean> = {};
 
 	hasMoved = function hasMovedFunction(
 		control,

@@ -2,8 +2,10 @@
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
 // Alias
-import Checkbox from '../../checkbox';
+import Checkbox, { type CheckboxProps } from '../../checkbox';
 
-const OldCheckbox = (props) => <Checkbox oldEventParameterOrder {...props} />;
+const OldCheckbox = (props: CheckboxProps) => (
+	<Checkbox oldEventParameterOrder {...props} />
+);
 
 export default OldCheckbox;

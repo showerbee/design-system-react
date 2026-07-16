@@ -72,6 +72,11 @@ export interface CheckboxProps {
 	assistiveText?: CheckboxAssistiveText | string;
 	/** Controlled checked state */
 	checked?: boolean;
+	/**
+	 * Preserves the legacy `onChange(event, { checked })` parameter order used
+	 * by the deprecated `components/forms/checkbox` alias. Not for new code.
+	 */
+	oldEventParameterOrder?: boolean;
 	/** Initial uncontrolled checked state */
 	defaultChecked?: boolean;
 	/** CSS class for container */
