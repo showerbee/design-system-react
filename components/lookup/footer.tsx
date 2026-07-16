@@ -4,22 +4,29 @@
 // Implements the [Lookup design pattern](https://latest-204.lightningdesignsystem.com/components/lookups) in React.
 // Based on SLDS v2.1.0-dev
 
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import Icon from '../icon';
 import EventUtil from '../../utilities/event';
 
-const displayName = 'LookupDefaultHeader';
-const propTypes = {};
-const defaultProps = {};
+const displayName = 'LookupDefaultFooter';
 
-class DefaultHeader extends React.Component {
-	// eslint-disable-next-line camelcase, react/sort-comp
-	UNSAFE_componentWillReceiveProps(nextProps) {
+export interface LookupDefaultFooterProps {
+	isActive?: boolean;
+	newItemLabel?: ReactNode;
+	onClose?: () => void;
+	setFocus?: (id: string) => void;
+}
+
+class DefaultFooter extends React.Component<LookupDefaultFooterProps> {
+	static displayName = displayName;
+
+	// eslint-disable-next-line react/sort-comp, camelcase
+	UNSAFE_componentWillReceiveProps(nextProps: LookupDefaultFooterProps) {
 		if (
 			nextProps.isActive !== this.props.isActive &&
 			nextProps.isActive === true
 		) {
-			this.props.setFocus('searchRecords');
+			this.props.setFocus?.('newItem');
 		}
 	}
 
@@ -37,24 +44,28 @@ class DefaultHeader extends React.Component {
 			/* eslint-disable jsx-a11y/no-static-element-interactions */
 			<div
 				className="js-slds-lookup__item"
-				onMouseDown={EventUtil.trapImmediate}
 				onClick={this.handleClick}
+				onMouseDown={EventUtil.trapImmediate}
 			>
 				{/* eslint-enable jsx-a11y/no-static-element-interactions */}
 				<a
-					id="searchRecords"
+					id="newItem"
 					href="#"
 					onClick={(event) => event.preventDefault()}
 					className={className}
 				>
 					<span className="lookup__item-action-label">
 						<Icon
-							name="search"
+							name="add"
 							category="utility"
 							size="x-small"
 							className="slds-icon-text-default"
 						/>
-						<span className="slds-truncate">{this.props.searchTerm}</span>
+						<span className="slds-truncate">
+							{this.props.newItemLabel
+								? this.props.newItemLabel
+								: 'Add New Item'}
+						</span>
 					</span>
 				</a>
 			</div>
@@ -62,8 +73,4 @@ class DefaultHeader extends React.Component {
 	}
 }
 
-DefaultHeader.displayName = displayName;
-DefaultHeader.propTypes = propTypes;
-DefaultHeader.defaultProps = defaultProps;
-
-export default DefaultHeader;
+export default DefaultFooter;

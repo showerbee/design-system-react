@@ -4,42 +4,60 @@
 
 /* eslint-disable jsx-a11y/role-has-required-aria-props */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ComponentType, type ReactNode } from 'react';
 import cx from 'classnames';
 import Icon from '../../icon';
 import EventUtil from '../../../utilities/event';
+import { type IconCategory } from '../../../types/common';
 
 const displayName = 'Lookup-Menu-Item';
-const propTypes = {
-	data: PropTypes.object,
-	handleItemFocus: PropTypes.func,
-	href: PropTypes.string,
-	iconCategory: PropTypes.string,
-	id: PropTypes.string,
-	index: PropTypes.number,
-	isActive: PropTypes.bool,
-	isDisabled: PropTypes.bool,
-	listItemLabelRenderer: PropTypes.func,
-	onSelect: PropTypes.func,
-	searchTerm: PropTypes.string,
-	setFocus: PropTypes.func,
-};
 
-class Item extends React.Component {
+interface LookupItemData {
+	label?: ReactNode;
+	data?: { subTitle?: ReactNode } & Record<string, unknown>;
+}
+
+export interface LookupMenuItemProps {
+	// Despite the name, `children` is a data object holding the item's label
+	// and metadata, not React children.
+	children?: LookupItemData;
+	data?: Record<string, unknown>;
+	handleItemFocus?: (index: number, height: number) => void;
+	href?: string;
+	iconCategory?: IconCategory;
+	iconInverse?: boolean;
+	iconName?: string;
+	id?: string;
+	index?: number;
+	isActive?: boolean;
+	isDisabled?: boolean;
+	listItemLabelRenderer?: ComponentType<LookupMenuItemProps>;
+	onSelect?: (id: string | undefined, data: Record<string, unknown> | undefined) => void;
+	searchTerm?: string;
+	setFocus?: (id: string | undefined) => void;
+}
+
+class Item extends React.Component<LookupMenuItemProps> {
+	static displayName = displayName;
+
+	itemRef: HTMLLIElement | null = null;
+
 	// eslint-disable-next-line camelcase, react/sort-comp
-	UNSAFE_componentWillReceiveProps(nextProps) {
+	UNSAFE_componentWillReceiveProps(nextProps: LookupMenuItemProps) {
 		if (
 			nextProps.isActive !== this.props.isActive &&
 			nextProps.isActive === true
 		) {
 			this.scrollFocus();
-			this.props.setFocus(this.props.id);
+			this.props.setFocus?.(this.props.id);
 		}
 	}
 
 	getCustomLabel() {
 		const ListItemLabel = this.props.listItemLabelRenderer;
+		if (!ListItemLabel) {
+			return null;
+		}
 		return <ListItemLabel {...this.props} />;
 	}
 
@@ -62,14 +80,13 @@ class Item extends React.Component {
 
 	getLabel() {
 		let label;
-		if (this.props.children.data.subTitle) {
+		const item = this.props.children;
+		if (item?.data?.subTitle) {
 			label = (
 				<div className="slds-media__body">
-					<div className="slds-lookup__result-text">
-						{this.props.children.label}
-					</div>
+					<div className="slds-lookup__result-text">{item.label}</div>
 					<span className="slds-lookup__result-meta slds-text-body_small">
-						{this.props.children.data.subTitle}
+						{item.data.subTitle}
 					</span>
 				</div>
 			);
@@ -80,20 +97,20 @@ class Item extends React.Component {
 
 			label = (
 				<div className="slds-media__body">
-					<div className={labelClassName}>{this.props.children.label}</div>
+					<div className={labelClassName}>{item?.label}</div>
 				</div>
 			);
 		}
 		return label;
 	}
 
-	handleClick = () => this.props.onSelect(this.props.id, this.props.data);
+	handleClick = () => this.props.onSelect?.(this.props.id, this.props.data);
 
 	// Scroll menu item based on up/down mouse keys (assumes all items are the same height)
 	scrollFocus() {
-		const height = this.itemRef.offsetHeight;
+		const height = this.itemRef?.offsetHeight;
 		if (height && this.props.handleItemFocus) {
-			this.props.handleItemFocus(this.props.index, height);
+			this.props.handleItemFocus(this.props.index ?? 0, height);
 		}
 	}
 
@@ -118,7 +135,7 @@ class Item extends React.Component {
 					onClick={this.handleClick}
 					onMouseDown={EventUtil.trapImmediate}
 					role="option"
-					tabIndex="-1"
+					tabIndex={-1}
 				>
 					{this.getIcon()}
 					{this.props.listItemLabelRenderer
@@ -129,8 +146,5 @@ class Item extends React.Component {
 		);
 	}
 }
-
-Item.displayName = displayName;
-Item.propTypes = propTypes;
 
 export default Item;
