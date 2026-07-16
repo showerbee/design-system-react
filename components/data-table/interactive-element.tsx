@@ -4,8 +4,7 @@
 import { Component, ComponentType } from 'react';
 import Mode from './private/mode';
 import CellContext from './private/cell-context';
-import TableContext from './private/table-context';
-import { TableContextValue } from './private/table-context';
+import TableContext, { TableContextValue } from './private/table-context';
 
 import generateId from '../../utilities/generate-id';
 
