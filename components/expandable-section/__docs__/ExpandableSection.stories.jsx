@@ -51,7 +51,7 @@ export const InitiallyCollapsed = {
 export const NonCollapsible = {
 	render: () => (
 		<ExpandableSection title="Non-Collapsible Section" nonCollapsible>
-			<p>This section cannot be collapsed. It's always visible.</p>
+			<p>This section cannot be collapsed. It&apos;s always visible.</p>
 		</ExpandableSection>
 	),
 };

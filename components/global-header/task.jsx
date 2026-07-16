@@ -44,7 +44,6 @@ class GlobalHeaderTask extends React.Component {
 		);
 		const dropdownChildren = dropdownProps.children || null;
 
-		// eslint-disable-next-line fp/no-delete
 		delete dropdownProps.children;
 
 		return (

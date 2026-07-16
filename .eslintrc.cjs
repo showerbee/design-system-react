@@ -11,6 +11,9 @@ module.exports = {
 		'plugin:react/recommended',
 		'plugin:react/jsx-runtime',
 		'plugin:react-hooks/recommended',
+		'plugin:jsx-a11y/recommended',
+		'plugin:import/recommended',
+		'plugin:import/typescript',
 		'plugin:storybook/recommended',
 		'prettier',
 	],
@@ -24,12 +27,25 @@ module.exports = {
 		// Ensure `project` paths resolve relative to this config file (not process.cwd()).
 		// This prevents ESLint from trying to read a non-existent repo-root tsconfig.json.
 		tsconfigRootDir: __dirname,
-		project: ['./tsconfig.json', './tsconfig.node.json'],
+		// Use the lint-only tsconfig, which widens `include` to cover stories,
+		// docs, examples, tests, and sidecar `.d.ts` files. The build tsconfig
+		// excludes those, which caused "TSConfig does not include this file"
+		// parse errors for type-aware linting.
+		project: ['./tsconfig.eslint.json', './tsconfig.node.json'],
 	},
-	plugins: ['@typescript-eslint', 'react', 'react-hooks'],
+	plugins: ['@typescript-eslint', 'react', 'react-hooks', 'jsx-a11y', 'import'],
 	settings: {
 		react: {
 			version: 'detect',
+		},
+		'import/resolver': {
+			node: {
+				extensions: ['.js', '.jsx', '.ts', '.tsx'],
+			},
+		},
+		// The `import` plugin resolves TS path/extension imports via these parsers.
+		'import/parsers': {
+			'@typescript-eslint/parser': ['.ts', '.tsx'],
 		},
 	},
 	ignorePatterns: [
@@ -40,6 +56,11 @@ module.exports = {
 		'*.config.mjs',
 		'coverage',
 		'.storybook',
+		// Sidecar type declarations paired with a same-named source file. TS treats
+		// them as non-root program files, so the type-aware parser rejects them.
+		// They carry no lintable logic and are slated for removal in the TS
+		// migration, so exclude them from linting.
+		'**/*.d.ts',
 	],
 	rules: {
 		// TypeScript handles these
@@ -77,6 +98,28 @@ module.exports = {
 
 		// Console warnings for debugging (will clean up later)
 		'no-console': ['warn', { allow: ['warn', 'error'] }],
+
+		// Module resolution is validated by TypeScript + Vite, both of which
+		// understand this codebase's mixed `.jsx`-import/`.tsx`-on-disk paths and
+		// `paths` aliases. The eslint-plugin-import node resolver does not, so
+		// `no-unresolved` is a false-positive generator here — turn it off.
+		'import/no-unresolved': 'off',
+		'import/named': 'off',
+
+		// The airbnb-era codebase carries a large, pre-existing accessibility and
+		// import-hygiene backlog. Surface it as warnings (matching this config's
+		// gradual-migration philosophy for `any`, non-null assertions, etc.) so it
+		// stays visible without blocking the "zero errors" goal. Ratchet these back
+		// to `error` as the backlog is worked down.
+		'jsx-a11y/anchor-is-valid': 'warn',
+		'jsx-a11y/click-events-have-key-events': 'warn',
+		'jsx-a11y/no-static-element-interactions': 'warn',
+		'jsx-a11y/no-noninteractive-element-interactions': 'warn',
+		'jsx-a11y/interactive-supports-focus': 'warn',
+		'jsx-a11y/role-has-required-aria-props': 'warn',
+		'jsx-a11y/label-has-associated-control': 'warn',
+		'jsx-a11y/no-noninteractive-tabindex': 'warn',
+		'jsx-a11y/no-autofocus': 'warn',
 	},
 	overrides: [
 		// JavaScript files (legacy, being migrated)
@@ -114,6 +157,11 @@ module.exports = {
 			rules: {
 				'@typescript-eslint/no-explicit-any': 'off',
 				'no-console': 'off',
+				// CSF3 `render: () => { ... }` functions legitimately call hooks
+				// (useState, etc.) but are not recognized as React components by
+				// this rule, producing false positives. Hooks-correctness in real
+				// components is still enforced everywhere else.
+				'react-hooks/rules-of-hooks': 'off',
 			},
 		},
 		// Example files

@@ -1,6 +1,11 @@
 # Do not format inline SVGs
 icons/
 
+# Legacy Karma/chai/sinon browser tests, excluded from the Vitest run and not
+# migrated. They reference globals (sinon) that no longer exist, so linting them
+# is noise until they are ported or removed.
+**/*.browser-test.*
+
 # --- FROM GITIGNORE FILE BELOW THIS LINE ---
 
 ### Project files ###

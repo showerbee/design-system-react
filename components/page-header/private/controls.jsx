@@ -58,7 +58,6 @@ class Controls extends Component {
 						child.type &&
 						child.type.displayName === PAGE_HEADER_CONTROL
 					) {
-						// eslint-disable-next-line fp/no-mutating-methods
 						vettedControls.push(child);
 					}
 				});

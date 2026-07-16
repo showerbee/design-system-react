@@ -1,14 +1,19 @@
-import React from 'react';
-import { storiesOf } from '@storybook/react';
-
-import { PORTAL_SETTINGS } from '../../../utilities/constants';
-
 import Default from '../__examples__/default';
 import Override from '../__examples__/override';
 
-storiesOf(PORTAL_SETTINGS, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">{getStory()}</div>
-	))
-	.add('Default, not used', () => <Default />)
-	.add('Override', () => <Override />);
+export default {
+	title: 'Components/PortalSettings',
+	decorators: [
+		(Story) => <div className="slds-p-around_medium">{Story()}</div>,
+	],
+};
+
+export const DefaultNotUsed = {
+	name: 'Default, not used',
+	render: () => <Default />,
+};
+
+export const OverrideStory = {
+	name: 'Override',
+	render: () => <Override />,
+};

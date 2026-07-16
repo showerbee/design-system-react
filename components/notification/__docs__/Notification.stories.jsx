@@ -1,19 +1,23 @@
-import React from 'react';
-import { storiesOf } from '@storybook/react';
 import IconSettings from '../../icon-settings';
-import { NOTIFICATION } from '../../../utilities/constants';
 import Notification from '../../notification';
 import Alerts from '../__examples__/alerts';
 import Toasts from '../__examples__/toasts';
 import WithinModal from '../__examples__/within-modal';
 
-storiesOf(NOTIFICATION, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">
-			<IconSettings iconPath="/assets/icons">{getStory()}</IconSettings>
-		</div>
-	))
-	.add('Base: Alert', () => (
+export default {
+	title: 'Components/Notification',
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">{Story()}</IconSettings>
+			</div>
+		),
+	],
+};
+
+export const BaseAlert = {
+	name: 'Base: Alert',
+	render: () => (
 		<Notification
 			content={[
 				'Your new contact ',
@@ -32,8 +36,12 @@ storiesOf(NOTIFICATION, module)
 			variant="alert"
 			silenceDeprecationWarning
 		/>
-	))
-	.add('Base: Toast', () => (
+	),
+};
+
+export const BaseToast = {
+	name: 'Base: Toast',
+	render: () => (
 		<Notification
 			content="toast notification"
 			inverse
@@ -46,7 +54,20 @@ storiesOf(NOTIFICATION, module)
 			variant="toast"
 			silenceDeprecationWarning
 		/>
-	))
-	.add('Docs site Alerts', () => <Alerts />)
-	.add('Docs site Toasts', () => <Toasts />)
-	.add('Docs site WithinModal', () => <WithinModal />);
+	),
+};
+
+export const DocsSiteAlerts = {
+	name: 'Docs site Alerts',
+	render: () => <Alerts />,
+};
+
+export const DocsSiteToasts = {
+	name: 'Docs site Toasts',
+	render: () => <Toasts />,
+};
+
+export const DocsSiteWithinModal = {
+	name: 'Docs site WithinModal',
+	render: () => <WithinModal />,
+};

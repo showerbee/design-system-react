@@ -124,7 +124,6 @@ class TextTruncate extends React.Component {
 			let lastIsEng = false;
 			let lastSpaceIndex = -1;
 
-			// eslint-disable-next-line fp/no-loops
 			while (displayLine !== 0) {
 				let ext = '';
 				let extraWidthDueToPrefixStyle = 0;
@@ -143,7 +142,6 @@ class TextTruncate extends React.Component {
 					}
 				}
 
-				// eslint-disable-next-line fp/no-loops
 				while (currentPos <= maxTextLength) {
 					truncatedText = text.substr(startPos, currentPos);
 					width =
@@ -161,7 +159,6 @@ class TextTruncate extends React.Component {
 						}
 					} else {
 						let lastWidth = 0;
-						// eslint-disable-next-line fp/no-loops
 						do {
 							currentPos -= 1;
 							truncatedText = text.substr(startPos, currentPos);

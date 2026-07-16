@@ -2,11 +2,9 @@
 
 import React from 'react';
 
-import { storiesOf } from '@storybook/react';
 import { action } from 'storybook/actions';
 import IconSettings from '../../../../../components/icon-settings';
 
-import { FORMS_INLINE_EDIT } from '../../../../../utilities/constants';
 import InlineEdit from '../../inline';
 
 class DemoInlineEdit extends React.Component {
@@ -38,21 +36,30 @@ class DemoInlineEdit extends React.Component {
 	}
 }
 
-storiesOf(FORMS_INLINE_EDIT, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">
-			<IconSettings iconPath="/assets/icons">{getStory()}</IconSettings>
-		</div>
-	))
-	.add('Base', () => (
+export default {
+	title: 'Components/Forms/InlineEdit',
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">{Story()}</IconSettings>
+			</div>
+		),
+	],
+};
+
+export const Base = {
+	render: () => (
 		<section>
 			<h1 className="slds-text-title_caps slds-p-vertical_medium">
 				Base Inline Edit Input
 			</h1>
 			<DemoInlineEdit name="inline-edit-standard" id="inline-edit-standard" />
 		</section>
-	))
-	.add('Disabled', () => (
+	),
+};
+
+export const Disabled = {
+	render: () => (
 		<section>
 			<h1 className="slds-text-title_caps slds-p-vertical_medium">
 				Disabled Inline Edit Input
@@ -63,4 +70,5 @@ storiesOf(FORMS_INLINE_EDIT, module)
 				disabled
 			/>
 		</section>
-	));
+	),
+};

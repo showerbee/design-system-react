@@ -1,20 +1,37 @@
-import React from 'react';
-import { storiesOf } from '@storybook/react';
-
-import { ILLUSTRATION } from '../../../utilities/constants';
-
 import SmallImageWithText from '../__examples__/small-image-text.jsx';
 import LargeImageWithText from '../__examples__/large-image-text.jsx';
 import HeadingOnly from '../__examples__/heading-only.jsx';
 import MessageOnly from '../__examples__/message-only.jsx';
 import HeadingWithMessage from '../__examples__/heading-message.jsx';
 
-storiesOf(ILLUSTRATION, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">{getStory()}</div>
-	))
-	.add('Small Image and Text', () => <SmallImageWithText />)
-	.add('Large Image and Text', () => <LargeImageWithText />)
-	.add('Heading Only', () => <HeadingOnly />)
-	.add('Message Only', () => <MessageOnly />)
-	.add('Heading and Message', () => <HeadingWithMessage />);
+export default {
+	title: 'Components/Illustration',
+	decorators: [
+		(Story) => <div className="slds-p-around_medium">{Story()}</div>,
+	],
+};
+
+export const SmallImageAndText = {
+	name: 'Small Image and Text',
+	render: () => <SmallImageWithText />,
+};
+
+export const LargeImageAndText = {
+	name: 'Large Image and Text',
+	render: () => <LargeImageWithText />,
+};
+
+export const HeadingOnly1 = {
+	name: 'Heading Only',
+	render: () => <HeadingOnly />,
+};
+
+export const MessageOnly1 = {
+	name: 'Message Only',
+	render: () => <MessageOnly />,
+};
+
+export const HeadingAndMessage = {
+	name: 'Heading and Message',
+	render: () => <HeadingWithMessage />,
+};

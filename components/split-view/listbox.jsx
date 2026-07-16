@@ -251,12 +251,10 @@ class SplitViewListbox extends React.Component {
 					? this.props.selection.filter((i) => i !== item)
 					: [item, ...this.props.selection];
 			} else if (event.shiftKey) {
-				/* eslint-disable fp/no-mutating-methods */
 				const [begin, end] = [
 					this.props.options.indexOf(this.state.currentSelectedItem),
 					this.props.options.indexOf(item),
 				].sort();
-				/* eslint-enable fp/no-mutating-methods */
 
 				const addToSelection = this.props.options.slice(begin, end + 1);
 

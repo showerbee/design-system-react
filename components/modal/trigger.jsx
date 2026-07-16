@@ -1,8 +1,7 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import componentIsDeprecated from '../../utilities/warning/component-is-deprecated';
 
@@ -32,7 +31,11 @@ const ModalTrigger = {
 			</Modal>
 		);
 
-		ReactDOM.render(comp, el); // deepscan-disable-line REACT_ASYNC_RENDER_RETURN_VALUE
+		if (el) {
+			// React 18+ root API. `ReactDOM.render` was removed in React 19.
+			const root = createRoot(el);
+			root.render(comp);
+		}
 	},
 };
 

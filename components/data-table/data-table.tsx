@@ -14,11 +14,13 @@
 // @ts-ignore - Main component is still JSX
 export { default } from './index.jsx';
 
-// Export TypeScript-converted subcomponents
-export { default as DataTableCell, type DataTableCellProps } from './cell';
-export { default as DataTableColumn, type DataTableColumnProps } from './column';
-export { default as DataTableRowActions, type DataTableRowActionsProps } from './row-actions';
-export { default as DataTableHighlightCell, type DataTableHighlightCellProps } from './highlight-cell';
+// Export TypeScript-converted subcomponents. The corresponding `*Props` types
+// are re-exported once via `export * from './types'` below (their canonical
+// home) to avoid duplicate-export conflicts.
+export { default as DataTableCell } from './cell';
+export { default as DataTableColumn } from './column';
+export { default as DataTableRowActions } from './row-actions';
+export { default as DataTableHighlightCell } from './highlight-cell';
 export { default as DataTableInteractiveElement } from './interactive-element';
 export { default as DataTableInteractiveLink } from './interactive-link';
 

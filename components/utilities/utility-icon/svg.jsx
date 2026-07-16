@@ -16,21 +16,25 @@ class Svg extends React.Component {
 
 	getCircles = (circles) => {
 		if (circles instanceof Array) {
-			return circles.map((item) => <circle {...item} />);
+			return circles.map((item, index) => <circle key={index} {...item} />);
 		}
 		return <circle key="circleSVG" {...circles} />;
 	};
 
 	getEllipses = (ellipses) => {
 		if (ellipses instanceof Array) {
-			return ellipses.map((item) => <ellipse {...item} />);
+			return ellipses.map((item, index) => (
+				<ellipse key={index} {...item} />
+			));
 		}
 		return <ellipse key="ellipseSVG" {...ellipses} />;
 	};
 
 	getGroups = (groups) => {
 		if (groups instanceof Array) {
-			return groups.map((item) => <g>{this.getShapes(item)}</g>);
+			return groups.map((item, index) => (
+				<g key={index}>{this.getShapes(item)}</g>
+			));
 		}
 
 		return <g key="groupsSVG">{this.getShapes(groups)}</g>;
@@ -41,22 +45,18 @@ class Svg extends React.Component {
 
 		if (data) {
 			if (data.g) {
-				// eslint-disable-next-line fp/no-mutating-methods
 				shapes.push(this.getGroups(data.g));
 			}
 
 			if (data.ellipse) {
-				// eslint-disable-next-line fp/no-mutating-methods
 				shapes.push(this.getEllipses(data.ellipse));
 			}
 
 			if (data.circle) {
-				// eslint-disable-next-line fp/no-mutating-methods
 				shapes.push(this.getCircles(data.circle));
 			}
 
 			if (data.path) {
-				// eslint-disable-next-line fp/no-mutating-methods
 				shapes.push(this.getPaths(data.path));
 			}
 		}

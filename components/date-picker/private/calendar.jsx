@@ -192,9 +192,7 @@ class DatepickerCalendar extends React.Component {
 		let monthIndex = firstDayOfWeek.getMonth();
 		let count = 0;
 
-		// eslint-disable-next-line fp/no-loops
 		while (!done) {
-			// eslint-disable-next-line fp/no-mutating-methods
 			weeks.push(
 				<Week
 					calendarHasFocus={this.state.calendarHasFocus}
@@ -228,10 +226,8 @@ class DatepickerCalendar extends React.Component {
 			monthIndex = firstDayOfWeek.getMonth();
 		}
 		let extraWeeks = 0;
-		// eslint-disable-next-line fp/no-loops
 		while (weeks.length < 6) {
 			extraWeeks += 1;
-			// eslint-disable-next-line fp/no-mutating-methods
 			weeks.push(
 				<tr key={`extra_${extraWeeks}`} className="week">
 					<td

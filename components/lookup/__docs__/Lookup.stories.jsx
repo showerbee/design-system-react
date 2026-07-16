@@ -1,8 +1,6 @@
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 import { action } from 'storybook/actions';
 import IconSettings from '../../icon-settings';
-import { LOOKUP } from '../../../utilities/constants';
 import Lookup from '../../lookup';
 import Header from '../../lookup/header';
 import Footer from '../../lookup/footer';
@@ -117,16 +115,23 @@ class DemoLookupAccounts extends React.Component {
 		);
 	}
 }
-storiesOf(LOOKUP, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">
-			<IconSettings iconPath="/assets/icons">
-				{<DeprecatedWarning />}
-				{getStory()}
-			</IconSettings>
-		</div>
-	))
-	.add('Standard', () => (
+
+export default {
+	title: 'Components/Lookup',
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">
+					{<DeprecatedWarning />}
+					{Story()}
+				</IconSettings>
+			</div>
+		),
+	],
+};
+
+export const Standard = {
+	render: () => (
 		<DemoLookup
 			emptyMessage="No Files found"
 			hasError={false}
@@ -135,9 +140,16 @@ storiesOf(LOOKUP, module)
 			isInline
 			label="Files"
 		/>
-	))
-	.add('Disabled', () => <DemoLookup disabled />)
-	.add('Standard with Accounts', () => (
+	),
+};
+
+export const Disabled = {
+	render: () => <DemoLookup disabled />,
+};
+
+export const StandardWithAccounts = {
+	name: 'Standard with Accounts',
+	render: () => (
 		<DemoLookupAccounts
 			emptyMessage="No Accounts found"
 			hasError={false}
@@ -146,10 +158,24 @@ storiesOf(LOOKUP, module)
 			isInline
 			label="Account"
 		/>
-	))
-	.add('Custom Empty Message Content', () => (
-		<DemoLookup emptyMessage={<span>No matches.</span>} isInline />
-	))
-	.add('Docs site Default', () => <Default />)
-	.add('Docs site Files', () => <Files />)
-	.add('Docs site WithSelection', () => <WithSelection />);
+	),
+};
+
+export const CustomEmptyMessageContent = {
+	render: () => <DemoLookup emptyMessage={<span>No matches.</span>} isInline />,
+};
+
+export const DocsSiteDefault = {
+	name: 'Docs site Default',
+	render: () => <Default />,
+};
+
+export const DocsSiteFiles = {
+	name: 'Docs site Files',
+	render: () => <Files />,
+};
+
+export const DocsSiteWithSelection = {
+	name: 'Docs site WithSelection',
+	render: () => <WithSelection />,
+};

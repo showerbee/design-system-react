@@ -123,7 +123,6 @@ class InlineEdit extends React.Component {
 	endEditMode = (option) => {
 		if (this.willSave) {
 			clearTimeout(this.willSave);
-			// eslint-disable-next-line fp/no-delete
 			delete this.willSave;
 		}
 

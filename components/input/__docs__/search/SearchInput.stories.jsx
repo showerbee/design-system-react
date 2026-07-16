@@ -1,18 +1,21 @@
-import React from 'react';
-import { storiesOf } from '@storybook/react';
 import { action } from 'storybook/actions';
 import IconSettings from '../../../icon-settings';
 
-import { SEARCH } from '../../../../utilities/constants';
 import Search from '../../search';
 
-storiesOf(SEARCH, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">
-			<IconSettings iconPath="/assets/icons">{getStory()}</IconSettings>
-		</div>
-	))
-	.add('Standard', () => (
+export default {
+	title: 'Components/Input/Search',
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">{Story()}</IconSettings>
+			</div>
+		),
+	],
+};
+
+export const Standard = {
+	render: () => (
 		<Search
 			assistiveText={{ label: 'Search' }}
 			id="search-standard"
@@ -21,4 +24,5 @@ storiesOf(SEARCH, module)
 			onChange={action('change')}
 			onSearch={action('search')}
 		/>
-	));
+	),
+};

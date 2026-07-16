@@ -1,6 +1,3 @@
-import React from 'react';
-import { storiesOf } from '@storybook/react';
-import { ICON } from '../../../utilities/constants';
 import Icon from '../../icon';
 import IconSettings from '../../icon-settings';
 import download from '../../../icons/utility/download';
@@ -34,24 +31,75 @@ const makeRtl = (component) => (
 	</UNSAFE_DirectionSettings.Provider>
 );
 
-storiesOf(ICON, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">
-			<IconSettings iconPath="/assets/icons">{getStory()}</IconSettings>
-		</div>
-	))
-	.add('Category: Standard', () => <Standard />)
-	.add('Category: Standard - Right to Left (RTL)', () => makeRtl(<Standard />))
-	.add('Category: Utility', () => <Utility />)
-	.add('Category: Action', () => <Action />)
-	.add('Category: Doctype', () => <Doctype />)
-	.add('Category: Custom', () => <Custom />)
-	.add('Category: External Path', () => <ExternalPath />)
-	.add('Size: X-Small', () => <SizesExtraSmall />)
-	.add('Size: Small', () => <SizesSmall />)
-	.add('Size: Medium (default)', () => <SizesMedium />)
-	.add('Size: Large', () => <SizesLarge />)
-	.add('Color: Base', () => (
+export default {
+	title: 'Components/Icon',
+	decorators: [
+		(Story) => (
+			<div className="slds-p-around_medium">
+				<IconSettings iconPath="/assets/icons">{Story()}</IconSettings>
+			</div>
+		),
+	],
+};
+
+export const CategoryStandard = {
+	name: 'Category: Standard',
+	render: () => <Standard />,
+};
+
+export const CategoryStandardRightToLeftRTL = {
+	name: 'Category: Standard - Right to Left (RTL)',
+	render: () => makeRtl(<Standard />),
+};
+
+export const CategoryUtility = {
+	name: 'Category: Utility',
+	render: () => <Utility />,
+};
+
+export const CategoryAction = {
+	name: 'Category: Action',
+	render: () => <Action />,
+};
+
+export const CategoryDoctype = {
+	name: 'Category: Doctype',
+	render: () => <Doctype />,
+};
+
+export const CategoryCustom = {
+	name: 'Category: Custom',
+	render: () => <Custom />,
+};
+
+export const CategoryExternalPath = {
+	name: 'Category: External Path',
+	render: () => <ExternalPath />,
+};
+
+export const SizeXSmall = {
+	name: 'Size: X-Small',
+	render: () => <SizesExtraSmall />,
+};
+
+export const SizeSmall = {
+	name: 'Size: Small',
+	render: () => <SizesSmall />,
+};
+
+export const SizeMediumDefault = {
+	name: 'Size: Medium (default)',
+	render: () => <SizesMedium />,
+};
+
+export const SizeLarge = {
+	name: 'Size: Large',
+	render: () => <SizesLarge />,
+};
+
+export const ColorBase1 = {
+	name: 'Color: Base',
+	render: () => (
 		<div
 			style={{
 				backgroundColor: 'goldenrod',
@@ -60,13 +108,37 @@ storiesOf(ICON, module)
 		>
 			<ColorBase />
 		</div>
-	))
-	.add('Color: Default', () => <ColorDefault />)
-	.add('Color: Success', () => <ColorSuccess />)
-	.add('Color: Error', () => <ColorError />)
-	.add('Color: Warning', () => <ColorWarning />)
-	.add('Color: Light', () => <ColorLight />)
-	.add('Base: Standard (custom styles)', () => (
+	),
+};
+
+export const ColorDefault1 = {
+	name: 'Color: Default',
+	render: () => <ColorDefault />,
+};
+
+export const ColorSuccess1 = {
+	name: 'Color: Success',
+	render: () => <ColorSuccess />,
+};
+
+export const ColorError1 = {
+	name: 'Color: Error',
+	render: () => <ColorError />,
+};
+
+export const ColorWarning1 = {
+	name: 'Color: Warning',
+	render: () => <ColorWarning />,
+};
+
+export const ColorLight1 = {
+	name: 'Color: Light',
+	render: () => <ColorLight />,
+};
+
+export const BaseStandardCustomStyles = {
+	name: 'Base: Standard (custom styles)',
+	render: () => (
 		<Icon
 			assistiveText={{
 				label: 'Account',
@@ -79,8 +151,12 @@ storiesOf(ICON, module)
 			}}
 			title="This is a title"
 		/>
-	))
-	.add('Base: Imported', () => (
+	),
+};
+
+export const BaseImported = {
+	name: 'Base: Imported',
+	render: () => (
 		<Icon
 			assistiveText={{
 				label: 'Download',
@@ -88,8 +164,25 @@ storiesOf(ICON, module)
 			category="utility"
 			icon={download}
 		/>
-	))
-	.add('Product Themes', () => <ProductThemes />)
-	.add('Docs site Categories', () => <Categories />)
-	.add('Docs site Colors', () => <Colors />)
-	.add('Docs site Sizes', () => <Sizes />);
+	),
+};
+
+export const ProductThemes1 = {
+	name: 'Product Themes',
+	render: () => <ProductThemes />,
+};
+
+export const DocsSiteCategories = {
+	name: 'Docs site Categories',
+	render: () => <Categories />,
+};
+
+export const DocsSiteColors = {
+	name: 'Docs site Colors',
+	render: () => <Colors />,
+};
+
+export const DocsSiteSizes = {
+	name: 'Docs site Sizes',
+	render: () => <Sizes />,
+};

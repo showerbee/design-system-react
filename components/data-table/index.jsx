@@ -135,7 +135,6 @@ const getColumnsAndRowActions = memoize(
 					Cell = DataTableCell;
 				}
 
-				// eslint-disable-next-line fp/no-mutating-methods
 				columns.push({
 					Cell,
 					props,
@@ -734,7 +733,6 @@ class DataTable extends React.Component {
 			const disabledColumns = [];
 
 			if (this.props.selectRows) {
-				// eslint-disable-next-line fp/no-mutating-methods
 				disabledColumns.push(0);
 			}
 

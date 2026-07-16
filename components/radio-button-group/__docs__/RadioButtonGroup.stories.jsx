@@ -1,10 +1,8 @@
 /* eslint-disable react/display-name */ import React from 'react';
 import PropTypes from 'prop-types';
-import { storiesOf } from '@storybook/react';
 import { action } from 'storybook/actions';
 import RadioButtonGroup from '../../radio-button-group';
 import Radio from '../../radio-button-group/radio';
-import { RADIO_BUTTON_GROUP } from '../../../utilities/constants';
 
 import Base from '../__examples__/base';
 
@@ -72,18 +70,29 @@ RadioButtonGroupExample.defaultProps = {
 		label: 'Day of week',
 	},
 };
-storiesOf(RADIO_BUTTON_GROUP, module)
-	.addDecorator((getStory) => (
-		<div className="slds-p-around_medium">{getStory()}</div>
-	))
-	.add('Base', () => <RadioButtonGroupExample heading="Base" />)
-	.add('Disabled', () => (
-		<RadioButtonGroupExample heading="Disabled" disabled />
-	))
-	.add('Required', () => (
-		<RadioButtonGroupExample heading="Required" required />
-	))
-	.add('Error', () => (
+
+export default {
+	title: 'Components/RadioButtonGroup',
+	decorators: [
+		(Story) => <div className="slds-p-around_medium">{Story()}</div>,
+	],
+};
+
+export const Base2 = {
+	name: 'Base',
+	render: () => <RadioButtonGroupExample heading="Base" />,
+};
+
+export const Disabled = {
+	render: () => <RadioButtonGroupExample heading="Disabled" disabled />,
+};
+
+export const Required = {
+	render: () => <RadioButtonGroupExample heading="Required" required />,
+};
+
+export const Error = {
+	render: () => (
 		<RadioButtonGroupExample
 			heading="Error"
 			labels={{
@@ -91,5 +100,10 @@ storiesOf(RADIO_BUTTON_GROUP, module)
 				error: 'There is an error',
 			}}
 		/>
-	))
-	.add('Docs site Base', () => <Base name="doc-site-base" />);
+	),
+};
+
+export const DocsSiteBase = {
+	name: 'Docs site Base',
+	render: () => <Base name="doc-site-base" />,
+};
