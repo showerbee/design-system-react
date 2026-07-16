@@ -3,7 +3,7 @@
 
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 
-import React, { Component } from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 

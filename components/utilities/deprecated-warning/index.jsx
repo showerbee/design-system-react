@@ -4,7 +4,6 @@
 /* eslint-disable react/jsx-no-literals */
 
 // ### React
-import React from 'react';
 
 // ## Constants
 import { DEPRECATED_WARNING } from '../../../utilities/constants';

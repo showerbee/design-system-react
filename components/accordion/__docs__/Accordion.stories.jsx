@@ -1,4 +1,3 @@
-import React from 'react';
 import IconSettings from '../../icon-settings';
 import Accordion from '../';
 import AccordionPanel from '../panel';

@@ -1,4 +1,3 @@
-import React from 'react';
 import IconSettings from '../../icon-settings';
 import GlobalNavigationBar from '../';
 import GlobalNavigationBarRegion from '../region';

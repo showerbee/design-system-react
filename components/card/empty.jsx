@@ -3,7 +3,6 @@
 
 // ### React
 // React is an external dependency of the project.
-import React from 'react';
 import PropTypes from 'prop-types';
 
 import { CARD_EMPTY } from '../../utilities/constants';

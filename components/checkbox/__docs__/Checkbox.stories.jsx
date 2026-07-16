@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { action } from 'storybook/actions';
 import IconSettings from '../../icon-settings';
 import Checkbox from '../../checkbox';

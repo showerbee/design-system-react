@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 // eslint-disable-next-line camelcase
 import UNSAFE_DirectionSettings from '..';
 

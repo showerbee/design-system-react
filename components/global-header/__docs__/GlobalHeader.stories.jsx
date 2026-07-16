@@ -1,4 +1,3 @@
-import React from 'react';
 import IconSettings from '../../icon-settings';
 import GlobalHeader from '../';
 // Note: GlobalHeaderSearch and GlobalHeaderProfile use react-onclickoutside

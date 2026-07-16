@@ -1,4 +1,3 @@
-import React from 'react';
 import Badge from '../../badge';
 import Icon from '../../icon';
 import IconSettings from '../../icon-settings';

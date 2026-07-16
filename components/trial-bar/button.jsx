@@ -1,4 +1,3 @@
-import React from 'react';
 import Button from '../button';
 import { TRIAL_BAR_BUTTON } from '../../utilities/constants';
 

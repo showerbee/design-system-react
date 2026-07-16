@@ -2,7 +2,6 @@
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
 // ### React
-import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '../../../components/button';
 import { CAROUSEL_AUTOPLAY_BUTTON } from '../../../utilities/constants';

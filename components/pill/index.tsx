@@ -1,7 +1,7 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React, { useRef, useCallback, useImperativeHandle, forwardRef, type ReactNode, type KeyboardEvent, type MouseEvent, type FocusEvent } from 'react';
+import { useRef, useCallback, useImperativeHandle, forwardRef, type ReactNode, type KeyboardEvent, type MouseEvent, type FocusEvent } from 'react';
 import classNames from 'classnames';
 import { PILL } from '../../utilities/constants';
 import UtilityIcon from '../utilities/utility-icon';

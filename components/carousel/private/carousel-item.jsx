@@ -5,7 +5,6 @@
 
 // Implements the [CarouselItem design pattern](https://www.lightningdesignsystem.com/components/carousel/) in React.
 
-import React from 'react';
 import PropTypes from 'prop-types';
 
 import Button from '../../button';

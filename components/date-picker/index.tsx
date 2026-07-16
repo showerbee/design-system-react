@@ -1,7 +1,7 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React, { useRef, forwardRef, type ForwardedRef } from 'react';
+import { useRef, forwardRef, type ForwardedRef } from 'react';
 import Datepicker, { type DatePickerProps } from './date-picker';
 import { useClickOutside } from '../../utilities/hooks/use-click-outside';
 

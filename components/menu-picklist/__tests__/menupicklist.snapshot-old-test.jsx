@@ -1,5 +1,4 @@
 /* eslint-env jest */
-import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import renderer from 'react-test-renderer';
 import jsBeautify from 'js-beautify';

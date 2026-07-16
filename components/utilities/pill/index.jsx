@@ -4,7 +4,6 @@
 /**
  * This Pill component should be used within a listbox and differs from the standalone Pill component which is typically used for actions (such as a link) and not form fields. This component should be used in conjuction with `PillContainer`.
  */
-import React from 'react';
 import PropTypes from 'prop-types';
 
 import assign from 'lodash.assign';

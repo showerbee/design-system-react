@@ -1,4 +1,3 @@
-import React from 'react';
 import Spinner from '../../spinner';
 import IconSettings from '../../icon-settings';
 

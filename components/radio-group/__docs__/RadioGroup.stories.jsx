@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import IconSettings from '../../icon-settings';
 import Radio from '../../radio';
 import RadioGroup from '../';

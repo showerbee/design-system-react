@@ -5,7 +5,6 @@
 // pattern](https://www.lightningdesignsystem.com/components/accordion/) in
 // React. Based on SLDS v2.3.2
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 

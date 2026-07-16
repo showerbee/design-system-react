@@ -1,4 +1,3 @@
-import React from 'react';
 import ProgressBar from '../../progress-bar';
 import IconSettings from '../../icon-settings';
 

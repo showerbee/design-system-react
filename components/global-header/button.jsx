@@ -7,7 +7,6 @@
 // ## Dependencies
 
 // ### React
-import React from 'react';
 
 // ### Button
 import Button from '../button';

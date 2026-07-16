@@ -1,4 +1,3 @@
-import React from 'react';
 
 import Dropdown from '../menu-dropdown';
 import DropdownTrigger from '../menu-dropdown/button-trigger';

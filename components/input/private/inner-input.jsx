@@ -4,7 +4,6 @@
 /* eslint-disable jsx-a11y/aria-activedescendant-has-tabindex */
 
 // ### React
-import React from 'react';
 import PropTypes from 'prop-types';
 
 import classNames from 'classnames';

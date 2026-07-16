@@ -3,7 +3,6 @@
 
 // Implements the [Progress Ring design pattern](https://lightningdesignsystem.com/components/progress-ring/) in React.
 // Based on SLDS v2.4.5
-import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
