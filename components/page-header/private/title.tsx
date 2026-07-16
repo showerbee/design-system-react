@@ -1,46 +1,44 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import { Component, type ReactNode } from 'react';
 import classnames from 'classnames';
 
 import Label from './label';
 
 const displayName = 'PageHeaderTitle';
-const propTypes = {
+
+export interface PageHeaderTitleProps {
 	/**
 	 * Sets the vertical alignment on the title
 	 */
-	align: PropTypes.oneOf(['top', 'middle', 'bottom']),
+	align?: 'top' | 'middle' | 'bottom';
 	/**
 	 * Optional class name
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * The title content
 	 */
-	content: PropTypes.node,
+	content?: ReactNode;
 	/**
 	 * Label node, for variants that require a label within the title
 	 */
-	label: PropTypes.node,
+	label?: ReactNode;
 	/**
 	 * Sets whether the title will truncate its content responsively.
 	 */
-	truncate: PropTypes.bool,
-};
-const defaultProps = {
-	// align: 'middle',
-	title: 'Page Header Title',
-	truncate: true,
-};
+	truncate?: boolean;
+}
 
-class Title extends Component {
+class Title extends Component<PageHeaderTitleProps> {
+	static displayName = displayName;
+
+	static defaultProps: Partial<PageHeaderTitleProps> = {
+		// align: 'middle',
+		truncate: true,
+	};
+
 	render() {
 		if (!this.props.content) return null;
 
@@ -72,9 +70,5 @@ class Title extends Component {
 		);
 	}
 }
-
-Title.displayName = displayName;
-Title.propTypes = propTypes;
-Title.defaultProps = defaultProps;
 
 export default Title;

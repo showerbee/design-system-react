@@ -1,8 +1,7 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactElement } from 'react';
 import classnames from 'classnames';
 
 import Controls from '../controls';
@@ -12,72 +11,38 @@ import Label from '../label';
 import MediaObject from '../../../media-object';
 import Title from '../title';
 
-const displayName = 'PageHeaderObjectHome';
-const propTypes = {
-	/**
-	 * The label property can be a string or a React element
-	 */
-	label: PropTypes.node,
-	/**
-	 * The page header icon
-	 */
-	icon: PropTypes.element,
-	/**
-	 * The info property can be a string or a React element
-	 */
-	info: PropTypes.node,
-	/**
-	 * Used with the `object-home` variant. Accepts a node, typically a Dropdown component
-	 */
-	nameSwitcherDropdown: PropTypes.node,
-	/**
-	 * Content to appear on the right hand side of the page header
-	 * prop 'contentRight' will be deprecated soon, use 'onRenderActions' instead
-	 */
-	onRenderActions: PropTypes.func,
-	/**
-	 * Nav content which appears in the upper right hand corner.
-	 * prop 'navRight' will be deprecated soon, use 'onRenderControls' instead
-	 */
-	onRenderControls: PropTypes.func,
-	/**
-	 * The title property can be a string or a React element
-	 */
-	title: PropTypes.node,
-	/**
-	 * An array of react elements presumably anchor <a> elements.
-	 */
-	trail: PropTypes.array,
-	/**
-	 * The type of component
-	 * Note: Extra options are added to make the version backward compatible
-	 */
-	variant: PropTypes.string,
-};
+import { type PageHeaderVariantProps } from '../types';
 
-const ObjectHome = (props) => {
+const displayName = 'PageHeaderObjectHome';
+
+const ObjectHome = (props: PageHeaderVariantProps) => {
 	let icon;
 
 	// Backwards compatibility
 	if (props.iconName) {
-		icon = (
-			<Icon
-				category={props.iconCategory}
-				className="slds-page-header__icon"
-				name={props.iconName}
-				position={props.iconPosition}
-				size={props.iconSize}
-				variant={props.iconVariant}
-			/>
-		);
+		// `position`/`variant` are legacy props not on IconProps; preserved via cast.
+		const iconProps = {
+			category: props.iconCategory,
+			className: 'slds-page-header__icon',
+			name: props.iconName,
+			position: props.iconPosition,
+			size: props.iconSize,
+			variant: props.iconVariant,
+		} as Record<string, unknown>;
+		icon = <Icon {...iconProps} />;
 	} else if (props.icon) {
 		let iconClasses = 'slds-page-header__icon';
 
 		if (props.icon.props) {
-			iconClasses = classnames(props.icon.props.className, iconClasses);
+			iconClasses = classnames(
+				(props.icon.props as { className?: string }).className,
+				iconClasses
+			);
 		}
 
-		icon = React.cloneElement(props.icon, { className: iconClasses });
+		icon = React.cloneElement(props.icon as ReactElement, {
+			className: iconClasses,
+		} as { className: string });
 	}
 
 	return (
@@ -122,7 +87,10 @@ const ObjectHome = (props) => {
 				</div>
 				<Controls
 					className={classnames({
-						'slds-align-middle': !props.onRenderActions && !props.comntentRight,
+						// NOTE: the original JS referenced a misspelled `comntentRight`
+						// which was always undefined, so this condition has only ever
+						// depended on `onRenderActions`. Behavior preserved verbatim.
+						'slds-align-middle': !props.onRenderActions,
 					})}
 					navRight={props.navRight}
 					onRenderControls={props.onRenderControls}
@@ -134,6 +102,5 @@ const ObjectHome = (props) => {
 };
 
 ObjectHome.displayName = displayName;
-ObjectHome.propTypes = propTypes;
 
 export default ObjectHome;

@@ -1,30 +1,29 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import { Component, type ReactNode } from 'react';
 import classnames from 'classnames';
-import DetailBlock from './detail-block';
+import DetailBlock, {
+	type PageHeaderDetailBlockProps,
+} from './detail-block';
 
 const displayName = 'PageHeaderDetailRow';
-const propTypes = {
-	children: PropTypes.node,
+
+export interface PageHeaderDetailRowProps {
+	children?: ReactNode;
 	/**
 	 * Optional class name
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * An array of detail blocks
 	 */
-	details: PropTypes.array,
-};
-const defaultProps = {};
+	details?: PageHeaderDetailBlockProps[];
+}
 
-class DetailRow extends Component {
+class DetailRow extends Component<PageHeaderDetailRowProps> {
+	static displayName = displayName;
+
 	renderDetails() {
 		if (this.props.children !== undefined) {
 			return this.props.children;
@@ -58,9 +57,5 @@ class DetailRow extends Component {
 		return <ul className={classes}>{this.renderDetails()}</ul>;
 	}
 }
-
-DetailRow.displayName = displayName;
-DetailRow.propTypes = propTypes;
-DetailRow.defaultProps = defaultProps;
 
 export default DetailRow;

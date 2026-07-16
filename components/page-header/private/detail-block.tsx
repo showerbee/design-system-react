@@ -3,45 +3,45 @@
 
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import { Component, type ReactNode } from 'react';
 import classnames from 'classnames';
 
 const displayName = 'PageHeaderDetailRow';
-const propTypes = {
+
+export interface PageHeaderDetailBlockProps {
 	/**
 	 * Optional class name
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * The content property can be a string or a React element
 	 */
-	content: PropTypes.node,
+	content?: ReactNode;
 	/**
 	 * Sets the 'flavor' of a block, which adds the following sizing class: `slds-size_${flavor}`
 	 */
-	flavor: PropTypes.string,
+	flavor?: string;
 	/**
 	 * Sets the label of a detail block
 	 */
-	label: PropTypes.node,
+	label?: ReactNode;
 	/**
 	 * Sets whether the fields truncate
 	 */
-	truncate: PropTypes.bool,
-};
+	truncate?: boolean;
+}
 
-const defaultProps = {
-	content: '',
-	label: '',
-	truncate: true,
-};
+class DetailBlock extends Component<PageHeaderDetailBlockProps> {
+	static displayName = displayName;
 
-class DetailBlock extends Component {
+	static defaultProps: Partial<PageHeaderDetailBlockProps> = {
+		content: '',
+		label: '',
+		truncate: true,
+	};
+
+	fieldContentRef: HTMLDivElement | null = null;
+
 	renderContent() {
 		const { content, truncate } = this.props;
 
@@ -97,9 +97,5 @@ class DetailBlock extends Component {
 		);
 	}
 }
-
-DetailBlock.displayName = displayName;
-DetailBlock.propTypes = propTypes;
-DetailBlock.defaultProps = defaultProps;
 
 export default DetailBlock;

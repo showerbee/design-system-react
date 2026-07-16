@@ -1,8 +1,7 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactElement } from 'react';
 import classnames from 'classnames';
 
 import Controls from '../controls';
@@ -11,54 +10,38 @@ import Info from '../info';
 import MediaObject from '../../../media-object';
 import Title from '../title';
 
-const displayName = 'PageHeaderBase';
-const propTypes = {
-	/**
-	 * The page header icon
-	 */
-	icon: PropTypes.node,
-	/**
-	 * The info property can be a string or a React element
-	 */
-	info: PropTypes.node,
-	/**
-	 * Nav content which appears in the upper right hand corner.
-	 * prop 'navRight' will be deprecated soon, use 'onRenderControls' instead
-	 */
-	onRenderControls: PropTypes.func,
-	/**
-	 * The title property can be a string or a React element
-	 */
-	title: PropTypes.node,
-	/**
-	 * The type of component
-	 */
-	variant: PropTypes.string,
-};
+import { type PageHeaderVariantProps } from '../types';
 
-const Base = (props) => {
+const displayName = 'PageHeaderBase';
+
+const Base = (props: PageHeaderVariantProps) => {
 	let icon;
 
 	// Backwards compatibility
 	if (props.iconName) {
-		icon = (
-			<Icon
-				category={props.iconCategory}
-				className="slds-page-header__icon"
-				name={props.iconName}
-				position={props.iconPosition}
-				size={props.iconSize}
-				variant={props.iconVariant}
-			/>
-		);
+		// `position`/`variant` are legacy props not on IconProps; preserved via cast.
+		const iconProps = {
+			category: props.iconCategory,
+			className: 'slds-page-header__icon',
+			name: props.iconName,
+			position: props.iconPosition,
+			size: props.iconSize,
+			variant: props.iconVariant,
+		} as Record<string, unknown>;
+		icon = <Icon {...iconProps} />;
 	} else if (props.icon) {
 		let iconClasses = 'slds-page-header__icon';
 
 		if (props.icon.props) {
-			iconClasses = classnames(props.icon.props.className, iconClasses);
+			iconClasses = classnames(
+				(props.icon.props as { className?: string }).className,
+				iconClasses
+			);
 		}
 
-		icon = React.cloneElement(props.icon, { className: iconClasses });
+		icon = React.cloneElement(props.icon as ReactElement, {
+			className: iconClasses,
+		} as { className: string });
 	}
 
 	return (
@@ -86,6 +69,5 @@ const Base = (props) => {
 	);
 };
 Base.displayName = displayName;
-Base.propTypes = propTypes;
 
 export default Base;
