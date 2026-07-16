@@ -1,12 +1,15 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React from 'react';
+import { createContext } from 'react';
 
 // Constants to specify directions: Left-to-Right (ltr) or Right-to-Left (rtl)
-const DIRECTIONS = {};
-DIRECTIONS.LTR = 'ltr';
-DIRECTIONS.RTL = 'rtl';
+export const DIRECTIONS = {
+	LTR: 'ltr',
+	RTL: 'rtl',
+} as const;
+
+export type Direction = (typeof DIRECTIONS)[keyof typeof DIRECTIONS];
 
 /*
  * Use this React context to wrap your component(s) to specify direction. Use either `DIRECTIONS.LTR` (ltr) or `DIRECTIONS.LTR` (rtl).
@@ -23,7 +26,7 @@ DIRECTIONS.RTL = 'rtl';
  * </UNSAFE_DirectionSettings.Provider>
  */
 // eslint-disable-next-line camelcase
-const UNSAFE_DirectionSettings = React.createContext('ltr');
+const UNSAFE_DirectionSettings = createContext<Direction>('ltr');
 
 // eslint-disable-next-line camelcase
-export { UNSAFE_DirectionSettings as default, DIRECTIONS };
+export { UNSAFE_DirectionSettings as default };

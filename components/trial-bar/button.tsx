@@ -1,14 +1,10 @@
-import Button from '../button';
+import Button, { type ButtonProps } from '../button';
 import { TRIAL_BAR_BUTTON } from '../../utilities/constants';
-
-// This component accepts the same props as Button.
-// eslint-disable-next-line react/forbid-foreign-prop-types
-const { propTypes } = Button;
 
 /**
  *  A [Button](/components/buttons/) within the Trial Bar.
  */
-const TrialBarButton = (props) => (
+const TrialBarButton = (props: ButtonProps) => (
 	<Button
 		{...props}
 		inverse
@@ -17,7 +13,6 @@ const TrialBarButton = (props) => (
 	/>
 );
 
-TrialBarButton.propTypes = propTypes;
 TrialBarButton.displayName = TRIAL_BAR_BUTTON;
 
 export default TrialBarButton;

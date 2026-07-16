@@ -1,14 +1,16 @@
-import { Component } from 'react';
+import { Component, type ComponentType } from 'react';
 // eslint-disable-next-line camelcase
-import UNSAFE_DirectionSettings from '..';
+import UNSAFE_DirectionSettings, { type Direction } from '..';
 
-const LanguageDirectionHOC = (WrappedComponent) => {
+const LanguageDirectionHOC = <P extends object>(
+	WrappedComponent: ComponentType<P & { direction?: Direction }>
+) => {
 	const componentName =
 		WrappedComponent.displayName || WrappedComponent.name || 'Component';
-	return class LanguageDirection extends Component {
+	return class LanguageDirection extends Component<P> {
 		static displayName = `LanguageDirection(${componentName})`;
 
-		getWrappedComponent = (value) => (
+		getWrappedComponent = (value: Direction) => (
 			<WrappedComponent {...this.props} direction={value} />
 		);
 

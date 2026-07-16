@@ -1,10 +1,17 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React from 'react';
+import { Component, type ReactNode } from 'react';
 import classNames from 'classnames';
 
-class GridColumn extends React.Component {
+export interface GridColumnProps {
+	/** Additional class names applied to the column. */
+	className?: string;
+	/** Column content. */
+	children?: ReactNode;
+}
+
+class GridColumn extends Component<GridColumnProps> {
 	getClassName() {
 		return `${this.props.className} slds-col`;
 	}
@@ -14,7 +21,18 @@ class GridColumn extends React.Component {
 	}
 }
 
-class Grid extends React.Component {
+export interface GridProps {
+	/** Additional class names applied to the grid. */
+	className?: string;
+	/** Grid flavor, appended as `slds-grid_{flavor}`. */
+	flavor?: string;
+	/** Grid content, typically `Grid.Column` elements. */
+	children?: ReactNode;
+}
+
+class Grid extends Component<GridProps> {
+	static Column = GridColumn;
+
 	getClassName() {
 		const { flavor } = this.props;
 		return classNames(this.props.className, 'slds-grid', {
@@ -26,7 +44,5 @@ class Grid extends React.Component {
 		return <div className={this.getClassName()}>{this.props.children}</div>;
 	}
 }
-
-Grid.Column = GridColumn;
 
 export default Grid;

@@ -1,19 +1,21 @@
-
 import Dropdown from '../menu-dropdown';
 import DropdownTrigger from '../menu-dropdown/button-trigger';
-import MenuDropdown from '../menu-dropdown/menu-dropdown';
+import { type MenuDropdownProps } from '../menu-dropdown/menu-dropdown';
 import Button from '../button';
 
 import { TRIAL_BAR_DROPDOWN } from '../../utilities/constants';
 
-// This component accepts the same props as MenuDropdown.
-// eslint-disable-next-line react/forbid-foreign-prop-types
-const { propTypes } = MenuDropdown;
+export interface TrialBarDropdownProps extends MenuDropdownProps {
+	/**
+	 * Label rendered on the dropdown trigger button.
+	 */
+	label?: string;
+}
 
 /**
  *  A [Dropdown](/components/menu-dropdowns/) within the Trial Bar.
  */
-const TrialBarDropdown = (props) => {
+const TrialBarDropdown = (props: TrialBarDropdownProps) => {
 	const { label, ...rest } = props;
 	return (
 		<Dropdown {...rest} inverse>
@@ -31,6 +33,5 @@ const TrialBarDropdown = (props) => {
 	);
 };
 
-TrialBarDropdown.propTypes = propTypes;
 TrialBarDropdown.displayName = TRIAL_BAR_DROPDOWN;
 export default TrialBarDropdown;
