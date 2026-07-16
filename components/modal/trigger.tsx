@@ -2,6 +2,7 @@
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
 import { createRoot } from 'react-dom/client';
+import { type ReactNode } from 'react';
 
 import componentIsDeprecated from '../../utilities/warning/component-is-deprecated';
 
@@ -9,20 +10,33 @@ import Modal from './index';
 
 import { canUseDOM } from '../../utilities/execution-environment';
 
+export interface ModalTriggerConfig {
+	/** Modal heading text. */
+	title?: ReactNode;
+	/** Modal footer content. */
+	footer?: ReactNode | ReactNode[];
+	/** Modal body content. */
+	content?: ReactNode;
+}
+
 // This component should be deprecated and appears to have
 // been created in order to do modals in portals.
 
 const ModalTrigger = {
-	open: (cfg) => {
+	open: (cfg: ModalTriggerConfig) => {
 		componentIsDeprecated(
 			'components/modal/trigger.jsx',
+			// The legacy call passes a message string in the `props` slot; the
+			// deprecation helper only reads `props.silenceDeprecationWarning`, so
+			// this is a harmless no-op guard. Preserved for backwards behavior.
+			{} as Record<string, unknown>,
 			'This component is deprecated and appears to have been created in order to do modals in portals which is what current Modal has done for years.'
 		);
 
 		let el;
 		if (canUseDOM) {
 			el = document.createElement('span');
-			el.setAttribute('data-slds-modal', true);
+			el.setAttribute('data-slds-modal', 'true');
 			document.body.appendChild(el);
 		}
 		const comp = (
