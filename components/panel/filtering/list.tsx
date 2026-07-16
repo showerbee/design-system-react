@@ -9,63 +9,67 @@
 // ## Dependencies
 
 // ### React
-import React from 'react';
-
-import PropTypes from 'prop-types';
+import React, { Component, type ReactNode } from 'react';
 
 // ## Constants
 import { PANEL_FILTER_LIST } from '../../../utilities/constants';
 
 import generateId from '../../../utilities/generate-id';
 
+export interface PanelFilterListProps {
+	/**
+	 * Pass in `Filter` components
+	 */
+	children?: ReactNode;
+}
+
 /**
  * A list of Filters. This is a higher order component for filters that decorates the filter to work within a Filtering Panel. It also adds support for a Filter error label.
  */
-class PanelFilterList extends React.Component {
+class PanelFilterList extends Component<PanelFilterListProps> {
 	static displayName = PANEL_FILTER_LIST;
 
-	static propTypes() {
-		return {
-			/**
-			 * Pass in `Filter` components
-			 */
-			children: PropTypes.node,
-		};
-	}
+	generatedId: string;
 
-	constructor(props) {
+	constructor(props: PanelFilterListProps) {
 		super(props);
 		this.generatedId = generateId();
 	}
 
 	render() {
 		const children = React.Children.map(this.props.children, (child, index) => {
-			const id =
-				child && child.props.id
-					? child.props.id
-					: `${this.generatedId}-${index}`;
+			if (!React.isValidElement(child)) {
+				return null;
+			}
+
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const childProps = child.props as any;
+			const id = childProps.id
+				? childProps.id
+				: `${this.generatedId}-${index}`;
 
 			let clonedChild;
 
-			if (child && child.props.errorLabel) {
+			if (childProps.errorLabel) {
 				clonedChild = React.cloneElement(child, {
 					isError: true,
-				});
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				} as any);
 			}
 
-			return child ? (
+			return (
 				<li className="slds-item slds-hint-parent">
 					{clonedChild || child}
-					{child.props.errorLabel ? (
+					{childProps.errorLabel ? (
 						<p
 							id={`${id}-error`}
 							className="slds-text-color_error slds-m-top_xx-small"
 						>
-							{child.props.errorLabel}
+							{childProps.errorLabel}
 						</p>
 					) : null}
 				</li>
-			) : null;
+			);
 		});
 
 		return (

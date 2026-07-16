@@ -3,40 +3,53 @@
 
 /* eslint-disable class-methods-use-this */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, type ComponentType, type Ref } from 'react';
 import classNames from 'classnames';
 
 export const DISPLAY_NAME = 'SLDSSplitViewListItemWithContent';
 
-const propsTypes = {
+export interface SplitViewListItemAssistiveText {
+	/** The unread indicator. */
+	unreadItem?: string;
+}
+
+export interface SplitViewListItemEventData {
+	item: unknown;
+	isSelected: boolean;
+	isUnread?: boolean;
+}
+
+export interface SplitViewListItemEvents {
+	/** Called when the item is clicked. */
+	onClick: (event: React.MouseEvent, data: SplitViewListItemEventData) => void;
+}
+
+export interface ListItemWithContentProps {
 	/**
 	 * **Assistive text for accessibility**
 	 * * `unreadItem`: The unread indicator.
 	 */
-	assistiveText: PropTypes.shape({
-		unreadItem: PropTypes.string,
-	}),
+	assistiveText?: SplitViewListItemAssistiveText;
 	/**
 	 * Item to be displayed
 	 */
-	item: PropTypes.object.isRequired,
+	item: unknown;
 	/**
 	 * Allows multiple item to be selection
 	 */
-	multiple: PropTypes.bool,
+	multiple?: boolean;
 	/**
 	 * Shows the item as `focused`.
 	 */
-	isFocused: PropTypes.bool.isRequired,
+	isFocused: boolean;
 	/**
 	 * Shows the item as `selected`.
 	 */
-	isSelected: PropTypes.bool.isRequired,
+	isSelected: boolean;
 	/**
 	 * Shows the item as `unread`.
 	 */
-	isUnread: PropTypes.bool,
+	isUnread?: boolean;
 	/**
 	 * **Event Callbacks**
 	 * * `onClick`: Called when the item is clicked.
@@ -46,20 +59,18 @@ const propsTypes = {
 	 * * * * `isSelected`: Is the item selected.
 	 * * * * `isUnread`: Is the item unread.
 	 */
-	events: PropTypes.shape({
-		onClick: PropTypes.func.isRequired,
-	}),
+	events?: SplitViewListItemEvents;
 	/**
 	 * Reference to the list item component
 	 */
-	listItemRef: PropTypes.func,
-};
+	listItemRef?: Ref<HTMLAnchorElement>;
+}
 
-const defaultProps = {
+const defaultProps: Partial<ListItemWithContentProps> = {
 	assistiveText: {
 		unreadItem: 'Unread Item',
 	},
-	events: {},
+	events: {} as SplitViewListItemEvents,
 };
 
 /**
@@ -67,20 +78,20 @@ const defaultProps = {
  * @param ListItemContent {node} A React component
  * @returns {ListItemWithContent} A React component
  */
-const listItemWithContent = (ListItemContent) => {
-	class ListItemWithContent extends React.Component {
+const listItemWithContent = (
+	ListItemContent: ComponentType<ListItemWithContentProps>
+) => {
+	class ListItemWithContent extends Component<ListItemWithContentProps> {
 		static displayName = `${DISPLAY_NAME}(${
 			ListItemContent.displayName || ListItemContent.name || 'Component'
 		})`;
 
-		static propTypes = propsTypes;
-
 		static defaultProps = defaultProps;
 
-		onClick = (event) => {
+		onClick = (event: React.MouseEvent) => {
 			event.preventDefault();
 
-			this.props.events.onClick(event, {
+			this.props.events?.onClick(event, {
 				item: this.props.item,
 				isSelected: this.props.isSelected,
 				isUnread: this.props.isUnread,
@@ -91,8 +102,8 @@ const listItemWithContent = (ListItemContent) => {
 			return this.props.isUnread ? (
 				<abbr
 					className="slds-indicator_unread"
-					title={this.props.assistiveText.unreadItem}
-					aria-label={this.props.assistiveText.unreadItem}
+					title={this.props.assistiveText?.unreadItem}
+					aria-label={this.props.assistiveText?.unreadItem}
 				>
 					{/* eslint-disable-next-line react/jsx-curly-brace-presence */}
 					<span className="slds-assistive-text">{'●'}</span>

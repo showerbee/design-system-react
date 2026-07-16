@@ -1,20 +1,36 @@
-
 import Button from '../button';
 import Icon from '../icon';
 import Dropdown from '../menu-dropdown';
 import DropdownTrigger from '../menu-dropdown/button-trigger';
-import MenuDropdown from '../menu-dropdown/menu-dropdown';
+import { type MenuDropdownProps } from '../menu-dropdown/menu-dropdown';
+import type { IconCategory } from '../../types/common';
 
 import { BUILDER_HEADER_NAV_DROPDOWN } from '../../utilities/constants';
 
-// This component accepts the same props as MenuDropdown.
-// eslint-disable-next-line react/forbid-foreign-prop-types
-const { propTypes } = MenuDropdown;
+export interface BuilderHeaderNavDropdownProps
+	extends Omit<MenuDropdownProps, 'assistiveText'> {
+	/**
+	 * Assistive text for accessibility. `icon` labels the leading icon.
+	 */
+	assistiveText?: { icon?: string } & Record<string, unknown>;
+	/**
+	 * Category of the leading icon.
+	 */
+	iconCategory?: IconCategory;
+	/**
+	 * Name of the leading icon.
+	 */
+	iconName?: string;
+	/**
+	 * Text label shown next to the icon.
+	 */
+	label?: string;
+}
 
 /**
  * A dropdown within the navigation section of the header.
  */
-const BuilderHeaderNavDropdown = (props) => {
+const BuilderHeaderNavDropdown = (props: BuilderHeaderNavDropdownProps) => {
 	// Separate props we care about in order to pass others along passively to the dropdown component
 	const { iconCategory, iconName, label, assistiveText, ...rest } = props;
 	return (
@@ -53,5 +69,4 @@ const BuilderHeaderNavDropdown = (props) => {
 };
 
 BuilderHeaderNavDropdown.displayName = BUILDER_HEADER_NAV_DROPDOWN;
-BuilderHeaderNavDropdown.propTypes = propTypes;
 export default BuilderHeaderNavDropdown;
