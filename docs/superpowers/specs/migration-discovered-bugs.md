@@ -11,7 +11,9 @@ re-enabled. Suite: **696 passed, 11 skipped, 0 failed; `tsc --noEmit` clean.**
 
 Fixed (details below): Portal (createPortal), lookup string ref, menu-dropdown/menu-picklist
 keyboard nav, data-table + visual-picker Fragment prop leaks, react-highlighter-ts React-19
-mismatch (npm `overrides`), global-header Fragment-child drop.
+mismatch (npm `overrides`), global-header Fragment-child drop, modal `ModalTrigger`
+`ReactDOM.render` → `createRoot` + deletion of dead `modal/private/manager.jsx`
+(both used React-19-removed APIs; found via `react/no-deprecated` lint).
 
 Also proven false and re-enabled (test-harness/assumption bugs, not real limitations):
 split-view multi-select (3), data-table keyboard nav + actionable mode (2), app-launcher
