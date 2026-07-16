@@ -2,8 +2,7 @@
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
 // ### React
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactElement, type ReactNode } from 'react';
 
 // ### classNames
 // [github.com/JedWatson/classnames](https://github.com/JedWatson/classnames)
@@ -23,7 +22,7 @@ const idSuffixes = {
 	filter: '__filter-input',
 };
 
-const renderFilter = (filter, id) => {
+const renderFilter = (filter: ReactElement<{ id?: string }>, id?: string) => {
 	// allow id to be set by custom header component passed in
 	const clonedFilter = React.cloneElement(filter, {
 		id: filter.props.id || id,
@@ -38,14 +37,49 @@ const renderFilter = (filter, id) => {
 
 renderFilter.displayName = 'renderFilter';
 
+export interface CardHeaderProps {
+	/**
+	 * Adds a filter input to the card header
+	 */
+	filter?: ReactNode;
+	/**
+	 * Set the HTML `id` of the card filter.
+	 */
+	filterId?: string;
+	/**
+	 * Allows a custom header (the media object with the icon in the first column). `icon`, `heading` and other props are passed in the media object from Card. Use `design-system-react/components/media-object` to create your own.
+	 */
+	header?: ReactNode;
+	/**
+	 * Actions performed on selected items or that relate to the entire group of items such as "Add Item.""
+	 */
+	headerActions?: ReactNode;
+	/**
+	 * Set the HTML `id` of the card header actions.
+	 */
+	headerActionsId?: string;
+	/**
+	 * The heading is the name of the related item group.
+	 */
+	heading?: ReactNode;
+	/**
+	 * Set the HTML `id` of the card heading.
+	 */
+	headingId?: string;
+	/**
+	 * Icon associated with grouped items
+	 */
+	icon?: ReactNode;
+}
+
 /**
  * Card Header is a private component and is not meant to be imported or used for Card's `header` prop. It just happens to have the same file name.
  */
-const CardHeader = (props) => {
-	let title = null;
+const CardHeader = (props: CardHeaderProps) => {
+	let title: string | undefined;
 
 	if (typeof props.heading === 'string' || props.heading instanceof String) {
-		title = props.heading;
+		title = props.heading as string;
 	}
 
 	const heading = (
@@ -58,15 +92,16 @@ const CardHeader = (props) => {
 		</h2>
 	);
 
-	let Header;
+	let Header: ReactNode;
 
 	if (props.header) {
-		Header = React.cloneElement(props.header, {
+		const customHeader = props.header as ReactElement<Record<string, unknown>>;
+		Header = React.cloneElement(customHeader, {
 			figure: props.icon,
 			body: heading,
 			verticalCenter: true,
 			canTruncate: true,
-			...props.header.props,
+			...customHeader.props,
 		});
 	} else {
 		Header = (
@@ -84,7 +119,12 @@ const CardHeader = (props) => {
 	return (
 		<div className={classnames('slds-card__header', 'slds-grid')}>
 			{Header}
-			{props.filter ? renderFilter(props.filter, props.filterId) : null}
+			{props.filter
+				? renderFilter(
+						props.filter as ReactElement<{ id?: string }>,
+						props.filterId
+					)
+				: null}
 			<div
 				id={props.headerActionsId}
 				className={classnames('slds-no-flex', {
@@ -101,43 +141,6 @@ const CardHeader = (props) => {
 // ### Display Name
 // Always use the canonical component name as the React display name.
 CardHeader.displayName = CARD_HEADER;
-
-// ### Prop Types
-CardHeader.propTypes = {
-	/**
-	 * Adds a filter input to the card header
-	 */
-	filter: PropTypes.node,
-	/**
-	 * Set the HTML `id` of the card filter.
-	 */
-	filterId: PropTypes.string,
-	/**
-	 * Allows a custom header (the media object with the icon in the first column). `icon`, `heading` and other props are passed in the media object from Card. Use `design-system-react/components/media-object` to create your own.
-	 */
-	header: PropTypes.node,
-	/**
-	 * Actions performed on selected items or that relate to the entire group of items such as "Add Item.""
-	 */
-	headerActions: PropTypes.node,
-	/**
-	 * Set the HTML `id` of the card header actions.
-	 */
-	headerActionsId: PropTypes.string,
-	/**
-	 * The heading is the name of the related item group.
-	 */
-	heading: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
-		.isRequired,
-	/**
-	 * Set the HTML `id` of the card heading.
-	 */
-	headingId: PropTypes.string,
-	/**
-	 * Icon associated with grouped items
-	 */
-	icon: PropTypes.node,
-};
 
 export default CardHeader;
 export { idSuffixes };
