@@ -3,31 +3,27 @@
 
 // # Alert Container Component
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 import classNames from '../../utilities/class-names';
 import { ALERT_CONTAINER } from '../../utilities/constants';
 
-const propTypes = {
+export interface AlertContainerProps {
 	/**
 	 * CSS classes to be added to tag with `.slds-notify_alert`. Uses `classNames` [API](https://github.com/JedWatson/classnames).
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * Alert components
 	 */
-	children: PropTypes.node,
-};
+	children?: ReactNode;
+}
 
 /**
  * A fixed container for alert banners.
  */
+class AlertContainer extends React.Component<AlertContainerProps> {
+	static displayName = ALERT_CONTAINER;
 
-class AlertContainer extends React.Component {
 	render() {
 		return (
 			<div
@@ -38,8 +34,5 @@ class AlertContainer extends React.Component {
 		);
 	}
 }
-
-AlertContainer.displayName = ALERT_CONTAINER;
-AlertContainer.propTypes = propTypes;
 
 export default AlertContainer;
