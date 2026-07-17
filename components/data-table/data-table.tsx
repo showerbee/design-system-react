@@ -4,15 +4,12 @@
 /**
  * DataTable TypeScript wrapper and exports
  *
- * The main DataTable component remains in index.jsx for now due to its
- * complexity. This file provides TypeScript type exports and will be
- * the future home of the fully converted component.
+ * The main DataTable component lives in `index.tsx`. This file re-exports it
+ * along with the TypeScript-converted subcomponents and shared prop types.
  */
 
-// Re-export the main component from JSX
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - Main component is still JSX
-export { default } from './index.jsx';
+// Re-export the main component
+export { default } from './index';
 
 // Export TypeScript-converted subcomponents. The corresponding `*Props` types
 // are re-exported once via `export * from './types'` below (their canonical

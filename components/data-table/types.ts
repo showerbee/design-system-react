@@ -36,6 +36,7 @@ export interface DataTableAssistiveText {
 	selectRow?: string;
 	selectRowGroup?: string;
 	loadingMore?: string;
+	[key: string]: unknown;
 }
 
 // ============================================================================
@@ -206,6 +207,8 @@ export interface DataTableColumnProps {
 	fixedLayout?: boolean;
 	/** Table ID */
 	id?: string;
+	/** Additional props passed through to the cell */
+	[key: string]: unknown;
 }
 
 // ============================================================================
