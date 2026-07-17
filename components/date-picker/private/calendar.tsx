@@ -1,93 +1,73 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React from 'react';
+import React, { type SyntheticEvent } from 'react';
 
-import PropTypes from 'prop-types';
 import Week from './week';
 import DateUtil from '../../../utilities/date';
 
-class DatepickerCalendar extends React.Component {
+export interface CalendarProps {
+	/** Three letter abbreviations of the days of the week */
+	abbreviatedWeekDayLabels: string[];
+	/** Function to determine if a date should be disabled */
+	dateDisabled?: (data: { date: Date }) => boolean;
+	/** HTML id for component */
+	id: string;
+	/** Date used to create calendar that is displayed */
+	initialDateForCalendarRender: Date;
+	/** Makes Monday the first day of the week */
+	isIsoWeekday?: boolean;
+	/** Called when focus moves off calendar */
+	onCalendarBlur: (event: SyntheticEvent, data: { direction: string }) => void;
+	/** Called when month changes */
+	onChangeMonth: (event: SyntheticEvent | undefined, date: Date) => void;
+	/** Called when internal focus date requested */
+	onRequestInternalFocusDate?: (
+		event: SyntheticEvent | undefined,
+		data: { date: Date; ref?: HTMLElement | null; triggerCallback?: boolean }
+	) => void;
+	/** Called when calendar should close */
+	onRequestClose: (
+		event?: SyntheticEvent,
+		data?: Record<string, unknown>
+	) => void;
+	/** Called when a date is selected */
+	onSelectDate: (event: SyntheticEvent, data: { date: Date }) => void;
+	/** Currently selected date */
+	selectedDate?: Date;
+	/** Ref callback for selected date cell */
+	selectedDateRef?: (ref: HTMLElement | null) => void;
+	/** Label for today shortcut */
+	todayLabel: string;
+	/** Called on last focusable node keydown */
+	onLastFocusableNodeKeyDown?: (event: React.KeyboardEvent) => void;
+	/** Ref callback for today link */
+	todayRef?: (ref: HTMLAnchorElement | null) => void;
+	/** Full names of the days of the week */
+	weekDayLabels: string[];
+}
+
+interface CalendarState {
+	focusedDate: Date;
+	calendarHasFocus: boolean;
+	todayFocus: boolean;
+	selected?: Date;
+}
+
+class DatepickerCalendar extends React.Component<CalendarProps, CalendarState> {
 	static displayName = 'SLDSDatepickerCalendar';
 
-	static propTypes = {
-		/**
-		 * Three letter abbreviations of the days of the week, starting on Sunday.
-		 */
-		abbreviatedWeekDayLabels: PropTypes.array.isRequired,
-		/**
-		 * dateDisabled() takes a date as input argument, returns true if given date should be disabled, otherwise returns false.
-		 */
-		dateDisabled: PropTypes.func,
-		/**
-		 * HTML id for component
-		 */
-		id: PropTypes.string.isRequired,
-		/**
-		 * Date used to create calendar that is displayed. This is typically the initial day focused when using the keyboard navigation. Focus will be set to this date if available.
-		 */
-		initialDateForCalendarRender: PropTypes.instanceOf(Date).isRequired,
-		/**
-		 * Makes Monday the first day of the week
-		 */
-		isIsoWeekday: PropTypes.bool,
-		/**
-		 * Triggered when the keyboard moves focus off the calendar.
-		 */
-		onCalendarBlur: PropTypes.func.isRequired,
-		/**
-		 * Displayed calendar has changed or re-rendered
-		 */
-		onChangeMonth: PropTypes.func.isRequired,
-		/**
-		 * Internal callback that will eventually trigger when the keyboard moves focus on the calendar. `{date: [Date object], formattedDate: [string]}`.
-		 */
-		onRequestInternalFocusDate: PropTypes.func,
-		/**
-		 * Triggered when the calendar is cancelled.
-		 */
-		onRequestClose: PropTypes.func.isRequired,
-		/**
-		 * Triggered when a date on the calendar is clicked.
-		 */
-		onSelectDate: PropTypes.func.isRequired,
-		/**
-		 * Currently selected date. This should be present in the input field.
-		 */
-		selectedDate: PropTypes.instanceOf(Date),
-		/**
-		 * Component reference / DOM node for selected day.
-		 */
-		selectedDateRef: PropTypes.func,
-		/**
-		 * Label of shortcut to jump to today within the calendar. This is also used for assistive text on today's date.
-		 */
-		todayLabel: PropTypes.string.isRequired,
-		/**
-		 * For keyboard navigation. Listens for key presses on the last focusable DOM Node, the "Today" link, so that dialog focus can be trapped.
-		 */
-		onLastFocusableNodeKeyDown: PropTypes.func,
-		/**
-		 * Callback that passes in the DOM reference of the Today `a` DOM node within this component. Primary use is to allow `focus` to be called. You should still test if the node exists, since rendering is asynchronous. `buttonRef={(component) => { if(component) console.log(component); }}`
-		 */
-		todayRef: PropTypes.func,
-		/**
-		 * Names of the seven days of the week, starting on Sunday.
-		 */
-		weekDayLabels: PropTypes.array.isRequired,
-	};
-
-	state = {
+	state: CalendarState = {
 		focusedDate: this.props.initialDateForCalendarRender,
 		calendarHasFocus: true,
 		todayFocus: false,
 	};
 
-	componentDidUpdate(prevProps) {
+	componentDidUpdate(prevProps: CalendarProps) {
 		this.setCalendarRenderSeedDate(prevProps);
 	}
 
-	setCalendarRenderSeedDate = (prevProps) => {
+	setCalendarRenderSeedDate = (prevProps: CalendarProps) => {
 		// Set prop that sets focus in child component once it is rendered. This occurs when the month DOM has changed. This will trigger a re-render, but no DOM change will occur, just a DOM focus.
 		if (
 			!DateUtil.isEqual(
@@ -96,72 +76,84 @@ class DatepickerCalendar extends React.Component {
 			)
 		) {
 			this.setState({ focusedDate: this.props.initialDateForCalendarRender });
-			this.props.onRequestInternalFocusDate(undefined, {
+			this.props.onRequestInternalFocusDate?.(undefined, {
 				date: this.props.initialDateForCalendarRender,
 				triggerCallback: true,
 			});
 		}
 	};
 
-	handleSelectDate = (event, { date }) => {
-		if (!this.props.dateDisabled({ date })) {
+	handleSelectDate = (event: SyntheticEvent, { date }: { date: Date }) => {
+		if (!this.props.dateDisabled?.({ date })) {
 			this.setState({ selected: date });
 			this.props.onSelectDate(event, { date });
 		}
 	};
 
-	handleRequestClose = (event) => {
+	handleRequestClose = (event?: SyntheticEvent) => {
 		if (this.props.onRequestClose) {
 			this.props.onRequestClose(event, {});
 		}
 	};
 
-	handleKeyboardNavigateToPreviousDay = (event, { date }) => {
+	handleKeyboardNavigateToPreviousDay = (
+		event: SyntheticEvent,
+		{ date }: { date: Date }
+	) => {
 		const prevDate = DateUtil.addDays(date, -1);
 		if (!DateUtil.isSameMonth(prevDate, date)) {
 			this.props.onChangeMonth(event, prevDate);
 		} else {
 			this.setState({ focusedDate: prevDate });
-			this.props.onRequestInternalFocusDate(event, {
+			this.props.onRequestInternalFocusDate?.(event, {
 				date: prevDate,
 				triggerCallback: true,
 			});
 		}
 	};
 
-	handleKeyboardNavigateToNextDay = (event, { date }) => {
+	handleKeyboardNavigateToNextDay = (
+		event: SyntheticEvent,
+		{ date }: { date: Date }
+	) => {
 		const nextDate = DateUtil.addDays(date, 1);
 		if (!DateUtil.isSameMonth(nextDate, date)) {
 			this.props.onChangeMonth(event, nextDate);
 		} else {
 			this.setState({ focusedDate: nextDate });
-			this.props.onRequestInternalFocusDate(event, {
+			this.props.onRequestInternalFocusDate?.(event, {
 				date: nextDate,
 				triggerCallback: true,
 			});
 		}
 	};
 
-	handleKeyboardNavigateToPreviousWeek = (event, { date }) => {
+	handleKeyboardNavigateToPreviousWeek = (
+		event: SyntheticEvent,
+		{ date }: { date: Date }
+	) => {
 		const prevDate = DateUtil.addDays(date, -7);
 		if (!DateUtil.isSameMonth(prevDate, date)) {
 			this.props.onChangeMonth(event, prevDate);
 		} else {
 			this.setState({ focusedDate: prevDate });
-			this.props.onRequestInternalFocusDate(event, {
+			this.props.onRequestInternalFocusDate?.(event, {
 				date: prevDate,
 				triggerCallback: true,
 			});
 		}
 	};
 
-	handleKeyboardNavigateToNextWeek = (event, { date }) => {
+	handleKeyboardNavigateToNextWeek = (
+		event: SyntheticEvent,
+		{ date }: { date: Date }
+	) => {
 		const nextDate = DateUtil.addDays(date, 7);
 		if (!DateUtil.isSameMonth(nextDate, date)) {
 			this.props.onChangeMonth(event, nextDate);
 		} else {
 			this.setState({ focusedDate: nextDate });
-			this.props.onRequestInternalFocusDate(event, {
+			this.props.onRequestInternalFocusDate?.(event, {
 				date: nextDate,
 				triggerCallback: true,
 			});
@@ -300,10 +292,10 @@ class DatepickerCalendar extends React.Component {
 						{this.renderWeeks()}
 
 						<tr>
-							<td colSpan="7" role="gridcell">
+							<td colSpan={7} role="gridcell">
 								<a
 									href="#"
-									tabIndex="0"
+									tabIndex={0}
 									className="slds-show_inline-block slds-p-bottom_x-small"
 									onClick={(event) => {
 										event.preventDefault();

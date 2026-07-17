@@ -1,8 +1,7 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type SyntheticEvent } from 'react';
 
 // ### classNames
 // [github.com/JedWatson/classnames](https://github.com/JedWatson/classnames)
@@ -10,111 +9,88 @@ import PropTypes from 'prop-types';
 // joining classNames together."
 import classNames from 'classnames';
 
-import Calendar from './calendar';
+import Calendar, { type CalendarProps } from './calendar';
 import CalendarNavigation from './navigation';
 
 import EventUtil from '../../../utilities/event';
 import KEYS from '../../../utilities/key-code';
 
-class DatepickerCalendarWrapper extends React.Component {
-	static displayName = 'DatepickerCalendarWrapper';
+export interface CalendarWrapperProps {
+	/** Label for button to go to the next month */
+	assistiveTextNextMonth: string;
+	/** Label for button to go to the previous month */
+	assistiveTextPreviousMonth: string;
+	/** Label for year picklist/combobox */
+	assistiveTextYear: string;
+	/** One letter abbreviations of the days of the week, starting on Sunday */
+	abbreviatedWeekDayLabels: string[];
+	/** Whether or not the CalendarWrapper can steal focus from the main Input */
+	canFocusCalendar: boolean;
+	/** CSS classes for datepicker */
+	className?: unknown[] | Record<string, unknown> | string;
+	/** Function to determine if a date should be disabled */
+	dateDisabled?: (date: Date) => boolean;
+	/** HTML id for component */
+	id?: string;
+	/** Makes Monday the first day of the week */
+	isIsoWeekday?: boolean;
+	/** For use of datepicker outside of dropdown */
+	isolated?: boolean;
+	/** Names of the months */
+	monthLabels: string[];
+	/** Called when keyboard moves focus on calendar */
+	onCalendarFocus?: (
+		event: SyntheticEvent | null,
+		data: { date?: Date; ref?: HTMLElement; direction?: string }
+	) => void;
+	/** Called when calendar should close */
+	onRequestClose: (
+		event?: SyntheticEvent,
+		data?: Record<string, unknown>
+	) => void;
+	/** Called when a date is selected */
+	onSelectDate: (event: SyntheticEvent, data: { date: Date }) => void;
+	/** Years before current year in dropdown */
+	relativeYearFrom: number;
+	/** Years after current year in dropdown */
+	relativeYearTo: number;
+	/** Currently selected date */
+	selectedDate?: Date;
+	/** Ref callback for selected date cell */
+	selectedDateRef?: (ref: HTMLElement | null) => void;
+	/** Label for today shortcut */
+	todayLabel: string;
+	/** Full names of the days of the week */
+	weekDayLabels: string[];
+}
 
-	static propTypes = {
-		/**
-		 * Label for button to go to the next month
-		 */
-		assistiveTextNextMonth: PropTypes.string.isRequired,
-		/**
-		 * Label for button to go to the previous month
-		 */
-		assistiveTextPreviousMonth: PropTypes.string.isRequired,
-		/**
-		 * Label for year picklist/combobox
-		 */
-		assistiveTextYear: PropTypes.string.isRequired,
-		/**
-		 * One letter abbreviations of the days of the week, starting on Sunday.
-		 */ abbreviatedWeekDayLabels: PropTypes.array.isRequired,
-		/**
-		 * Whether or not the `CalendarWrapper` can steal focus from the main `Input`
-		 */
-		canFocusCalendar: PropTypes.bool.isRequired,
-		/**
-		 * CSS classes to be added to tag with `slds-datepicker`.
-		 */
-		className: PropTypes.oneOfType([
-			PropTypes.array,
-			PropTypes.object,
-			PropTypes.string,
-		]),
-		/**
-		 * dateDisabled() takes a date as input argument, returns true if given date should be disabled, otherwise returns false.
-		 */
-		dateDisabled: PropTypes.func,
-		/**
-		 * HTML id for component
-		 */
-		id: PropTypes.string,
-		/**
-		 * Makes Monday the first day of the week
-		 */
-		isIsoWeekday: PropTypes.bool,
-		/**
-		 * For use of datepicker outside of dropdown.
-		 */
-		isolated: PropTypes.bool,
-		/**
-		 * Names of the months
-		 */
-		monthLabels: PropTypes.array.isRequired,
-		/**
-		 * Triggered when the keyboard moves focus on the calendar. {date: [Date object], formattedDate: [string]}  _Tested with Mocha framework._
-		 */
-		onCalendarFocus: PropTypes.func,
-		/**
-		 * Triggered when the calendar is supposed to close.
-		 */
-		onRequestClose: PropTypes.func.isRequired,
-		/**
-		 * Triggered when a date on the calendar is clicked.
-		 */
-		onSelectDate: PropTypes.func.isRequired,
-		/**
-		 * The earliest year that can be selected in the year selection dropdown.
-		 */
-		relativeYearFrom: PropTypes.number.isRequired,
-		/**
-		 * The maximum year that can be selected in the year selection dropdown.
-		 */
-		relativeYearTo: PropTypes.number.isRequired,
-		/**
-		 * Currently selected date
-		 */
-		selectedDate: PropTypes.instanceOf(Date),
-		/**
-		 * Component reference / DOM node for selected day.
-		 */
-		selectedDateRef: PropTypes.func,
-		/**
-		 * Label of shortcut to jump to today within the calendar. Also used for assistive text for the current day.
-		 */
-		todayLabel: PropTypes.string.isRequired,
-		/**
-		 * Names of the seven days of the week, starting on Sunday.
-		 */
-		weekDayLabels: PropTypes.array.isRequired,
-	};
+interface CalendarWrapperState {
+	initialDateForCalendarRender: Date;
+}
+
+class DatepickerCalendarWrapper extends React.Component<
+	CalendarWrapperProps,
+	CalendarWrapperState
+> {
+	static displayName = 'DatepickerCalendarWrapper';
 
 	static defaultProps = {
 		selectedDate: new Date(),
 		value: new Date(),
 	};
 
-	state = {
-		initialDateForCalendarRender: this.props.selectedDate,
+	state: CalendarWrapperState = {
+		initialDateForCalendarRender: this.props.selectedDate as Date,
 	};
 
-	handleCalendarBlur = (event, { direction }) => {
+	previousMonthRef: HTMLButtonElement | null = null;
+
+	todayRef: HTMLAnchorElement | null = null;
+
+	handleCalendarBlur = (
+		event: SyntheticEvent,
+		{ direction }: { direction: string }
+	) => {
 		if (direction === 'next' && this.previousMonthRef) {
 			if (this.props.onCalendarFocus) {
 				this.props.onCalendarFocus(event, {
@@ -134,40 +110,43 @@ class DatepickerCalendarWrapper extends React.Component {
 		}
 	};
 
-	handleFirstFocusableNodeKeyDown = (event) => {
+	handleFirstFocusableNodeKeyDown = (event: React.KeyboardEvent) => {
 		if (event.shiftKey && event.keyCode === KEYS.TAB) {
 			EventUtil.trapEvent(event);
 		}
 	};
 
 	handleInitialDateForCalendarRenderChange = (
-		event,
-		initialDateForCalendarRender
+		event: SyntheticEvent | undefined,
+		initialDateForCalendarRender: Date
 	) => {
 		this.setState({ initialDateForCalendarRender });
 	};
 
-	handleKeyDown = (event) => {
+	handleKeyDown = (event: React.KeyboardEvent) => {
 		if (event.keyCode === KEYS.ESCAPE) {
 			EventUtil.trapEvent(event);
 			this.props.onRequestClose(event, {});
 		}
 	};
 
-	handleLastFocusableNodeKeyDown = (event) => {
+	handleLastFocusableNodeKeyDown = (event: React.KeyboardEvent) => {
 		if (!event.shiftKey && event.keyCode === KEYS.TAB) {
 			EventUtil.trapEvent(event);
-			this.previousMonthRef.focus();
+			this.previousMonthRef?.focus();
 		}
 	};
 
-	handleRequestClose = (event) => {
+	handleRequestClose = (event?: SyntheticEvent) => {
 		if (this.props.onRequestClose) {
 			this.props.onRequestClose(event, {});
 		}
 	};
 
-	handleRequestFocusDate = (event, data) => {
+	handleRequestFocusDate = (
+		event: SyntheticEvent | undefined,
+		data: { date: Date; ref?: HTMLElement | null; triggerCallback?: boolean }
+	) => {
 		// will be called three times, due to re-render
 		if (data.ref && this.props.canFocusCalendar) {
 			data.ref.focus();
@@ -175,8 +154,12 @@ class DatepickerCalendarWrapper extends React.Component {
 
 		// only call on actual DOM event and not on re-render
 		if (this.props.onCalendarFocus && data.triggerCallback) {
-			const { triggerCallback, ...modifiedData } = data; // eslint-disable-line no-unused-vars
-			this.props.onCalendarFocus(event, modifiedData);
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { triggerCallback, ref, ...rest } = data;
+			this.props.onCalendarFocus(event ?? null, {
+				...rest,
+				ref: ref ?? undefined,
+			});
 		}
 	};
 
@@ -187,7 +170,7 @@ class DatepickerCalendarWrapper extends React.Component {
 					{
 						'slds-datepicker': this.props.isolated,
 					},
-					this.props.className
+					this.props.className as string
 				)}
 				aria-hidden="false"
 				data-selection="single"
@@ -210,8 +193,10 @@ class DatepickerCalendarWrapper extends React.Component {
 				/>
 				<Calendar
 					abbreviatedWeekDayLabels={this.props.abbreviatedWeekDayLabels}
-					dateDisabled={this.props.dateDisabled}
-					id={this.props.id}
+					dateDisabled={
+						this.props.dateDisabled as CalendarProps['dateDisabled']
+					}
+					id={this.props.id as string}
 					initialDateForCalendarRender={this.state.initialDateForCalendarRender}
 					isIsoWeekday={this.props.isIsoWeekday}
 					onCalendarBlur={this.handleCalendarBlur}

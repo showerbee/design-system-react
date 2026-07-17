@@ -1,7 +1,7 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import PropTypes from 'prop-types';
+import React, { type SyntheticEvent } from 'react';
 
 // ### classNames
 // [github.com/JedWatson/classnames](https://github.com/JedWatson/classnames)
@@ -16,12 +16,77 @@ import KEYS from '../../../utilities/key-code';
 import { DIRECTIONS } from '../../utilities/UNSAFE_direction';
 import LanguageDirection from '../../utilities/UNSAFE_direction/private/language-direction';
 
-const handleClick = (event, { date, onSelectDate }) => {
+export interface DayProps {
+	/** If elements within the calendar have focus */
+	calendarHasFocus?: boolean;
+	/** Date of day */
+	date: Date;
+	/** If date is disabled */
+	disabled?: boolean;
+	/** Date used to create calendar that is displayed */
+	initialDateForCalendarRender: Date;
+	/** Date that has focus */
+	focusedDate?: Date;
+	/** Called when focus moves off calendar */
+	onCalendarBlur: (event: SyntheticEvent, data: { direction: string }) => void;
+	/** Called on next day keyboard navigation */
+	onKeyboardNavigateToNextDay: (
+		event: SyntheticEvent,
+		data: { date: Date }
+	) => void;
+	/** Called on next week keyboard navigation */
+	onKeyboardNavigateToNextWeek: (
+		event: SyntheticEvent,
+		data: { date: Date }
+	) => void;
+	/** Called on previous day keyboard navigation */
+	onKeyboardNavigateToPreviousDay: (
+		event: SyntheticEvent,
+		data: { date: Date }
+	) => void;
+	/** Called on previous week keyboard navigation */
+	onKeyboardNavigateToPreviousWeek: (
+		event: SyntheticEvent,
+		data: { date: Date }
+	) => void;
+	/** Called when internal focus date requested */
+	onRequestInternalFocusDate?: (
+		event: SyntheticEvent | undefined,
+		data: { date: Date; ref?: HTMLElement | null; triggerCallback?: boolean }
+	) => void;
+	/** Called when a date is selected */
+	onSelectDate: (event: SyntheticEvent, data: { date: Date }) => void;
+	/** Currently selected date */
+	selectedDate?: Date;
+	/** Ref callback for selected date cell */
+	selectedDateRef?: (ref: HTMLElement | null) => void;
+	/** Label for today shortcut */
+	todayLabel: string;
+	/** Text direction */
+	direction?: 'ltr' | 'rtl';
+}
+
+type DayHandlerProps = Pick<
+	DayProps,
+	| 'date'
+	| 'onCalendarBlur'
+	| 'onSelectDate'
+	| 'onKeyboardNavigateToPreviousDay'
+	| 'onKeyboardNavigateToNextDay'
+	| 'onKeyboardNavigateToPreviousWeek'
+	| 'onKeyboardNavigateToNextWeek'
+	| 'direction'
+>;
+
+const handleClick = (
+	event: SyntheticEvent,
+	{ date, onSelectDate }: Pick<DayProps, 'date' | 'onSelectDate'>
+) => {
 	onSelectDate(event, { date });
 };
 
 const handleKeyDown = (
-	event,
+	event: React.KeyboardEvent,
 	{
 		date,
 		onCalendarBlur,
@@ -31,9 +96,9 @@ const handleKeyDown = (
 		onKeyboardNavigateToPreviousWeek,
 		onKeyboardNavigateToNextWeek,
 		direction,
-	}
+	}: DayHandlerProps
 ) => {
-	const keyDownCallbacks = {
+	const keyDownCallbacks: Record<number, () => void> = {
 		[KEYS.SPACE]: () => {
 			onSelectDate(event, { date });
 		},
@@ -65,7 +130,7 @@ const handleKeyDown = (
 		},
 	};
 
-	const shiftKeyDownCallbacks = {
+	const shiftKeyDownCallbacks: Record<number, () => void> = {
 		[KEYS.TAB]: () => {
 			onCalendarBlur(event, { direction: 'previous' });
 		},
@@ -82,7 +147,7 @@ const handleKeyDown = (
 	}
 };
 
-const DatepickerCalendarDay = (props) => {
+const DatepickerCalendarDay = (props: DayProps) => {
 	const isCurrentMonth = DateUtil.isSameMonth(
 		props.date,
 		props.initialDateForCalendarRender
@@ -115,7 +180,7 @@ const DatepickerCalendarDay = (props) => {
 			}}
 			ref={(component) => {
 				if (isSelectedDay) {
-					props.selectedDateRef(component);
+					props.selectedDateRef?.(component);
 				}
 
 				if (
@@ -123,7 +188,7 @@ const DatepickerCalendarDay = (props) => {
 					DateUtil.isSameDay(props.focusedDate, props.date) &&
 					isCurrentMonth
 				) {
-					props.onRequestInternalFocusDate(undefined, {
+					props.onRequestInternalFocusDate?.(undefined, {
 						date: props.date,
 						ref: component,
 					});
@@ -146,62 +211,5 @@ const DatepickerCalendarDay = (props) => {
 };
 
 DatepickerCalendarDay.displayName = 'SLDSDatepickerCalendarDay';
-
-DatepickerCalendarDay.propTypes = {
-	/**
-	 * If elements within the calendar have focus. This is helpful for keyboard event trapping.
-	 */
-	calendarHasFocus: PropTypes.bool.isRequired,
-	/**
-	 * Date of day
-	 */
-	date: PropTypes.instanceOf(Date).isRequired,
-	/**
-	 * If date is disabled
-	 */
-	disabled: PropTypes.bool,
-	/**
-	 * Date used to create calendar that is displayed. This is typically the initial day focused when using the keyboard navigation. Focus will be set to this date if available.
-	 */
-	initialDateForCalendarRender: PropTypes.instanceOf(Date).isRequired,
-	/**
-	 * Triggered when the keyboard moves focus off the calendar.
-	 */
-	onCalendarBlur: PropTypes.func.isRequired,
-	/**
-	 * For keyboard navigation. Changes the focus to the next day on the calendar. Triggered when right arrow button is pressed.
-	 */
-	onKeyboardNavigateToNextDay: PropTypes.func.isRequired,
-	/**
-	 * For keyboard navigation. Changes the focus to the same day in the next week on the calendar. Triggered when down arrow button is pressed.
-	 */
-	onKeyboardNavigateToNextWeek: PropTypes.func.isRequired,
-	/**
-	 * For keyboard navigation. Changes the focus to the previous day on the calendar. Triggered when left arrow button is pressed.
-	 */
-	onKeyboardNavigateToPreviousDay: PropTypes.func.isRequired,
-	/**
-	 * For keyboard navigation. Changes the focus to the same day in the previous week on the calendar. Triggered when up arrow button is pressed.
-	 */
-	onKeyboardNavigateToPreviousWeek: PropTypes.func.isRequired,
-	/**
-	 * Triggered when a date on the calendar is clicked.
-	 */
-	onSelectDate: PropTypes.func.isRequired,
-	/**
-	 * Currently selected date. This should be present in the input field.
-	 */
-	selectedDate: PropTypes.instanceOf(Date).isRequired,
-	/**
-	 * Component reference / DOM node for selected day.
-	 */
-	selectedDateRef: PropTypes.func.isRequired,
-	/**
-	 * Label of shortcut to jump to today within the calendar. Also used for assistive text for the current day.
-	 */
-	todayLabel: PropTypes.string.isRequired,
-	focusedDate: PropTypes.instanceOf(Date),
-	onRequestInternalFocusDate: PropTypes.func,
-};
 
 export default LanguageDirection(DatepickerCalendarDay);
