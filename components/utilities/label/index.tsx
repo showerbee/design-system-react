@@ -2,39 +2,39 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import PropTypes from 'prop-types';
+import React from 'react';
 import classNames from 'classnames';
 
-const propTypes = {
-	/*
+export interface LabelAssistiveText {
+	label?: string;
+}
+
+export interface LabelProps {
+	/**
 	 * Assistive Text to use instead of a visible label
 	 */
-	assistiveText: PropTypes.object,
+	assistiveText?: LabelAssistiveText | Record<string, unknown>;
 	/**
 	 * Class names to be added to the label
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
-	/*
+	className?: unknown[] | Record<string, unknown> | string;
+	/**
 	 * Id of the input associated with this label
 	 */
-	htmlFor: PropTypes.string,
-	/*
+	htmlFor?: string;
+	/**
 	 * Input Label
 	 */
-	label: PropTypes.string,
-	/*
+	label?: string;
+	/**
 	 * Applies label styling for a required form element
 	 */
-	required: PropTypes.bool,
+	required?: boolean;
 	/**
 	 * Changes markup of label.
 	 */
-	variant: PropTypes.oneOf(['base', 'static']),
-};
+	variant?: 'base' | 'static';
+}
 
 /*
  * Form label. This returns null if there is no label text (hidden or shown)
@@ -46,10 +46,11 @@ const Label = ({
 	className,
 	htmlFor,
 	required,
-}) => {
-	const labelText = label || (assistiveText && assistiveText.label); // One of these is required to pass accessibility tests
+}: LabelProps) => {
+	const labelText =
+		label || (assistiveText && (assistiveText as LabelAssistiveText).label); // One of these is required to pass accessibility tests
 
-	const subRenders = {
+	const subRenders: Record<'base' | 'static', React.ReactElement> = {
 		base: (
 			<label
 				className={classNames(
@@ -57,7 +58,7 @@ const Label = ({
 					{
 						'slds-assistive-text': assistiveText && !label,
 					},
-					className
+					className as string
 				)}
 				htmlFor={htmlFor}
 			>
@@ -70,7 +71,9 @@ const Label = ({
 			</label>
 		),
 		static: (
-			<span className={classNames('slds-form-element__label', className)}>
+			<span
+				className={classNames('slds-form-element__label', className as string)}
+			>
 				{labelText}
 			</span>
 		),
@@ -80,6 +83,5 @@ const Label = ({
 };
 
 Label.displayName = 'Label';
-Label.propTypes = propTypes;
 
 export default Label;
