@@ -2,31 +2,34 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 import classNames from 'classnames';
 
-const propTypes = {
-	/*
+export interface LabelProps {
+	/**
 	 * Assistive Text to use instead of a visible label
 	 */
-	assistiveText: PropTypes.object,
-	/*
+	assistiveText?: {
+		label?: string;
+		[key: string]: unknown;
+	};
+	/**
 	 * Id of the input associated with this label
 	 */
-	htmlFor: PropTypes.string,
-	/*
+	htmlFor?: string;
+	/**
 	 * Input Label or inner node for formatting purposes
 	 */
-	label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
-	/*
+	label?: ReactNode | string;
+	/**
 	 * Applies label styling for a required form element
 	 */
-	required: PropTypes.bool,
+	required?: boolean;
 	/**
 	 * Changes markup of label.
 	 */
-	variant: PropTypes.oneOf(['base', 'static']),
-};
+	variant?: 'base' | 'static';
+}
 
 /*
  * Form label. This returns null if there is no label text (hidden or shown)
@@ -37,10 +40,10 @@ const Label = ({
 	htmlFor,
 	required,
 	variant = 'base',
-}) => {
+}: LabelProps) => {
 	const labelText = label || (assistiveText && assistiveText.label); // One of these is required to pass accessibility tests
 
-	const subRenders = {
+	const subRenders: Record<'base' | 'static', React.ReactElement> = {
 		base: (
 			<label
 				className={classNames('slds-form-element__label', {
@@ -63,6 +66,5 @@ const Label = ({
 };
 
 Label.displayName = 'Label';
-Label.propTypes = propTypes;
 
 export default Label;
