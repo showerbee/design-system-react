@@ -9,7 +9,7 @@
 // ## Dependencies
 
 // ### React
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 
 // ### classNames
 import classNames from 'classnames';
@@ -19,6 +19,21 @@ import Icon from '../../icon';
 // ## Constants
 import { PANEL_FILTER_LIST_HEADING } from '../../../utilities/constants';
 
+export interface PanelFilterListHeadingProps {
+	/**
+	 * Heading for following PanelFilterList
+	 */
+	heading?: ReactNode | string;
+	/**
+	 * Displayed a heading for a locked list of filters
+	 */
+	isLocked?: boolean;
+	/**
+	 * Heading for a group of filters that are locked
+	 */
+	lockedHeading?: string;
+}
+
 /**
  * A filtering panel contextual filtering options.
  */
@@ -26,7 +41,7 @@ const PanelFilterListHeading = ({
 	heading = 'Matching all these filters',
 	isLocked,
 	lockedHeading = 'Locked filters',
-}) => (
+}: PanelFilterListHeadingProps): React.ReactElement => (
 	<h3
 		className={classNames('slds-text-body_small', 'slds-m-vertical_x-small', {
 			'slds-grid': isLocked,
@@ -46,20 +61,5 @@ const PanelFilterListHeading = ({
 );
 
 PanelFilterListHeading.displayName = PANEL_FILTER_LIST_HEADING;
-
-PanelFilterListHeading.propTypes = {
-	/**
-	 * Heading for following PanelFilterList
-	 */
-	heading: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
-	/**
-	 * Displayed a heading for a locked list of filters
-	 */
-	isLocked: PropTypes.bool,
-	/**
-	 * Heading for a group of filters that are locked
-	 */
-	lockedHeading: PropTypes.string,
-};
 
 export default PanelFilterListHeading;

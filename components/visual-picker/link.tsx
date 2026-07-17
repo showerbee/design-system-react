@@ -3,47 +3,44 @@
 
 // Implements the [Visual Picker Link design pattern](https://lightningdesignsystem.com/components/visual-picker/) in React.
 // Based on SLDS v2.4.5
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { VISUAL_PICKER_LINK } from '../../utilities/constants';
 
-const propTypes = {
+export interface VisualPickerLinkProps {
 	/**
 	 * HTML id for component.
 	 */
-	id: PropTypes.string,
+	id?: string;
 	/**
 	 * CSS classes to be added to tag with `.slds-form-element`. Uses `classNames` [API](https://github.com/JedWatson/classnames).
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * URL for the Link
 	 */
-	href: PropTypes.string,
+	href?: string;
 	/**
 	 * Icon node for the Link
 	 */
-	icon: PropTypes.node,
+	icon?: ReactNode;
 	/**
 	 * Title for the Link
 	 */
-	title: PropTypes.string,
+	title?: string;
 	/**
 	 * Description for the Link
 	 */
-	description: PropTypes.string,
-};
+	description?: string;
+}
 
 /**
  * Visual Picker Link Component
  */
-class VisualPickerLink extends React.Component {
+class VisualPickerLink extends React.Component<VisualPickerLinkProps> {
+	static displayName = VISUAL_PICKER_LINK;
+
 	render() {
 		return (
 			<a
@@ -56,7 +53,7 @@ class VisualPickerLink extends React.Component {
 					'slds-box_x-small',
 					'slds-media',
 					'slds-visual-picker_vertical',
-					this.props.className
+					this.props.className as string
 				)}
 			>
 				<div className="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center slds-m-left_xx-small">
@@ -75,7 +72,5 @@ class VisualPickerLink extends React.Component {
 		);
 	}
 }
-VisualPickerLink.displayName = VISUAL_PICKER_LINK;
-VisualPickerLink.propTypes = propTypes;
 
 export default VisualPickerLink;

@@ -9,9 +9,28 @@
 // ## Dependencies
 
 // ### React
-import PropTypes from 'prop-types';
+import React, { type ReactNode, type MouseEvent } from 'react';
 
 import Button from '../../../button';
+
+export interface PanelFilterFooterProps {
+	/**
+	 * Localized description of the "Add Filter" button in the footer
+	 */
+	addFilterLabel: ReactNode;
+	/**
+	 * Callback triggered when "Add Filter" is clicked. Recieves an `event`.
+	 */
+	onClickAdd: (event: MouseEvent) => void;
+	/**
+	 * Callback triggered when "Remove All" is clicked. Recieves an `event`.
+	 */
+	onClickRemoveAll: (event: MouseEvent) => void;
+	/**
+	 * Localized description of the "Remove All" button in the footer
+	 */
+	removeAllLabel: ReactNode;
+}
 
 /**
  * A filtering panel contextual filtering options.
@@ -21,7 +40,7 @@ const PanelFilterFooter = ({
 	onClickAdd,
 	onClickRemoveAll,
 	removeAllLabel,
-}) => (
+}: PanelFilterFooterProps): React.ReactElement => (
 	<div className="slds-filters__footer slds-grid slds-shrink-none">
 		<Button label={addFilterLabel} onClick={onClickAdd} variant="link" />
 		<Button
@@ -34,24 +53,5 @@ const PanelFilterFooter = ({
 );
 
 PanelFilterFooter.displayName = 'SLDSPanelFilterFooter';
-
-PanelFilterFooter.propTypes = {
-	/**
-	 * Localized description of the "Add Filter" button in the footer
-	 */
-	addFilterLabel: PropTypes.node.isRequired,
-	/**
-	 * Callback triggered when "Add Filter" is clicked. Recieves an `event`.
-	 */
-	onClickAdd: PropTypes.func.isRequired,
-	/**
-	 * Callback triggered when "Remove All" is clicked. Recieves an `event`.
-	 */
-	onClickRemoveAll: PropTypes.func.isRequired,
-	/**
-	 * Localized description of the "Remove All" button in the footer
-	 */
-	removeAllLabel: PropTypes.node.isRequired,
-};
 
 export default PanelFilterFooter;
