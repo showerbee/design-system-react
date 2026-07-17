@@ -1,5 +1,4 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 
 import {
 	BUILDER_HEADER_NAV,
@@ -7,7 +6,7 @@ import {
 	BUILDER_HEADER_NAV_LINK,
 } from '../../utilities/constants';
 
-const propTypes = {
+export interface BuilderHeaderNavProps {
 	/**
 	 * Provide children of the types `<BuilderHeaderNavLink />` or `<BuilderHeaderNavDropdown />` to define the structure of the navigation section.
 	 * ```
@@ -19,19 +18,24 @@ const propTypes = {
 	 * </BuilderHeader>
 	 * ```
 	 */
-	children: PropTypes.node,
-};
+	children?: ReactNode;
+}
 
 /**
  * The navigation section of the header.
  */
-const BuilderHeaderNav = (props) => (
+const BuilderHeaderNav = (
+	props: BuilderHeaderNavProps
+): React.ReactElement => (
 	<nav className="slds-builder-header__item slds-builder-header__nav">
 		<ul className="slds-builder-header__nav-list">
 			{React.Children.map(props.children, (child) => {
 				if (
-					child.type.displayName === BUILDER_HEADER_NAV_LINK ||
-					child.type.displayName === BUILDER_HEADER_NAV_DROPDOWN
+					React.isValidElement(child) &&
+					((child.type as { displayName?: string }).displayName ===
+						BUILDER_HEADER_NAV_LINK ||
+						(child.type as { displayName?: string }).displayName ===
+							BUILDER_HEADER_NAV_DROPDOWN)
 				) {
 					return <li className="slds-builder-header__nav-item">{child}</li>;
 				}
@@ -42,5 +46,5 @@ const BuilderHeaderNav = (props) => (
 );
 
 BuilderHeaderNav.displayName = BUILDER_HEADER_NAV;
-BuilderHeaderNav.propTypes = propTypes;
+
 export default BuilderHeaderNav;

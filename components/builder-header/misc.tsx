@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 
 import { BUILDER_HEADER_MISC } from '../../utilities/constants';
 
-const propTypes = {
+export interface BuilderHeaderMiscProps {
 	/**
 	 * Provide custom content in place of Page Type label
 	 * ```
@@ -13,18 +13,18 @@ const propTypes = {
 	 * </BuilderHeader>
 	 * ```
 	 */
-	children: PropTypes.node,
-};
+	children?: ReactNode;
+}
 
 /**
  * The miscellaneous section of the header.
  */
-const BuilderHeaderMisc = (props) => (
+const BuilderHeaderMisc = (props: BuilderHeaderMiscProps): React.ReactElement => (
 	<div className="slds-builder-header__item" style={{ width: '100%' }}>
 		<div className="slds-builder-header__item-label">{props.children}</div>
 	</div>
 );
 
 BuilderHeaderMisc.displayName = BUILDER_HEADER_MISC;
-BuilderHeaderMisc.propTypes = propTypes;
+
 export default BuilderHeaderMisc;

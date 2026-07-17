@@ -1,21 +1,23 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 
 import {
 	BUILDER_HEADER_TOOLBAR,
 	BUTTON_GROUP,
 } from '../../utilities/constants';
 
-const propTypes = {
+export interface BuilderHeaderToolbarAssistiveText {
+	/** Used for the aria-label for the actions section of the toolbar. */
+	actions?: string;
+}
+
+export interface BuilderHeaderToolbarProps {
 	/**
 	 * **Assistive text for accessibility**
 	 * This object is merged with the default props object on every render.
 	 * * `actions`: Used for the aria-label for the actions section of the toolbar.
 	 * * _Tested with snapshot testing._
 	 */
-	assistiveText: PropTypes.shape({
-		actions: PropTypes.string,
-	}),
+	assistiveText?: BuilderHeaderToolbarAssistiveText;
 	/**
 	 * Provide children of the type `<ButtonGroup />` to define the structure of the toolbar section.
 	 * ```
@@ -27,39 +29,40 @@ const propTypes = {
 	 * </BuilderHeader>
 	 * ```
 	 */
-	children: PropTypes.node,
+	children?: ReactNode;
 	/**
 	 * Renders the actions section of the header.
 	 */
-	onRenderActions: PropTypes.func,
-};
+	onRenderActions?: () => ReactNode;
+}
 
-const defaultProps = {
-	assistiveText: {
-		actions: 'Actions',
-	},
+const defaultAssistiveText: BuilderHeaderToolbarAssistiveText = {
+	actions: 'Actions',
 };
 
 /**
  * The toolbar section of the header.
  */
 const BuilderHeaderToolbar = ({
-	assistiveText = defaultProps.assistiveText,
+	assistiveText = defaultAssistiveText,
 	children,
 	onRenderActions,
-}) => {
+}: BuilderHeaderToolbarProps): React.ReactElement => {
 	const mergedAssistiveText = {
-		...defaultProps.assistiveText,
+		...defaultAssistiveText,
 		...assistiveText,
 	};
 	return (
 		<div className="slds-builder-toolbar" role="toolbar">
 			{React.Children.map(children, (child) => {
-				if (child.type.displayName === BUTTON_GROUP) {
+				if (
+					React.isValidElement(child) &&
+					(child.type as { displayName?: string }).displayName === BUTTON_GROUP
+				) {
 					return (
 						<div
 							className="slds-builder-toolbar__item-group"
-							aria-label={child.props.label}
+							aria-label={(child.props as { label?: string }).label}
 						>
 							{child}
 						</div>
@@ -78,5 +81,5 @@ const BuilderHeaderToolbar = ({
 };
 
 BuilderHeaderToolbar.displayName = BUILDER_HEADER_TOOLBAR;
-BuilderHeaderToolbar.propTypes = propTypes;
+
 export default BuilderHeaderToolbar;
