@@ -1,7 +1,6 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 import React from 'react';
-import PropTypes from 'prop-types';
 
 // ### classNames
 // [github.com/JedWatson/classnames](https://github.com/JedWatson/classnames)
@@ -10,108 +9,103 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 // Child component
+// @ts-expect-error - Module declaration doesn't match relative import
 import Tooltip from '../../tooltip';
 import { PROGRESS_INDICATOR_STEP } from '../../../utilities/constants';
 import ButtonIcon from '../../icon/button-icon';
+import {
+	type ProgressStep,
+	type ProgressIndicatorAssistiveText,
+	type ProgressIndicatorVariant,
+	type TooltipPosition,
+	type StepEventData,
+} from '../index';
 
 // ### Display Name
 const displayName = PROGRESS_INDICATOR_STEP;
 
-// ### Prop Types
-const propTypes = {
+export interface StepProps {
 	/**
 	 * **Assistive text for accessibility**
 	 * This object is merged with the default props object on every render.
 	 * * `completedStep`: Label for a completed step. The default is `Completed Step`
 	 * * `disabledStep`: Label for disabled step. The default is `Disabled Step`
 	 * * `errorStep`: Label for a step with an error. The default is `Error Step`
-	 * * `percentage`: Label for Progress Bar. The default is `Progress: [this.props.value]%`. You will need to calculate the percentage yourself if changing this string.
+	 * * `percentage`: Label for Progress Bar. The default is `Progress: [this.props.value]%`.
 	 * * `step`: Label for a step. It will be typically followed by the number of the step such as "Step 1".
 	 */
-	assistiveText: PropTypes.shape({
-		completedStep: PropTypes.string,
-		disabledStep: PropTypes.string,
-		percentage: PropTypes.string,
-		step: PropTypes.string,
-	}),
+	assistiveText?: ProgressIndicatorAssistiveText;
 	/**
 	 * Id for Steps, ranging in [0, steps.length).
 	 */
-	id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+	id?: number | string;
 	/**
 	 * Index of step. Used for id's if no step ID exists
 	 */
-	index: PropTypes.number,
+	index: number;
 	/**
 	 * Determines if the step has been completed
 	 */
-
-	isCompleted: PropTypes.bool,
+	isCompleted?: boolean;
 	/**
 	 * Determines if the step has been disabled
 	 */
-	isDisabled: PropTypes.bool,
+	isDisabled?: boolean;
 	/**
 	 * Determines if the step contains an error
 	 */
-	isError: PropTypes.bool,
+	isError?: boolean;
 	/**
 	 * Determines if the step is currently selected (active)
 	 */
-	isSelected: PropTypes.bool,
+	isSelected?: boolean;
 	/**
-	 * Label of tooltip attached to the step if applicable.
+	 * Triggered when click on individual steps.
 	 */
-	label: PropTypes.node,
+	onClick?: (
+		event: React.MouseEvent | React.KeyboardEvent,
+		data: StepEventData
+	) => void;
 	/**
-	 * Triggered when click on individual steps. By default, it receives an event and returns all info passed to that step.
-	 * users are able to re-define it by passing a function as a prop
+	 * Triggered when focus on individual steps.
 	 */
-	onClick: PropTypes.func,
-	/**
-	 * Triggered when focus on individual steps. By default, it receives an event and returns all info passed to that step.
-	 * users are able to re-define it by passing a function as a prop
-	 */
-	onFocus: PropTypes.func,
+	onFocus?: (event: React.FocusEvent, data: StepEventData) => void;
 	/**
 	 * Step object. This is passed into event callbacks.
 	 */
-	step: PropTypes.object,
+	step: ProgressStep;
 	/**
 	 * Determines if the tooltip attached to step is always open.
-	 * This is mainly for dev test purpose.
-	 * Usually the tooltip should only show when hover.
 	 */
-	tooltipIsOpen: PropTypes.bool,
+	tooltipIsOpen?: boolean;
 	/**
-	 * Please select one of the following:
-	 * * `absolute` - (default if `variant` is `modal`) The dialog will use `position: absolute` and style attributes to position itself. This allows inverted placement or flipping of the dialog.
-	 * * `overflowBoundaryElement` - (default if `variant` is `base`) The dialog will overflow scrolling parents. Use on elements that are aligned to the left or right of their target and don't care about the target being within a scrolling parent. Typically this is a popover or tooltip. Dropdown menus can usually open up and down if no room exists. In order to achieve this a portal element will be created and attached to `body`. This element will render into that detached render tree.
-	 * * `relative` - No styling or portals will be used. Menus will be positioned relative to their triggers. This is a great choice for HTML snapshot testing.
+	 * Position strategy for the step's tooltip.
 	 */
-	tooltipPosition: PropTypes.oneOf([
-		'absolute',
-		'overflowBoundaryElement',
-		'relative',
-	]),
-};
+	tooltipPosition?: TooltipPosition;
+	/**
+	 * The variant of the parent progress indicator
+	 */
+	variant?: ProgressIndicatorVariant;
+}
 
 /**
  * Step renders a button icon and its tooltip if applied.
  * The button is applied with different css classes under different conditions.
  * Button icons have 4 types of status: completed (success), active (in progress), error (warning) and uncompleted (not approached)
  */
-class Step extends React.Component {
+class Step extends React.Component<StepProps> {
+	static displayName = displayName;
+
 	/**
 	 * buttonIcon represents the button icon used for each step.
 	 * the button is applied with different css classes under different conditions.
 	 */
-	buttonIcon(renderIcon, status, props) {
-		const data = {
-			isSelected: props.isSelected,
-			isError: props.isError,
-			isCompleted: props.isCompleted,
-			isDisabled: props.isDisabled,
+	buttonIcon(renderIcon: boolean, status: string, props: StepProps) {
+		const data: StepEventData = {
+			isSelected: !!props.isSelected,
+			isError: !!props.isError,
+			isCompleted: !!props.isCompleted,
+			isDisabled: !!props.isDisabled,
 			step: props.step,
 		};
 
@@ -122,8 +116,9 @@ class Step extends React.Component {
 			/>
 		) : null;
 
-		const handleClick = (event) => props.onClick(event, data);
-		const handleFocus = (event) => props.onFocus(event, data);
+		const handleClick = (event: React.MouseEvent) => props.onClick?.(event, data);
+		const handleFocus = (event: React.FocusEvent) =>
+			props.onFocus?.(event, data);
 
 		const stepButton = props.isDisabled ? (
 			<a
@@ -146,7 +141,7 @@ class Step extends React.Component {
 				<span className="slds-assistive-text">
 					{this.props.step.assistiveText || (
 						<React.Fragment>
-							{`${props.assistiveText.step} ${props.index + 1}: `}
+							{`${props.assistiveText?.step} ${props.index + 1}: `}
 							{props.step.label}
 							{`- ${status}`}
 						</React.Fragment>
@@ -166,14 +161,14 @@ class Step extends React.Component {
 				aria-describedby={`progress-indicator-tooltip-${
 					this.props.step.id || this.props.index
 				}`}
-				aria-current={this.props.isSelected ? 'step' : null}
+				aria-current={this.props.isSelected ? 'step' : undefined}
 				type="button"
 			>
 				{icon}
 				<span className="slds-assistive-text">
 					{this.props.step.assistiveText || (
 						<React.Fragment>
-							{`${props.assistiveText.step} ${props.index + 1}: `}
+							{`${props.assistiveText?.step} ${props.index + 1}: `}
 							{props.step.label}
 							{status ? ` - ${status}` : ''}
 						</React.Fragment>
@@ -189,14 +184,22 @@ class Step extends React.Component {
 		const renderIcon = this.props.isCompleted || this.props.isError;
 		let status = '';
 		if (this.props.isError) {
-			status = this.props.assistiveText.errorStep;
+			status = this.props.assistiveText?.errorStep || '';
 		} else if (this.props.isCompleted) {
-			status = this.props.assistiveText.completedStep;
+			status = this.props.assistiveText?.completedStep || '';
 		} else if (this.props.isDisabled) {
-			status = this.props.assistiveText.disabledStep;
+			status = this.props.assistiveText?.disabledStep || '';
 		}
 
-		const tooltipProps = {
+		const tooltipProps: {
+			align: string;
+			id: string;
+			content: React.ReactNode;
+			theme: string;
+			position?: TooltipPosition;
+			triggerStyle: React.CSSProperties;
+			isOpen?: boolean;
+		} = {
 			align: 'top',
 			id: `progress-indicator-tooltip-${
 				this.props.step.id || this.props.index
@@ -224,14 +227,11 @@ class Step extends React.Component {
 				})}
 			>
 				<Tooltip {...tooltipProps}>
-					{this.buttonIcon(renderIcon, status, this.props)}
+					{this.buttonIcon(!!renderIcon, status, this.props)}
 				</Tooltip>
 			</li>
 		);
 	}
 }
 
-Step.propTypes = propTypes;
-Step.displayName = displayName;
-
-export default Step; // export is replaced with `ReactDOM.render(<Example />, mountNode);` at runtime
+export default Step;

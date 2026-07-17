@@ -187,7 +187,11 @@ const ProgressIndicator = ({
 	const tooltipPosition = propTooltipPosition || (variant === 'modal' ? 'absolute' : 'overflowBoundaryElement');
 
 	// Select step component based on orientation
-	const StepComponent = orientation === 'vertical' ? StepVertical : Step;
+	const StepComponent = (
+		orientation === 'vertical' ? StepVertical : Step
+	) as React.ComponentType<
+		React.ComponentProps<typeof Step> & React.ComponentProps<typeof StepVertical>
+	>;
 
 	return (
 		<Progress

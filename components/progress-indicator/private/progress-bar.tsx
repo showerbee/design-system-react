@@ -2,34 +2,42 @@
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-const propTypes = {
+import { type ProgressIndicatorOrientation } from '../index';
+
+export interface ProgressBarProps {
 	/**
 	 * Assistive text for percentage
 	 */
-	assistiveText: PropTypes.shape({
-		percentage: PropTypes.string,
-	}),
+	assistiveText?: {
+		percentage?: string;
+	};
+	/**
+	 * Determines the orientation of the progress bar
+	 */
+	orientation?: ProgressIndicatorOrientation;
 	/**
 	 * Percentage of progress completion, with range of [0, 100]
 	 */
-	value: PropTypes.string.isRequired,
-};
+	value: string;
+}
+
 /**
  * ProgressBar renders the blue/gray progress bar and dynamically updates its completion percentage
  */
-class ProgressBar extends React.Component {
+class ProgressBar extends React.Component<ProgressBarProps> {
+	static displayName = 'ProgressBar';
+
 	render() {
 		return (
 			<div
 				className={classNames('slds-progress-bar slds-progress-bar_x-small', {
 					'slds-progress-bar_vertical': this.props.orientation === 'vertical',
 				})}
-				aria-valuemin="0"
-				aria-valuemax="100"
-				aria-valuenow={this.props.value}
+				aria-valuemin={0}
+				aria-valuemax={100}
+				aria-valuenow={Number(this.props.value)}
 				role="progressbar"
 			>
 				<span
@@ -41,7 +49,7 @@ class ProgressBar extends React.Component {
 					}
 				>
 					<span className="slds-assistive-text">
-						{this.props.assistiveText.percentage ||
+						{this.props.assistiveText?.percentage ||
 							`Progress: ${this.props.value}%`}
 					</span>
 				</span>
@@ -49,8 +57,5 @@ class ProgressBar extends React.Component {
 		);
 	}
 }
-
-ProgressBar.displayName = 'ProgressBar';
-ProgressBar.propTypes = propTypes;
 
 export default ProgressBar;

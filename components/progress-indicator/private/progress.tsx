@@ -1,8 +1,7 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 
 // ### classNames
 // [github.com/JedWatson/classnames](https://github.com/JedWatson/classnames)
@@ -13,49 +12,49 @@ import classNames from 'classnames';
 import ProgressBar from './progress-bar';
 
 import { PROGRESS_INDICATOR_PROGRESS } from '../../../utilities/constants';
+import {
+	type ProgressIndicatorAssistiveText,
+	type ProgressIndicatorOrientation,
+	type ProgressIndicatorVariant,
+} from '../index';
 
-// ### Prop Types
-const propTypes = {
+export interface ProgressProps {
 	/**
 	 * Assistive text for percentage
 	 */
-	assistiveText: PropTypes.shape({
-		percentage: PropTypes.string,
-	}),
+	assistiveText?: ProgressIndicatorAssistiveText;
 	/**
 	 * Steps in the component
 	 */
-	children: PropTypes.node,
+	children?: ReactNode;
 	/**
 	 * CSS class names to be added to the container element.
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * HTML id for component.
 	 */
-	id: PropTypes.string.isRequired,
+	id: string;
 	/**
 	 * Determines the orientation of the progress indicator
 	 */
-	orientation: PropTypes.oneOf(['horizontal', 'vertical']),
+	orientation?: ProgressIndicatorOrientation;
 	/**
 	 * Percentage of progress completion, ranging [0, 100]
 	 */
-	value: PropTypes.string.isRequired,
+	value: string;
 	/**
 	 * Determines component style
 	 */
-	variant: PropTypes.oneOf(['base', 'modal', 'setup-assistant']),
-};
+	variant?: ProgressIndicatorVariant;
+}
 
 /**
- * Progress renders all step buttons and a container wrapping these buttongs and a progress bar
+ * Progress renders all step buttons and a container wrapping these buttons and a progress bar
  */
-class Progress extends React.Component {
+class Progress extends React.Component<ProgressProps> {
+	static displayName = PROGRESS_INDICATOR_PROGRESS;
+
 	/**
 	 * Get the progress's HTML id. Generate a new one if no ID present.
 	 */
@@ -72,7 +71,7 @@ class Progress extends React.Component {
 					{ 'slds-progress_shade': this.props.variant === 'modal' },
 					{ 'slds-progress_vertical': this.props.orientation === 'vertical' },
 					{ 'slds-progress_success': this.props.variant === 'setup-assistant' },
-					this.props.className
+					this.props.className as string
 				)}
 			>
 				<ol
@@ -94,8 +93,5 @@ class Progress extends React.Component {
 		);
 	}
 }
-
-Progress.propTypes = propTypes;
-Progress.displayName = PROGRESS_INDICATOR_PROGRESS;
 
 export default Progress;

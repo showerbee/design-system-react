@@ -1,7 +1,6 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 
 // ### classNames
 // [github.com/JedWatson/classnames](https://github.com/JedWatson/classnames)
@@ -12,55 +11,82 @@ import classNames from 'classnames';
 // Child component
 import { PROGRESS_INDICATOR_STEP_VERTICAL } from '../../../utilities/constants';
 import Icon from '../../icon';
+import {
+	type ProgressStep,
+	type ProgressIndicatorAssistiveText,
+	type ProgressIndicatorVariant,
+	type StepEventData,
+} from '../index';
 
 // ### Display Name
 const displayName = PROGRESS_INDICATOR_STEP_VERTICAL;
 
-// ### Prop Types
-const propTypes = {
+/**
+ * Setup-assistant steps carry extra optional fields consumed only by the
+ * vertical layout.
+ */
+export interface VerticalProgressStep extends ProgressStep {
+	onRenderSetupAssistantAction?: ReactNode;
+	setupAssistantEstimatedTime?: ReactNode;
+}
+
+export interface StepVerticalProps {
+	/**
+	 * Assistive text for accessibility.
+	 */
+	assistiveText?: ProgressIndicatorAssistiveText;
 	/**
 	 * Index of step. Used for id's if no step ID exists
 	 */
-	index: PropTypes.number,
+	index: number;
 	/**
 	 * Determines if the step has been completed
 	 */
-	isCompleted: PropTypes.bool,
+	isCompleted?: boolean;
+	/**
+	 * Determines if the step has been disabled
+	 */
+	isDisabled?: boolean;
 	/**
 	 * Determines if the step contains an error
 	 */
-	isError: PropTypes.bool,
+	isError?: boolean;
 	/**
 	 * Determines if the step is currently selected (active)
 	 */
-	isSelected: PropTypes.bool,
+	isSelected?: boolean;
 	/**
-	 * Triggered when click on individual steps. By default, it receives an event and returns all info passed to that step.
-	 * users are able to re-define it by passing a function as a prop
+	 * Triggered when click on individual steps.
 	 */
-	onClick: PropTypes.func,
+	onClick?: (
+		event: React.MouseEvent | React.KeyboardEvent,
+		data: StepEventData
+	) => void;
 	/**
 	 * Step object. This is passed into event callbacks.
 	 */
-	step: PropTypes.object,
+	step: VerticalProgressStep;
 	/**
 	 * The variant of the parent progress indicator
 	 */
-	variant: PropTypes.string,
-};
+	variant?: ProgressIndicatorVariant;
+}
 
 /**
  * StepVertical renders a step icon and its step label if applied
  */
-class StepVertical extends React.Component {
+class StepVertical extends React.Component<StepVerticalProps> {
+	static displayName = displayName;
+
 	/**
 	 * stepIcon represents the icon used for each step.
 	 */
-	stepIcon = (renderIcon, status, props) => {
-		const data = {
-			isSelected: this.props.isSelected,
-			isError: this.props.isError,
-			isCompleted: this.props.isCompleted,
+	stepIcon = (renderIcon: boolean, status: string, props: StepVerticalProps) => {
+		const data: StepEventData = {
+			isSelected: !!this.props.isSelected,
+			isError: !!this.props.isError,
+			isCompleted: !!this.props.isCompleted,
+			isDisabled: !!this.props.isDisabled,
 			step: this.props.step,
 		};
 
@@ -72,7 +98,8 @@ class StepVertical extends React.Component {
 			/>
 		) : null;
 
-		const handleClick = (event) => this.props.onClick(event, data);
+		const handleClick = (event: React.MouseEvent) =>
+			this.props.onClick?.(event, data);
 
 		return this.props.onClick ? (
 			<button
@@ -90,7 +117,7 @@ class StepVertical extends React.Component {
 				<span className="slds-assistive-text">
 					{this.props.step.assistiveText || (
 						<React.Fragment>
-							{`${this.props.assistiveText.step} ${this.props.index + 1}: `}
+							{`${this.props.assistiveText?.step} ${this.props.index + 1}: `}
 							{this.props.step.label}
 							{status ? ` - ${status}` : ''}
 						</React.Fragment>
@@ -111,7 +138,7 @@ class StepVertical extends React.Component {
 				<span className="slds-assistive-text">
 					{this.props.step.assistiveText || (
 						<React.Fragment>
-							{`${props.assistiveText.step} ${props.index + 1}: `}
+							{`${props.assistiveText?.step} ${props.index + 1}: `}
 							{props.step.label}
 							{status ? ` - ${status}` : ''}
 						</React.Fragment>
@@ -163,11 +190,11 @@ class StepVertical extends React.Component {
 		const renderIcon = this.props.isCompleted || this.props.isError;
 		let status = '';
 		if (this.props.isError) {
-			status = this.props.assistiveText.errorStep;
+			status = this.props.assistiveText?.errorStep || '';
 		} else if (this.props.isCompleted) {
-			status = this.props.assistiveText.completedStep;
+			status = this.props.assistiveText?.completedStep || '';
 		} else if (this.props.isDisabled) {
-			status = this.props.assistiveText.disabledStep;
+			status = this.props.assistiveText?.disabledStep || '';
 		}
 
 		return (
@@ -178,14 +205,11 @@ class StepVertical extends React.Component {
 					'slds-has-error': this.props.isError,
 				})}
 			>
-				{this.stepIcon(renderIcon, status, this.props)}
+				{this.stepIcon(!!renderIcon, status, this.props)}
 				{this.renderStepContent()}
 			</li>
 		);
 	}
 }
 
-StepVertical.propTypes = propTypes;
-StepVertical.displayName = displayName;
-
-export default StepVertical; // export is replaced with `ReactDOM.render(<Example />, mountNode);` at runtime
+export default StepVertical;
