@@ -16,10 +16,8 @@ import componentDoc from './component.json';
 
 // ## Children
 import Button from '../button';
-// @ts-expect-error - Module declaration doesn't match relative import
 import Highlighter from '../utilities/highlighter';
 import Tooltip from '../tooltip';
-// @ts-expect-error - Module declaration doesn't match relative import
 import Truncate from '../utilities/truncate';
 
 import { APP_LAUNCHER_TILE } from '../../utilities/constants';

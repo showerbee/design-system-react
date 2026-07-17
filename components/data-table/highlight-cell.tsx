@@ -4,7 +4,6 @@
 import React, { ReactNode } from 'react';
 
 import DataTableCell, { DataTableCellProps } from './cell';
-// @ts-expect-error - Module declaration doesn't match relative import
 import Highlighter from '../utilities/highlighter';
 
 import { DATA_TABLE_CELL } from '../../utilities/constants';

@@ -7,7 +7,6 @@ import findIndex from 'lodash.findindex';
 import isFunction from 'lodash.isfunction';
 
 import Button from '../../button';
-// @ts-expect-error - Module declaration doesn't match relative import
 import Highlighter from '../../utilities/highlighter';
 
 import EventUtil from '../../../utilities/event';

@@ -14,7 +14,6 @@ import React, { type ReactNode } from 'react';
 import classNames from 'classnames';
 
 // ### Children
-// @ts-expect-error - Module declaration doesn't match relative import
 import Highlighter from '../utilities/highlighter';
 
 // ## Constants

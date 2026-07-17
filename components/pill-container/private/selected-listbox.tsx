@@ -15,7 +15,6 @@ import classNames from 'classnames';
 
 import Avatar from '../../avatar';
 import Icon from '../../icon';
-// @ts-expect-error - Module declaration doesn't match relative import
 import Pill from '../../utilities/pill';
 
 import type { IconCategory } from '../../../types/common';
@@ -225,16 +224,15 @@ const SelectedListBox = ({
 								}}
 								avatar={avatar as ReactElement}
 								bare={option.bare || isBare}
-								error={option.error}
 								events={{
 									onBlur: events.onBlurPill,
 									onClick:
 										typeof events.onClickPill === 'function'
-											? (event: SyntheticEvent, data: object) => {
+											? (event: React.MouseEvent, data?: unknown) => {
 													events.onClickPill?.(
 														event as unknown as MouseEvent,
 														{
-															...data,
+															...(data as object),
 															index: renderIndex,
 														} as {
 															index: number;
@@ -243,24 +241,27 @@ const SelectedListBox = ({
 													);
 											  }
 											: undefined,
-									onFocus: (event: FocusEvent, data: object) => {
+									onFocus: (event: React.FocusEvent, data?: unknown) => {
 										events.onPillFocus?.(event, {
-											...data,
+											...(data as object),
 											index: renderIndex,
 										} as {
 											index: number;
 											option: SelectedListBoxOption;
 										});
 									},
-									onRequestFocusOnNextPill:
-										events.onRequestFocusOnNextPill,
+									onRequestFocusOnNextPill: events.onRequestFocusOnNextPill as
+										| ((event: unknown, data: unknown) => void)
+										| undefined,
 									onRequestFocusOnPreviousPill:
-										events.onRequestFocusOnPreviousPill,
-									onRequestRemove: (event: SyntheticEvent, data: object) => {
+										events.onRequestFocusOnPreviousPill as
+											| ((event: unknown, data: unknown) => void)
+											| undefined,
+									onRequestRemove: (event: unknown, data: unknown) => {
 										events.onRequestRemove?.(
 											event as unknown as MouseEvent,
 											{
-												...data,
+												...(data as object),
 												index: renderIndex,
 											} as {
 												index?: number;
@@ -268,16 +269,18 @@ const SelectedListBox = ({
 											}
 										);
 									},
-									onRequestFocus: events.onRequestFocus,
+									onRequestFocus: events.onRequestFocus as
+										| ((event: unknown, data: { ref: unknown }) => void)
+										| undefined,
 								}}
 								eventData={{ option }}
 								hasError={option.error}
 								icon={icon as ReactElement}
 								labels={{
 									label: option.label as string,
-									title: (option.title ?? option.label) as string,
 									removeTitle: labels?.removePillTitle,
 								}}
+								title={(option.title ?? option.label) as string}
 								requestFocus={listboxHasFocus}
 								tabIndex={hasTabIndex ? 0 : -1}
 							/>

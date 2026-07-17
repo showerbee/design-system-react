@@ -26,7 +26,6 @@ import ListItemLabel from '../utilities/menu-list/item-label';
 // Alias to a permissive type here rather than widen the public MenuListProps.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const List = BaseList as unknown as React.ComponentType<any>;
-// @ts-expect-error - Module declaration doesn't match relative import
 import Pill from '../utilities/pill';
 
 import EventUtil from '../../utilities/event';
@@ -592,11 +591,8 @@ const MenuPicklist: React.FC<MenuPicklistProps> = ({
 							onRequestFocus: () => {},
 							onRequestFocusOnNextPill: () => {},
 							onRequestFocusOnPreviousPill: () => {},
-							onRequestRemove: (
-								_event: React.SyntheticEvent,
-								data: { index: number }
-							) => {
-								const index = data.index;
+							onRequestRemove: (_event: unknown, data: unknown) => {
+								const { index } = data as { index: number };
 								setSelectedIndices((prev) =>
 									prev.filter((i) => i !== index)
 								);
@@ -608,7 +604,7 @@ const MenuPicklist: React.FC<MenuPicklistProps> = ({
 							},
 						}}
 						labels={{
-							label: pillLabel,
+							label: pillLabel as string,
 						}}
 					/>
 				</li>
