@@ -3,15 +3,16 @@
 
 /* eslint-disable class-methods-use-this */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode, type SyntheticEvent } from 'react';
 import classNames from 'classnames';
 import eventUtil from '../../utilities/event';
 
 import { SPLIT_VIEW_LISTBOX } from '../../utilities/constants';
 
 import Icon from '../icon';
-import SplitViewListItemContent from './private/list-item-content';
+import SplitViewListItemContent, {
+	type SplitViewListItem,
+} from './private/list-item-content';
 import listItemWithContent from './private/list-item-with-content';
 
 export const SORT_OPTIONS = Object.freeze({
@@ -19,7 +20,45 @@ export const SORT_OPTIONS = Object.freeze({
 	DOWN: 'down',
 });
 
-const propTypes = {
+export interface SplitViewListboxSortAssistiveText {
+	sortedBy?: string;
+	descending?: string;
+	ascending?: string;
+}
+
+export interface SplitViewListboxAssistiveText {
+	list?: string;
+	sort?: SplitViewListboxSortAssistiveText;
+	unreadItem?: string;
+}
+
+export interface SplitViewListboxSelectData {
+	selectedItems: SplitViewListboxItem[];
+	item: SplitViewListboxItem | null;
+}
+
+export interface SplitViewListboxEvents {
+	/**
+	 * Called when a list item is selected.
+	 */
+	onSelect: (event: SyntheticEvent, data: SplitViewListboxSelectData) => void;
+	/**
+	 * Called when the list is sorted.
+	 */
+	onSort?: (event: SyntheticEvent) => void;
+}
+
+export interface SplitViewListboxLabels {
+	/** This is the header of the list. */
+	header?: string;
+}
+
+export type SplitViewListboxItem = SplitViewListItem & {
+	id?: string | number;
+	[key: string]: unknown;
+};
+
+export interface SplitViewListboxProps {
 	/**
 	 * **Assistive text for accessibility**
 	 * * `list`: aria label for the list
@@ -28,79 +67,65 @@ const propTypes = {
 	 *    * `descending`: Descending sorting.
 	 *    * `ascending`: Ascending sorting.
 	 */
-	assistiveText: PropTypes.shape({
-		list: PropTypes.string,
-		sort: PropTypes.shape({
-			sortedBy: PropTypes.string,
-			descending: PropTypes.string,
-			ascending: PropTypes.string,
-		}),
-		unreadItem: PropTypes.string,
-	}),
+	assistiveText?: SplitViewListboxAssistiveText;
 	/**
 	 * CSS classes to be added to the parent `div` tag.
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * Event Callbacks
-	 * * `onSelect`: Called when a list item is selected. Previously, this event was called when an item was focused. The UX pattern has changed and this event is now called on pressing enter or mouse click.
-	 *    * event {object} List item click event
-	 *    * Meta {object}
-	 *       * selectedItems {array} List of selected items.
-	 *       * item {object} Last selected item.
+	 * * `onSelect`: Called when a list item is selected.
 	 * * `onSort`: Called when the list is sorted.
-	 *    * event {object} Sort click event
 	 */
-	events: PropTypes.shape({
-		onSelect: PropTypes.func.isRequired,
-		onSort: PropTypes.func,
-	}),
+	events?: SplitViewListboxEvents;
 	/**
 	 * HTML id for component.
 	 */
-	id: PropTypes.string,
+	id?: string;
 	/**
 	 * **Text labels for internationalization**
 	 * * `header`: This is the header of the list.
 	 */
-	labels: PropTypes.shape({
-		header: PropTypes.string,
-	}),
+	labels?: SplitViewListboxLabels;
 	/**
 	 * The direction of the sort arrow. Option are:
 	 * * SORT_OPTIONS.UP: `up`
 	 * * SORT_OPTIONS.DOWN: `down`
 	 */
-	sortDirection: PropTypes.oneOf([SORT_OPTIONS.UP, SORT_OPTIONS.DOWN]),
+	sortDirection?: 'up' | 'down';
 	/**
 	 * Allows multiple item to be selection
 	 */
-	multiple: PropTypes.bool,
+	multiple?: boolean;
 	/**
 	 * The list of items.
 	 * It is recommended that you have a unique `id` for each item.
 	 */
-	options: PropTypes.array.isRequired,
+	options: SplitViewListboxItem[];
 	/**
 	 * Accepts an array of item objects. For single selection, pass in an array of one object.
 	 */
-	selection: PropTypes.array,
+	selection?: SplitViewListboxItem[];
 	/**
 	 * Accepts an array of item objects. For single unread, pass in an array of one object.
 	 */
-	unread: PropTypes.array,
+	unread?: SplitViewListboxItem[];
 	/**
 	 * Custom list item template for the list item content. The select and unread functionality wraps the custom list item.
 	 * This should be a React component that accepts props.
 	 */
-	listItem: PropTypes.func,
-};
+	listItem?: React.ComponentType<{ item?: SplitViewListboxItem }>;
+}
 
-const defaultProps = {
+interface SplitViewListboxState {
+	currentSelectedItem: SplitViewListboxItem | null;
+	currentFocusedListItem: {
+		index: number;
+		item: SplitViewListboxItem | null;
+	};
+}
+
+const defaultProps: Partial<SplitViewListboxProps> = {
 	assistiveText: {
 		list: 'Select an item to open it in a new workspace tab.',
 		sort: {
@@ -109,7 +134,7 @@ const defaultProps = {
 			ascending: 'Ascending',
 		},
 	},
-	events: {},
+	events: {} as SplitViewListboxEvents,
 	labels: {},
 	selection: [],
 	unread: [],
@@ -118,14 +143,19 @@ const defaultProps = {
 /**
  * The menu with the ARIA role of a listbox.
  */
-class SplitViewListbox extends React.Component {
+class SplitViewListbox extends React.Component<
+	SplitViewListboxProps,
+	SplitViewListboxState
+> {
 	static displayName = SPLIT_VIEW_LISTBOX;
-
-	static propTypes = propTypes;
 
 	static defaultProps = defaultProps;
 
-	constructor(props) {
+	listItemComponents: Record<number, HTMLAnchorElement>;
+
+	ListItemWithContent: ReturnType<typeof listItemWithContent>;
+
+	constructor(props: SplitViewListboxProps) {
 		super(props);
 
 		this.listItemComponents = {};
@@ -140,7 +170,12 @@ class SplitViewListbox extends React.Component {
 
 		// Generates the list item template
 		this.ListItemWithContent = listItemWithContent(
-			props.listItem || SplitViewListItemContent
+			(props.listItem as unknown as React.ComponentType<
+				import('./private/list-item-with-content').ListItemWithContentProps
+			>) ||
+				(SplitViewListItemContent as unknown as React.ComponentType<
+					import('./private/list-item-with-content').ListItemWithContentProps
+				>)
 		);
 	}
 
@@ -148,19 +183,19 @@ class SplitViewListbox extends React.Component {
 		this.focusFirstItem();
 	}
 
-	isListItemFocused(item) {
+	isListItemFocused(item: SplitViewListboxItem) {
 		return this.state.currentFocusedListItem.item === item;
 	}
 
-	isSelected(item) {
-		return this.props.selection.includes(item);
+	isSelected(item: SplitViewListboxItem) {
+		return (this.props.selection || []).includes(item);
 	}
 
-	isUnread(item) {
-		return this.props.unread.includes(item);
+	isUnread(item: SplitViewListboxItem) {
+		return (this.props.unread || []).includes(item);
 	}
 
-	handleKeyDown(event) {
+	handleKeyDown(event: React.KeyboardEvent) {
 		if (this.props.multiple && event.key === 'a' && event.ctrlKey) {
 			// select / deselect all
 			eventUtil.trap(event);
@@ -178,7 +213,7 @@ class SplitViewListbox extends React.Component {
 		}
 	}
 
-	moveToNextItem(event) {
+	moveToNextItem(event: SyntheticEvent) {
 		const nextFocusIndex =
 			this.state.currentFocusedListItem.index === this.props.options.length - 1
 				? 0
@@ -187,7 +222,7 @@ class SplitViewListbox extends React.Component {
 		this.moveToIndex(event, nextFocusIndex);
 	}
 
-	moveToPreviousItem(event) {
+	moveToPreviousItem(event: SyntheticEvent) {
 		const previousFocusIndex =
 			this.state.currentFocusedListItem.index === 0
 				? this.props.options.length - 1
@@ -196,7 +231,7 @@ class SplitViewListbox extends React.Component {
 		this.moveToIndex(event, previousFocusIndex);
 	}
 
-	moveToIndex(event, index) {
+	moveToIndex(event: SyntheticEvent, index: number) {
 		const item = this.props.options[index];
 
 		this.focusItem(item);
@@ -204,15 +239,16 @@ class SplitViewListbox extends React.Component {
 
 	focusFirstItem() {
 		const firstSelectedItem =
-			this.props.options.find((item) => this.props.selection.includes(item)) ||
-			this.props.options[0];
+			this.props.options.find((item) =>
+				(this.props.selection || []).includes(item)
+			) || this.props.options[0];
 
 		if (firstSelectedItem) {
 			this.focusItem(firstSelectedItem, true);
 		}
 	}
 
-	focusItem(item, setDataOnly) {
+	focusItem(item: SplitViewListboxItem, setDataOnly?: boolean) {
 		const index = this.props.options.indexOf(item);
 
 		if (!setDataOnly) {
@@ -227,32 +263,33 @@ class SplitViewListbox extends React.Component {
 		});
 	}
 
-	deselectAllListItems(event) {
+	deselectAllListItems(event: SyntheticEvent) {
 		this.setState({ currentSelectedItem: null });
-		this.props.events.onSelect(event, {
+		this.props.events?.onSelect(event, {
 			selectedItems: [],
 			item: null,
 		});
 	}
 
-	selectAllListItems(event) {
-		this.props.events.onSelect(event, {
+	selectAllListItems(event: SyntheticEvent) {
+		this.props.events?.onSelect(event, {
 			selectedItems: this.props.options,
 			item: this.state.currentSelectedItem,
 		});
 	}
 
-	selectListItem(item, event) {
+	selectListItem(item: SplitViewListboxItem, event: React.MouseEvent) {
 		let selectedItems = [item];
+		const selection = this.props.selection || [];
 
 		if (this.props.multiple) {
 			if (event.metaKey) {
-				selectedItems = this.props.selection.includes(item)
-					? this.props.selection.filter((i) => i !== item)
-					: [item, ...this.props.selection];
+				selectedItems = selection.includes(item)
+					? selection.filter((i) => i !== item)
+					: [item, ...selection];
 			} else if (event.shiftKey) {
 				const [begin, end] = [
-					this.props.options.indexOf(this.state.currentSelectedItem),
+					this.props.options.indexOf(this.state.currentSelectedItem as SplitViewListboxItem),
 					this.props.options.indexOf(item),
 				].sort();
 
@@ -260,22 +297,25 @@ class SplitViewListbox extends React.Component {
 
 				selectedItems = [
 					...addToSelection,
-					...this.props.selection.filter((i) => !addToSelection.includes(i)),
+					...selection.filter((i) => !addToSelection.includes(i)),
 				];
 			}
 		}
 
 		this.setState({ currentSelectedItem: item });
 
-		this.props.events.onSelect(event, { selectedItems, item });
+		this.props.events?.onSelect(event, { selectedItems, item });
 	}
 
-	handleOnSelect(event, { item }) {
+	handleOnSelect(
+		event: React.MouseEvent,
+		{ item }: { item: SplitViewListboxItem }
+	) {
 		this.selectListItem(item, event);
 		this.focusItem(item);
 	}
 
-	sortDirection() {
+	sortDirection(): ReactNode {
 		return this.props.sortDirection ? (
 			<Icon
 				category="utility"
@@ -290,8 +330,8 @@ class SplitViewListbox extends React.Component {
 		) : null;
 	}
 
-	headerWrapper(children) {
-		return this.props.events.onSort ? (
+	headerWrapper(children: ReactNode): ReactNode {
+		return this.props.events?.onSort ? (
 			<a
 				aria-live="polite"
 				style={{ borderTop: '0' }}
@@ -312,18 +352,19 @@ class SplitViewListbox extends React.Component {
 		);
 	}
 
-	header() {
-		return this.props.labels.header
+	header(): ReactNode {
+		const sort = this.props.assistiveText?.sort || {};
+		return this.props.labels?.header
 			? this.headerWrapper(
 					<span
 						aria-sort={
-							this.props.sortDirection === SORT_OPTIONS.DOWN
-								? this.props.assistiveText.sort.descending
-								: this.props.assistiveText.sort.ascending
+							(this.props.sortDirection === SORT_OPTIONS.DOWN
+								? sort.descending
+								: sort.ascending) as React.AriaAttributes['aria-sort']
 						}
 					>
 						<span className="slds-assistive-text">
-							{this.props.assistiveText.sort.sortedBy}
+							{sort.sortedBy}
 							{': '}
 						</span>
 						<span>
@@ -333,36 +374,41 @@ class SplitViewListbox extends React.Component {
 						<span className="slds-assistive-text">
 							{'- '}
 							{this.props.sortDirection === SORT_OPTIONS.DOWN
-								? this.props.assistiveText.sort.descending
-								: this.props.assistiveText.sort.ascending}
+								? sort.descending
+								: sort.ascending}
 						</span>
 					</span>
 			  )
 			: null;
 	}
 
-	addListItemComponent(component, index) {
+	addListItemComponent(component: HTMLAnchorElement, index: number) {
 		this.listItemComponents[index] = component;
 	}
 
-	listItems() {
+	listItems(): ReactNode {
 		const { ListItemWithContent } = this;
 
 		return this.props.options.map((item, index) => (
 			<ListItemWithContent
 				key={item.id || index}
 				assistiveText={{
-					unreadItem: this.props.assistiveText.unreadItem,
+					unreadItem: this.props.assistiveText?.unreadItem,
 				}}
-				listItemRef={(component) => {
-					this.addListItemComponent(component, index);
+				listItemRef={(component: HTMLAnchorElement | null) => {
+					if (component) {
+						this.addListItemComponent(component, index);
+					}
 				}}
 				item={item}
 				isFocused={this.isListItemFocused(item)}
 				isSelected={this.isSelected(item)}
 				isUnread={this.isUnread(item)}
 				events={{
-					onClick: (event, meta) => this.handleOnSelect(event, meta),
+					onClick: (event, meta) =>
+						this.handleOnSelect(event, {
+							item: meta.item as SplitViewListboxItem,
+						}),
 				}}
 				multiple={this.props.multiple}
 			/>
@@ -375,13 +421,13 @@ class SplitViewListbox extends React.Component {
 				id={this.props.id}
 				className={classNames(
 					'slds-grid slds-grid_vertical slds-scrollable_none',
-					this.props.className
+					this.props.className as string
 				)}
 			>
 				{this.header()}
 				<ul
 					className="slds-scrollable_y"
-					aria-label={this.props.assistiveText.list}
+					aria-label={this.props.assistiveText?.list}
 					aria-multiselectable={this.props.multiple}
 					role="listbox"
 					onKeyDown={(event) => this.handleKeyDown(event)}
