@@ -1,8 +1,15 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import { useContext, useEffect, useRef, useState, Children } from 'react';
-import PropTypes from 'prop-types';
+import React, {
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+	Children,
+	type ReactNode,
+	type CSSProperties,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { PortalSettingsContext } from '../../portal-settings';
 
@@ -14,9 +21,48 @@ import { PortalSettingsContext } from '../../portal-settings';
  * `ReactDOM.unmountComponentAtNode`, both of which were removed in React 19.
  */
 
+export interface PortalProps {
+	/**
+	 * What tag to use for the portal, defaults to `span`.
+	 */
+	renderTag?: string;
+	/**
+	 * What node the portal is rendered to, defaults to `document.body`.
+	 */
+	renderTo?: string | HTMLElement | null;
+	/**
+	 * React id prop.
+	 */
+	id?: string;
+	/**
+	 * Accepts a _single_ element or component.
+	 */
+	children?: ReactNode;
+	/**
+	 * ClassName added to the portal node.
+	 */
+	className?: string;
+	/**
+	 * An object of styles that are applied to the portal.
+	 */
+	style?: CSSProperties;
+	/**
+	 * Triggers when Portal render tree mounts. Pass in an undefined event and `{ portal: [node] }`
+	 */
+	onMount?: (event: undefined, data: { portal: HTMLElement }) => unknown;
+	/**
+	 * Triggers when the portal is mounted.
+	 */
+	onOpen?: (event: undefined, data: { portal: ReactNode }) => void;
+	/**
+	 * Triggers when Portal re-renders its tree.
+	 */
+	onUpdate?: (instance: unknown) => unknown;
+}
+
 const documentDefined = typeof document !== 'undefined';
 
-const Portal = (props) => {
+const Portal = (props: PortalProps): React.ReactPortal | null => {
 	const {
 		renderTag = 'span',
 		renderTo = null,
@@ -30,14 +76,14 @@ const Portal = (props) => {
 	} = props;
 
 	const context = useContext(PortalSettingsContext);
-	const portalNodeRef = useRef(null);
-	const portalNodeInstanceRef = useRef(null);
+	const portalNodeRef = useRef<HTMLElement | null>(null);
+	const portalNodeInstanceRef = useRef<unknown>(null);
 	const [isMounted, setIsMounted] = useState(false);
 
 	// Resolve where the portal's DOM node should be appended. Precedence matches
 	// the legacy implementation: explicit `renderTo` selector/node > context
 	// `renderTo` selector > `document.body`.
-	const getPortalParentNode = () => {
+	const getPortalParentNode = (): Element | null => {
 		if (typeof renderTo === 'string') {
 			return document.querySelector(renderTo);
 		}
@@ -48,7 +94,7 @@ const Portal = (props) => {
 		) {
 			return document.querySelectorAll(context.renderTo)[0];
 		}
-		return renderTo || (documentDefined && document.body);
+		return renderTo || (documentDefined ? document.body : null);
 	};
 
 	// Create the portal container node, append it to the parent, and tear it
@@ -103,8 +149,9 @@ const Portal = (props) => {
 			node.className = className;
 		}
 		if (style) {
-			Object.keys(style).forEach((key) => {
-				node.style[key] = style[key];
+			(Object.keys(style) as Array<keyof CSSProperties>).forEach((key) => {
+				(node.style as unknown as Record<string, unknown>)[key as string] =
+					style[key] as unknown as string;
 			});
 		}
 		if (onUpdate) {
@@ -122,44 +169,5 @@ const Portal = (props) => {
 };
 
 Portal.displayName = 'Portal';
-
-Portal.propTypes = {
-	/*
-	 * What tag to use for the portal, defaults to `span`.
-	 */
-	renderTag: PropTypes.string,
-	/*
-	 * What node the portal is rendered to, defaults to `document.body`.
-	 */
-	renderTo: PropTypes.any,
-	/*
-	 * React id prop.
-	 */
-	id: PropTypes.string,
-	/*
-	 * Accepts a _single_ element or component.
-	 */
-	children: PropTypes.node,
-	/*
-	 * ClassName added to the portal node.
-	 */
-	className: PropTypes.any,
-	/*
-	 * An object of styles that are applied to the portal.
-	 */
-	style: PropTypes.object,
-	/*
-	 * Triggers when Portal render tree mounts. Pass in an undefined event and `{ portal: [node] }`
-	 */
-	onMount: PropTypes.func,
-	/*
-	 * Triggers when the portal is mounted.
-	 */
-	onOpen: PropTypes.func,
-	/*
-	 * Triggers when Portal re-renders its tree.
-	 */
-	onUpdate: PropTypes.func,
-};
 
 export default Portal;
