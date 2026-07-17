@@ -1,8 +1,7 @@
 /* Copyright (c) 2015-present, salesforce.com, inc. All rights reserved */
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode, type CSSProperties, type SyntheticEvent } from 'react';
 import classNames from 'classnames';
 
 import assign from 'lodash.assign';
@@ -18,79 +17,88 @@ import ProgressRing from '../progress-ring';
 import { ICON, SETUP_ASSISTANT_STEP } from '../../utilities/constants';
 import generateId from '../../utilities/generate-id';
 
-const propTypes = {
+export interface StepAssistiveText {
+	/** Button that examples a step */
+	expandStep?: string;
+}
+
+export interface StepToggleData {
+	index?: number;
+	isOpen: boolean;
+	step: StepProps;
+}
+
+export interface StepProps {
 	/**
 	 * **Assistive text for accessibility**
 	 * This object is merged with the default props object on every render.
 	 * * `expandStep`: Button that examples a step
 	 * _Tested with snapshot testing._
 	 */
-	assistiveText: PropTypes.shape({
-		expandStep: PropTypes.string,
-	}),
+	assistiveText?: StepAssistiveText;
 	/**
 	 * CSS class names to be added to the container element. `array`, `object`, or `string` are accepted.
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * Detailed description of the step
 	 */
-	description: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+	description?: string | ReactNode;
 	/**
 	 * Estimated time for completing the step
 	 */
-	estimatedTime: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+	estimatedTime?: string | ReactNode;
 	/**
 	 * Heading for the step
 	 */
-	heading: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+	heading?: string | ReactNode;
 	/**
 	 * HTML id for component.
 	 */
-	id: PropTypes.string,
+	id?: string;
 	/**
 	 * Index of the step within the step array
 	 */
-	index: PropTypes.number,
+	index?: number;
 	/**
 	 * Dictates whether the step can be expanded / collapsed
 	 */
-	isExpandable: PropTypes.bool,
+	isExpandable?: boolean;
 	/**
 	 * If `isExpandable` is true, this prop can be used to control the expanded state. If not provided state will be used instead
 	 */
-	isOpen: PropTypes.bool,
+	isOpen?: boolean;
 	/**
 	 * Function that is called to render a step's available action(s). Typically returns a Button, Button of variant "link," or Checkbox of variant "toggle"
 	 */
-	onRenderAction: PropTypes.func,
+	onRenderAction?: () => ReactNode;
 	/**
 	 * Function that is called to render step content. Typically returns a ProgressIndicator and/or ScopedNotification component
 	 */
-	onRenderContent: PropTypes.func,
+	onRenderContent?: () => ReactNode;
 	/**
 	 * Function that is called to render content within the media figure. Expects to be returned an Icon or ProgressRing component
 	 */
-	onRenderFigure: PropTypes.func,
+	onRenderFigure?: () => React.ReactElement | null;
 	/**
 	 * Function to handle requests to expand / collapse the step
 	 */
-	onToggleIsOpen: PropTypes.func,
+	onToggleIsOpen?: (event: SyntheticEvent, data: StepToggleData) => void;
 	/**
 	 * Percentage of step completed. No progress indicator will be shown for the step unless this is provided
 	 */
-	progress: PropTypes.number,
+	progress?: number;
 	/**
 	 * Display number for the step. Only appears if progress indicator is enabled. Determined automatically by parent if not provided.
 	 */
-	stepNumber: PropTypes.number,
-};
+	stepNumber?: number;
+}
 
-const defaultProps = {
+interface StepState {
+	isOpen: boolean;
+}
+
+const defaultProps: Partial<StepProps> = {
 	assistiveText: { expandStep: 'Expand Step' },
 };
 
@@ -98,14 +106,24 @@ const defaultProps = {
  * Setup Assistant Step component is used to specify individual items within the Setup Assistant
  * filled with learning and task links along with a recommended sequence that may have progress tracking
  */
-class Step extends React.Component {
-	constructor(props) {
+class Step extends React.Component<StepProps, StepState> {
+	static displayName = SETUP_ASSISTANT_STEP;
+
+	static defaultProps = defaultProps;
+
+	generatedId: string;
+
+	constructor(props: StepProps) {
 		super(props);
 		this.generatedId = generateId();
 		this.state = {
 			isOpen: props.isOpen || false,
 		};
-		checkProps(SETUP_ASSISTANT_STEP, this.props, componentDoc);
+		(checkProps as (name: string, props: unknown, doc?: unknown) => void)(
+			SETUP_ASSISTANT_STEP,
+			this.props,
+			componentDoc
+		);
 	}
 
 	getId() {
@@ -118,7 +136,7 @@ class Step extends React.Component {
 			: this.state.isOpen;
 	}
 
-	toggleIsOpen = (event) => {
+	toggleIsOpen = (event: SyntheticEvent) => {
 		if (this.props.onToggleIsOpen) {
 			this.props.onToggleIsOpen(event, {
 				index: this.props.index,
@@ -170,37 +188,50 @@ class Step extends React.Component {
 	}
 
 	renderSummary() {
-		let figure;
-		let progressRingTheme;
+		let figure: ReactNode;
+		let progressRingTheme: 'active' | 'complete' | undefined;
 
-		if (this.props.progress > 0 && this.props.progress < 100) {
+		if (
+			this.props.progress !== undefined &&
+			this.props.progress > 0 &&
+			this.props.progress < 100
+		) {
 			progressRingTheme = 'active';
 		} else if (this.props.progress === 100) {
 			progressRingTheme = 'complete';
 		}
 
 		if (this.props.onRenderFigure) {
-			figure = this.props.onRenderFigure();
+			const renderedFigure = this.props.onRenderFigure();
 
-			if (figure && figure.type && figure.type.displayName === ICON) {
-				let containerStyle = {
+			if (
+				renderedFigure &&
+				renderedFigure.type &&
+				(renderedFigure.type as { displayName?: string }).displayName === ICON
+			) {
+				const figureProps = renderedFigure.props as {
+					containerStyle?: CSSProperties;
+				};
+				let containerStyle: CSSProperties = {
 					position: 'relative',
 					top: this.props.isExpandable ? '5px' : '-3px',
 				};
 
-				if (figure.props.containerStyle) {
+				if (figureProps.containerStyle) {
 					containerStyle = {
 						...containerStyle,
-						...figure.props.containerStyle,
+						...figureProps.containerStyle,
 					};
 				}
 
-				figure = React.cloneElement(figure, {
-					...figure.props,
+				const clonedFigure = React.cloneElement(renderedFigure, {
+					...figureProps,
 					containerStyle,
 					size: 'small',
-				});
-				figure = <div className="slds-media__figure">{figure}</div>;
+				} as Partial<unknown>);
+				figure = <div className="slds-media__figure">{clonedFigure}</div>;
+			} else {
+				figure = renderedFigure;
 			}
 		} else if (this.props.progress !== undefined) {
 			figure = (
@@ -243,7 +274,7 @@ class Step extends React.Component {
 			<li
 				className={classNames(
 					'slds-setup-assistant__item',
-					this.props.className
+					this.props.className as string
 				)}
 				id={this.getId()}
 			>
@@ -288,9 +319,5 @@ class Step extends React.Component {
 		);
 	}
 }
-
-Step.displayName = SETUP_ASSISTANT_STEP;
-Step.propTypes = propTypes;
-Step.defaultProps = defaultProps;
 
 export default Step;
