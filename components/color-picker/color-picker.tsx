@@ -15,8 +15,7 @@ import Swatch from './private/swatch';
 import SwatchPicker from './private/swatch-picker';
 
 import Button from '../button';
-import Input from '../input';
-// @ts-expect-error - Tabs module declaration doesn't match relative import
+import Input, { type InputChangeData } from '../input';
 import Tabs from '../tabs';
 import TabsPanel from '../tabs/panel';
 import Popover from '../popover';
@@ -267,7 +266,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 	const updateWorkingColor = useCallback(
 		(
 			event: React.SyntheticEvent,
-			colorOptions: { hex?: string; red?: string | number; green?: string | number; blue?: string | number; hue?: number; saturation?: number; value?: number }
+			colorOptions: { hex?: string; red?: string | number; green?: string | number; blue?: string | number; hue?: number | string; saturation?: number; value?: number }
 		) => {
 			const newColor = ColorUtils.getNewColor(
 				colorOptions,
@@ -327,18 +326,25 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 	);
 
 	const handleColorChange = useCallback(
-		(property: 'hex' | 'red' | 'green' | 'blue' | 'hue') =>
-			(event: React.ChangeEvent<HTMLInputElement>) => {
+		(property: 'hex' | 'red' | 'green' | 'blue') =>
+			(event: React.SyntheticEvent, data: InputChangeData) => {
 				const colorProperties: Record<string, string | number> = {};
-				colorProperties[property] = event.target.value;
+				colorProperties[property] = data.value;
 				updateWorkingColor(event, colorProperties);
 			},
 		[updateWorkingColor]
 	);
 
-	const handleHexInputChange = useCallback(
+	const handleHueChange = useCallback(
 		(event: React.ChangeEvent<HTMLInputElement>) => {
-			const newCurrentColor = event.target.value;
+			updateWorkingColor(event, { hue: event.target.value });
+		},
+		[updateWorkingColor]
+	);
+
+	const handleHexInputChange = useCallback(
+		(event: React.SyntheticEvent, data: InputChangeData) => {
+			const newCurrentColor = data.value;
 			const namedColorHex = ColorUtils.getHexFromNamedColor(newCurrentColor);
 			let isValid = false;
 
@@ -497,7 +503,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 					onBlueChange={handleColorChange('blue')}
 					onGreenChange={handleColorChange('green')}
 					onHexChange={handleColorChange('hex')}
-					onHueChange={handleColorChange('hue')}
+					onHueChange={handleHueChange}
 					onRedChange={handleColorChange('red')}
 					onSwatchChange={handleSwatchChange}
 					onSaturationValueChange={handleSaturationValueChange}

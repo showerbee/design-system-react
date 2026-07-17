@@ -4,6 +4,7 @@
 import React, { useId, type ReactNode } from 'react';
 import classNames from 'classnames';
 import { EXPRESSION } from '../../utilities/constants';
+import { type InputChangeData } from '../input';
 import ExpressionGroup from './group';
 
 /**
@@ -22,7 +23,13 @@ export interface ExpressionEvents {
 	/** Called when add condition is clicked */
 	onAddCondition?: (event: React.MouseEvent) => void;
 	/** Called when custom logic value changes */
-	onChangeCustomLogicValue?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onChangeCustomLogicValue?: (
+		event:
+			| React.MouseEvent
+			| React.KeyboardEvent
+			| React.ChangeEvent<HTMLInputElement>,
+		data: InputChangeData
+	) => void;
 }
 
 /**

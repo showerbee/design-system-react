@@ -1,8 +1,16 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import Input from '../../input';
+import Input, { type InputChangeData } from '../../input';
 import { WorkingColor, ColorPickerLabels } from '../types';
+
+type InputChangeHandler = (
+	event:
+		| React.MouseEvent
+		| React.KeyboardEvent
+		| React.ChangeEvent<HTMLInputElement>,
+	data: InputChangeData
+) => void;
 
 export interface CustomColorFormProps {
 	/** Current working color object */
@@ -14,13 +22,13 @@ export interface CustomColorFormProps {
 	/** Labels for internationalization */
 	labels: ColorPickerLabels;
 	/** Callback for blue value change */
-	onBlueChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onBlueChange: InputChangeHandler;
 	/** Callback for green value change */
-	onGreenChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onGreenChange: InputChangeHandler;
 	/** Callback for hex value change */
-	onHexChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onHexChange: InputChangeHandler;
 	/** Callback for red value change */
-	onRedChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onRedChange: InputChangeHandler;
 }
 
 /**

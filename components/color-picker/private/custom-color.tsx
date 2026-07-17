@@ -2,7 +2,16 @@ import React from 'react';
 
 import CustomColorForm from './custom-color-form';
 import HsvColor from './hsv-color';
+import { type InputChangeData } from '../../input';
 import { WorkingColor, ColorPickerAssistiveText, ColorPickerLabels } from '../types';
+
+type InputChangeHandler = (
+	event:
+		| React.MouseEvent
+		| React.KeyboardEvent
+		| React.ChangeEvent<HTMLInputElement>,
+	data: InputChangeData
+) => void;
 
 export interface CustomColorProps {
 	/** Assistive text for accessibility */
@@ -18,15 +27,15 @@ export interface CustomColorProps {
 	/** Labels for internationalization */
 	labels: ColorPickerLabels;
 	/** Callback for blue value change */
-	onBlueChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onBlueChange: InputChangeHandler;
 	/** Callback for green value change */
-	onGreenChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onGreenChange: InputChangeHandler;
 	/** Callback for hex value change */
-	onHexChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onHexChange: InputChangeHandler;
 	/** Callback for hue slider change */
 	onHueChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	/** Callback for red value change */
-	onRedChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onRedChange: InputChangeHandler;
 	/** Callback for swatch toggle */
 	onSwatchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	/** Callback for saturation/value change */

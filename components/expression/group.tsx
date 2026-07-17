@@ -11,7 +11,7 @@ import generateId from '../../utilities/generate-id';
 
 import Combobox, { type ComboboxOption } from '../combobox';
 import Button from '../button';
-import Input from '../input';
+import Input, { type InputChangeData } from '../input';
 
 export type ExpressionTriggerType =
 	| 'all'
@@ -35,7 +35,11 @@ export interface ExpressionGroupEvents {
 		data: { triggerType: ExpressionTriggerType }
 	) => void;
 	onChangeCustomLogicValue?: (
-		event: React.ChangeEvent<HTMLInputElement>
+		event:
+			| React.MouseEvent
+			| React.KeyboardEvent
+			| React.ChangeEvent<HTMLInputElement>,
+		data: InputChangeData
 	) => void;
 	onAddCondition?: (event: React.MouseEvent) => void;
 	onAddGroup?: (event: React.MouseEvent) => void;
