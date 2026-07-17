@@ -4,8 +4,7 @@
 // # Global Header Favorites Component
 // Implements the [Global Header Help design pattern](https://www.lightningdesignsystem.com/components/global-header/#Help) in React.
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactElement } from 'react';
 import assign from 'lodash.assign';
 import classnames from 'classnames';
 
@@ -16,39 +15,53 @@ import Popover from '../popover';
 
 import { GLOBAL_HEADER_FAVORITES } from '../../utilities/constants';
 
-const propTypes = {
+export interface GlobalHeaderFavoritesAssistiveText {
+	action?: string;
+	more?: string;
+}
+
+export interface GlobalHeaderFavoritesProps {
 	/**
 	 * **Assistive text for accessibility**
 	 * * `action`: Description of star button. Default is "Toggle Favorite."
 	 * * `more`: Description of dropdown menu. Default is "View Favorites."
 	 */
-	assistiveText: PropTypes.shape({
-		action: PropTypes.string,
-		more: PropTypes.string,
-	}),
+	assistiveText?: GlobalHeaderFavoritesAssistiveText;
 	/**
 	 * Disables the favorites action (star) button and not the related Popover."
 	 */
-	actionDisabled: PropTypes.bool,
+	actionDisabled?: boolean;
 	/**
 	 * Controls whether the favorites action (star) button is selected or not
 	 */
-	actionSelected: PropTypes.bool,
+	actionSelected?: boolean;
 	/**
 	 * This event fires when the favorites action (star) button is toggled. Passes in `event, { actionSelected }`.
 	 */
-	onToggleActionSelected: PropTypes.func,
+	onToggleActionSelected?: (
+		event: React.SyntheticEvent,
+		data: { actionSelected: boolean }
+	) => void;
 	/**
 	 * A `Popover` component applied to the favorites more button. The props from this popover will be merged and override any default props. The `children` prop will be ignored.
 	 */
-	popover: PropTypes.node,
-};
+	popover?: ReactElement;
+}
 
 /**
  * A GlobalHeaderFavorites component. The favorites action is used to "favorite" a commonly used page within a user's experience. When a user "favorites" a page by pressing the favorites action, the button icon changes color with a small animation to confirm your selection.
  */
-class GlobalHeaderFavorites extends React.Component {
-	toggleActionSelected = (event) => {
+class GlobalHeaderFavorites extends React.Component<GlobalHeaderFavoritesProps> {
+	static displayName = GLOBAL_HEADER_FAVORITES;
+
+	static defaultProps: Partial<GlobalHeaderFavoritesProps> = {
+		assistiveText: {
+			action: 'Toggle Favorite',
+			more: 'View Favorites',
+		},
+	};
+
+	toggleActionSelected = (event: React.SyntheticEvent) => {
 		if (this.props.onToggleActionSelected) {
 			this.props.onToggleActionSelected(event, {
 				actionSelected: this.props.actionSelected || false,
@@ -57,12 +70,13 @@ class GlobalHeaderFavorites extends React.Component {
 	};
 
 	render() {
-		const actionAriaProps = {};
-		const popoverProps = assign(
+		const actionAriaProps: Record<string, unknown> = {};
+		const popoverProps: Record<string, unknown> = assign(
 			{
 				align: 'bottom',
 				body: <span />,
-				triggerClassName: 'slds-dropdown-trigger slds-dropdown-trigger_click',
+				triggerClassName:
+					'slds-dropdown-trigger slds-dropdown-trigger_click',
 			},
 			this.props.popover ? this.props.popover.props : {}
 		);
@@ -73,11 +87,14 @@ class GlobalHeaderFavorites extends React.Component {
 			actionAriaProps['aria-pressed'] = true;
 		}
 
+		const assistiveText = this.props
+			.assistiveText as GlobalHeaderFavoritesAssistiveText;
+
 		return (
 			<div className="slds-global-actions__favorites slds-dropdown-trigger slds-dropdown-trigger_click">
 				<div className="slds-button-group">
 					<Button
-						assistiveText={{ icon: this.props.assistiveText.action }}
+						assistiveText={{ icon: assistiveText.action }}
 						className={classnames(
 							'slds-button_icon slds-global-actions__favorites-action',
 							{
@@ -91,19 +108,23 @@ class GlobalHeaderFavorites extends React.Component {
 						iconSize="small"
 						iconVariant="border"
 						onClick={this.toggleActionSelected}
-						onKeyDown={(event) => {
+						onKeyDown={(event: React.KeyboardEvent) => {
 							if (event.keyCode === KEYS.ENTER) {
 								EventUtil.trapImmediate(event);
 								this.toggleActionSelected(event);
 							}
 						}}
-						title={this.props.assistiveText.action}
+						title={assistiveText.action}
 						variant="icon"
 						{...actionAriaProps}
 					/>
-					<Popover {...popoverProps}>
+					<Popover
+						{...(popoverProps as unknown as React.ComponentProps<
+							typeof Popover
+						>)}
+					>
 						<Button
-							assistiveText={{ icon: this.props.assistiveText.more }}
+							assistiveText={{ icon: assistiveText.more }}
 							className="slds-button_icon slds-global-actions__favorites-more"
 							iconCategory="utility"
 							iconName="down"
@@ -114,7 +135,7 @@ class GlobalHeaderFavorites extends React.Component {
 								borderLeft: '0',
 								borderRadius: '0 .25rem .25rem 0',
 							}}
-							title={this.props.assistiveText.more}
+							title={assistiveText.more}
 							variant="icon"
 						/>
 					</Popover>
@@ -123,16 +144,5 @@ class GlobalHeaderFavorites extends React.Component {
 		);
 	}
 }
-
-GlobalHeaderFavorites.displayName = GLOBAL_HEADER_FAVORITES;
-
-GlobalHeaderFavorites.defaultProps = {
-	assistiveText: {
-		action: 'Toggle Favorite',
-		more: 'View Favorites',
-	},
-};
-
-GlobalHeaderFavorites.propTypes = propTypes;
 
 export default GlobalHeaderFavorites;

@@ -8,9 +8,7 @@
 // ## Dependencies
 
 // ### React
-import React from 'react';
-
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 
 // ### classNames
 // [github.com/JedWatson/classnames](https://github.com/JedWatson/classnames)
@@ -24,88 +22,84 @@ import Button from '../button';
 // ### Children
 import { MENU_DROPDOWN_TRIGGER } from '../../../utilities/constants';
 
+export interface GlobalHeaderDropdownTriggerProps {
+	/**
+	 * An image URL or avatar node to display for the user profile.
+	 */
+	avatar?: string | ReactNode;
+	/**
+	 * CSS classes to be added to `li` element.
+	 */
+	className?: unknown[] | Record<string, unknown> | string;
+	/**
+	 * A unique ID is needed in order to support keyboard navigation, ARIA support, and connect the dropdown to the triggering button.
+	 */
+	id?: string;
+	/**
+	 * Informs the trigger on the open/close state of the dropdown menu
+	 */
+	isOpen?: boolean;
+	/**
+	 * Adds custom styling such as inverse fill and special sizing/spacing
+	 */
+	globalAction?: boolean;
+	/**
+	 * The dropdown menu.
+	 */
+	menu?: ReactNode;
+	/**
+	 * Is only called when `openOn` is set to `hover` and when the triggering li loses focus.
+	 */
+	onBlur?: React.FocusEventHandler<HTMLLIElement>;
+	/**
+	 * This prop is passed onto the triggering `li`. Triggered when the trigger li is clicked.
+	 */
+	onClick?: React.MouseEventHandler<HTMLLIElement>;
+	/**
+	 * Is only called when `openOn` is set to `hover` and when the triggering li gains focus.
+	 */
+	onFocus?: React.FocusEventHandler<HTMLLIElement>;
+	/**
+	 * Called when a key pressed.
+	 */
+	onKeyDown?: React.KeyboardEventHandler<HTMLLIElement>;
+	/**
+	 * Called when mouse clicks down on the trigger li.
+	 */
+	onMouseDown?: React.MouseEventHandler<HTMLLIElement>;
+	/**
+	 * Called when mouse hovers over the trigger `li`.
+	 */
+	onMouseEnter?: React.MouseEventHandler<HTMLLIElement>;
+	/**
+	 * Called when mouse leaves trigger `li` or the menu.
+	 */
+	onMouseLeave?: React.MouseEventHandler<HTMLLIElement>;
+	/**
+	 * Determines if mouse hover or click opens the dropdown menu. The default of `click` is highly recommended to comply with accessibility standards. If you are planning on using hover, please pause a moment and reconsider.
+	 */
+	openOn?: 'hover' | 'click' | 'hybrid';
+	/**
+	 * Set to true if menu is inline and relatively positioned with CSS. This is the typical use case for menus with nubbins.
+	 */
+	positioned?: boolean;
+	/**
+	 * The ref of the actual triggering button.
+	 */
+	triggerRef?: React.Ref<HTMLLIElement>;
+	[key: string]: unknown;
+}
+
 /**
  *  The Dropdown Button Trigger renders the default trigger button for the dropdown menu. If this component has children, it does not render itself to the DOM. Instead, it renders its child element, `Button`, and all that child's properties. This component may be used as a template to create custom triggers that do not use `Button`.
  */
-class GlobalHeaderDropdownTrigger extends React.Component {
+class GlobalHeaderDropdownTrigger extends React.Component<GlobalHeaderDropdownTriggerProps> {
 	// TODO: Make this a stateless component, however dropdowns break when this component becomes stateless.
 
 	// ### Display Name
 	// Always use the canonical component name (set in the core) as the React
 	// display name.
 	static displayName = MENU_DROPDOWN_TRIGGER;
-
-	// ### Prop Types
-	static propTypes = {
-		/**
-		 * An image URL or avatar node to display for the user profile.
-		 */
-		avatar: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-		/**
-		 * CSS classes to be added to `li` element.
-		 */
-		className: PropTypes.oneOfType([
-			PropTypes.array,
-			PropTypes.object,
-			PropTypes.string,
-		]),
-		/**
-		 * A unique ID is needed in order to support keyboard navigation, ARIA support, and connect the dropdown to the triggering button.
-		 */
-		id: PropTypes.string,
-		/**
-		 * Informs the trigger on the open/close state of the dropdown menu
-		 */
-		isOpen: PropTypes.bool,
-		/**
-		 * Adds custom styling such as inverse fill and special sizing/spacing
-		 */
-		globalAction: PropTypes.bool,
-		/**
-		 * The dropdown menu.
-		 */
-		menu: PropTypes.node,
-		/**
-		 * Is only called when `openOn` is set to `hover` and when the triggering li loses focus.
-		 */
-		onBlur: PropTypes.func,
-		/**
-		 * This prop is passed onto the triggering `li`. Triggered when the trigger li is clicked.
-		 */
-		onClick: PropTypes.func,
-		/**
-		 * Is only called when `openOn` is set to `hover` and when the triggering li gains focus.
-		 */
-		onFocus: PropTypes.func,
-		/**
-		 * Called when a key pressed.
-		 */
-		onKeyDown: PropTypes.func,
-		/**
-		 * Called when mouse clicks down on the trigger li.
-		 */
-		onMouseDown: PropTypes.func,
-		/**
-		 * Called when mouse hovers over the trigger `li`.
-		 */
-		onMouseEnter: PropTypes.func,
-		/**
-		 * Called when mouse leaves trigger `li` or the menu.
-		 */
-		onMouseLeave: PropTypes.func,
-		/**
-		 * Determines if mouse hover or click opens the dropdown menu. The default of `click` is highly recommended to comply with accessibility standards. If you are planning on using hover, please pause a moment and reconsider.
-		 */
-		openOn: PropTypes.oneOf(['hover', 'click', 'hybrid']),
-		/**
-		 * Set to true if menu is inline and relatively positioned with CSS. This is the typical use case for menus with nubbins.
-		 */
-		positioned: PropTypes.bool,
-		/**
-		 * The ref of the actual triggering button.
-		 */
-		triggerRef: PropTypes.func,
-	};
 
 	renderAvatar = () => {
 		const { avatar } = this.props;
@@ -150,7 +144,7 @@ class GlobalHeaderDropdownTrigger extends React.Component {
 						'slds-is-open': isOpen,
 						'slds-p-around_xx-small': globalAction,
 					},
-					className
+					className as string
 				)}
 				id={id}
 				onBlur={onBlur}
