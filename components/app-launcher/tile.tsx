@@ -18,7 +18,6 @@ import componentDoc from './component.json';
 import Button from '../button';
 // @ts-expect-error - Module declaration doesn't match relative import
 import Highlighter from '../utilities/highlighter';
-// @ts-expect-error - Module declaration doesn't match relative import
 import Tooltip from '../tooltip';
 // @ts-expect-error - Module declaration doesn't match relative import
 import Truncate from '../utilities/truncate';

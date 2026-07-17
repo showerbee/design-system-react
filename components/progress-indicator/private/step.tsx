@@ -9,8 +9,10 @@ import React from 'react';
 import classNames from 'classnames';
 
 // Child component
-// @ts-expect-error - Module declaration doesn't match relative import
-import Tooltip from '../../tooltip';
+import Tooltip, {
+	type TooltipAlign,
+	type TooltipTheme,
+} from '../../tooltip';
 import { PROGRESS_INDICATOR_STEP } from '../../../utilities/constants';
 import ButtonIcon from '../../icon/button-icon';
 import {
@@ -192,10 +194,10 @@ class Step extends React.Component<StepProps> {
 		}
 
 		const tooltipProps: {
-			align: string;
+			align: TooltipAlign;
 			id: string;
 			content: React.ReactNode;
-			theme: string;
+			theme: TooltipTheme;
 			position?: TooltipPosition;
 			triggerStyle: React.CSSProperties;
 			isOpen?: boolean;

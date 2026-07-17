@@ -3,43 +3,40 @@
 
 // # Toast Container Component
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 import classNames from '../../utilities/class-names';
 import { TOAST_CONTAINER } from '../../utilities/constants';
 
-const propTypes = {
+export interface ToastContainerProps {
 	/**
 	 * CSS classes to be added to tag with `.slds-notify-container`. Uses `classNames` [API](https://github.com/JedWatson/classnames).
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * Toast components
 	 */
-	children: PropTypes.node,
-};
+	children?: ReactNode;
+}
 
 /**
  * A fixed container for toast banners.
  */
 
-class ToastContainer extends React.Component {
+class ToastContainer extends React.Component<ToastContainerProps> {
+	static displayName = TOAST_CONTAINER;
+
 	render() {
 		return (
 			<div
-				className={classNames('slds-notify-container', this.props.className)}
+				className={classNames(
+					'slds-notify-container',
+					this.props.className as string
+				)}
 			>
 				{this.props.children}
 			</div>
 		);
 	}
 }
-
-ToastContainer.displayName = TOAST_CONTAINER;
-ToastContainer.propTypes = propTypes;
 
 export default ToastContainer;
