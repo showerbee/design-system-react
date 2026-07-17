@@ -2,100 +2,111 @@
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
 // Implements the [Expression Group design pattern](https://lightningdesignsystem.com/components/expression/) in React.
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode, type SyntheticEvent } from 'react';
 import classNames from 'classnames';
 import assign from 'lodash.assign';
 
 import { EXPRESSION_GROUP } from '../../utilities/constants';
 import generateId from '../../utilities/generate-id';
 
-import Combobox from '../combobox';
+import Combobox, { type ComboboxOption } from '../combobox';
 import Button from '../button';
 import Input from '../input';
 
-const propTypes = {
+export type ExpressionTriggerType =
+	| 'all'
+	| 'any'
+	| 'custom'
+	| 'always'
+	| 'formula';
+
+export interface ExpressionGroupAssistiveText {
+	/** Assistive text for the expression group's label. */
+	label?: string;
+	/** Assistive text for the Add Condition button's icon. */
+	addCondition?: string;
+	/** Assistive text for the Add Group button's icon. */
+	addGroup?: string;
+}
+
+export interface ExpressionGroupEvents {
+	onChangeTrigger?: (
+		event: SyntheticEvent,
+		data: { triggerType: ExpressionTriggerType }
+	) => void;
+	onChangeCustomLogicValue?: (
+		event: React.ChangeEvent<HTMLInputElement>
+	) => void;
+	onAddCondition?: (event: React.MouseEvent) => void;
+	onAddGroup?: (event: React.MouseEvent) => void;
+}
+
+export interface ExpressionGroupLabels {
+	addCondition?: string;
+	addGroup?: string;
+	customLogic?: string;
+	label?: string;
+	takeAction?: string;
+	triggerAll?: string;
+	triggerAlways?: string;
+	triggerAny?: string;
+	triggerCustom?: string;
+	triggerFormula?: string;
+}
+
+export interface ExpressionGroupProps {
 	/**
 	 *  **Assistive text for accessibility.**
 	 * * `label`: For users of assistive technology, assistive text for the expression group's label.
 	 * * `addCondition`: For users of assistive technology, assistive text for the Add Condition button's icon.
 	 * * `addGroup`: For users of assistive technology, assistive text for the Add Group button's icon.
 	 */
-	assistiveText: PropTypes.shape({
-		label: PropTypes.string,
-		addCondition: PropTypes.string,
-		addGroup: PropTypes.string,
-	}),
+	assistiveText?: ExpressionGroupAssistiveText;
 	/**
 	 * HTML id for ExpressionGroup component.
 	 */
-	id: PropTypes.string,
+	id?: string;
 	/**
 	 * `ExpressionGroup` children, accepts `ExpressionCondition`. (Also accepts sub-`ExpressionGroup` if `isRoot`)
 	 */
-	children: PropTypes.node,
+	children?: ReactNode;
 	/**
 	 * CSS classes to be added to the element with class `.slds-expression__group`. Uses `classNames` [API](https://github.com/JedWatson/classnames).
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * Callbacks for various expression group events such as trigger change, add condition etc
 	 */
-	events: PropTypes.shape({
-		onChangeTrigger: PropTypes.func,
-		onChangeCustomLogicValue: PropTypes.func,
-		onAddCondition: PropTypes.func,
-		onAddGroup: PropTypes.func,
-	}),
+	events?: ExpressionGroupEvents;
 	/**
 	 * If set to true, the component will focus on the first focusable input upon mounting. This is useful for accessibility when adding new groups.
 	 */
-	focusOnMount: PropTypes.bool,
+	focusOnMount?: boolean;
 	/**
 	 * **Text labels for internationalization**
 	 * This object is merged with the default props object on every render.
-	 * * `addCondition`: Label for the Add Condition Button. Defaults to "Add Condition"
-	 * * `addGroup`: Label for the Add Group Button. Defaults to "Add Group"
-	 * * `customLogic`: Label for the text box for inputting `customLogicValue`, if the `triggerType` is `custom`. Defaults to "Custom Logic"
-	 * * `label`: Label for the expression group, to indicate condition connectors based on the parent's trigger-type chosen. Defaults to ""
-	 * * `takeAction`: Label for the `triggerType` selector. Defaults to "Take Action When"
-	 * * `triggerAll`: Label for the `all` value within the trigger selector
-	 * * `triggerAlways`: Label for the `always` value within the trigger selector
-	 * * `triggerAny`: Label for the `any` value within the trigger selector
-	 * * `triggerCustom`: Label for the `custom` value within the trigger selector
-	 * * `triggerFormula`: Label for the `formula` value within the trigger selector
 	 */
-	labels: PropTypes.shape({
-		addCondition: PropTypes.string,
-		addGroup: PropTypes.string,
-		customLogic: PropTypes.string,
-		label: PropTypes.string,
-		takeAction: PropTypes.string,
-		triggerAll: PropTypes.string,
-		triggerAlways: PropTypes.string,
-		triggerAny: PropTypes.string,
-		triggerCustom: PropTypes.string,
-		triggerFormula: PropTypes.string,
-	}),
+	labels?: ExpressionGroupLabels;
 	/**
 	 * Whether the group is at root level
 	 */
-	isRoot: PropTypes.bool,
+	isRoot?: boolean;
 	/**
 	 * Trigger type for the Group
 	 */
-	triggerType: PropTypes.oneOf(['all', 'any', 'custom', 'always', 'formula']),
+	triggerType?: ExpressionTriggerType;
 	/**
 	 * Sets the input for the custom logic value input box, shown if the `triggerType` is set to `custom`.
 	 */
-	customLogicValue: PropTypes.string,
-};
+	customLogicValue?: string;
+}
 
-const defaultProps = {
+interface Trigger {
+	id: string;
+	label?: string;
+}
+
+const defaultProps: Partial<ExpressionGroupProps> = {
 	triggerType: 'all',
 	customLogicValue: '',
 	labels: {
@@ -115,13 +126,20 @@ const defaultProps = {
 /**
  * Expression Group Component
  */
-class ExpressionGroup extends React.Component {
+class ExpressionGroup extends React.Component<ExpressionGroupProps> {
+	static displayName = EXPRESSION_GROUP;
+
+	static defaultProps = defaultProps;
+
 	/**
 	 *  Return triggerType selected, processing the triggerType objects generated
 	 */
-	static triggerChange(event, data) {
+	static triggerChange(
+		event: SyntheticEvent,
+		data: { selection: ComboboxOption[] }
+	): ExpressionTriggerType {
 		const selection = data.selection[0].id;
-		let trigger = '';
+		let trigger: ExpressionTriggerType = 'all';
 		if (selection === '1') {
 			trigger = 'all';
 		} else if (selection === '2') {
@@ -136,7 +154,11 @@ class ExpressionGroup extends React.Component {
 		return trigger;
 	}
 
-	constructor(props) {
+	generatedId: string;
+
+	rootNode: HTMLElement | null = null;
+
+	constructor(props: ExpressionGroupProps) {
 		super(props);
 		this.generatedId = generateId();
 	}
@@ -160,7 +182,7 @@ class ExpressionGroup extends React.Component {
 	/**
 	 * Generate and return trigger type objects, with labels either sent as props or using default props.
 	 */
-	getTriggers() {
+	getTriggers(): Trigger[] {
 		const labels = assign({}, defaultProps.labels, this.props.labels);
 		return [
 			{ id: '1', label: labels.triggerAll },
@@ -174,10 +196,10 @@ class ExpressionGroup extends React.Component {
 	/**
 	 *  Returns object of trigger from trigger passed as prop
 	 */
-	getTriggerSelection() {
+	getTriggerSelection(): Trigger[] {
 		const selection = this.props.triggerType;
 		const Triggers = this.getTriggers();
-		const t = [];
+		const t: Trigger[] = [];
 		if (selection === 'all') {
 			t.push(Triggers[0]);
 		} else if (selection === 'any') {
@@ -203,8 +225,8 @@ class ExpressionGroup extends React.Component {
 		const triggerCombobox = (
 			<Combobox
 				events={{
-					onSelect: (event, data) =>
-						this.props.events.onChangeTrigger(event, {
+					onSelect: (event: SyntheticEvent, data: { selection: ComboboxOption[] }) =>
+						this.props.events?.onChangeTrigger?.(event, {
 							triggerType: ExpressionGroup.triggerChange(event, data),
 						}),
 				}}
@@ -228,7 +250,7 @@ class ExpressionGroup extends React.Component {
 						id={`${this.getId()}-add-condition-button`}
 						label={labels.addCondition}
 						assistiveText={{ icon: assistiveText.addCondition }}
-						onClick={this.props.events.onAddCondition}
+						onClick={this.props.events?.onAddCondition}
 					/>
 					{this.props.isRoot ? (
 						<Button
@@ -238,13 +260,13 @@ class ExpressionGroup extends React.Component {
 							id={`${this.getId()}-add-group-button`}
 							label={labels.addGroup}
 							assistiveText={{ icon: assistiveText.addGroup }}
-							onClick={this.props.events.onAddGroup}
+							onClick={this.props.events?.onAddGroup}
 						/>
 					) : null}
 				</div>
 			) : null;
 
-		let body = null;
+		let body: ReactNode = null;
 
 		if (this.props.triggerType !== 'always') {
 			if (this.props.isRoot && this.props.triggerType === 'formula') {
@@ -259,7 +281,7 @@ class ExpressionGroup extends React.Component {
 								id={`${this.getId()}-custom-logic-input`}
 								value={this.props.customLogicValue}
 								variant="base"
-								onChange={this.props.events.onChangeCustomLogicValue}
+								onChange={this.props.events?.onChangeCustomLogicValue}
 							/>
 						) : null}
 						<ul>{this.props.children}</ul>
@@ -279,7 +301,10 @@ class ExpressionGroup extends React.Component {
 			}
 
 			return (
-				<div className={classNames(this.props.className)} id={this.getId()}>
+				<div
+					className={classNames(this.props.className as string)}
+					id={this.getId()}
+				>
 					<div className="slds-expression__options">{triggerCombobox}</div>
 					{body}
 					{buttons}
@@ -289,7 +314,10 @@ class ExpressionGroup extends React.Component {
 
 		return (
 			<li
-				className={classNames('slds-expression__group', this.props.className)}
+				className={classNames(
+					'slds-expression__group',
+					this.props.className as string
+				)}
 				id={this.getId()}
 				ref={(rootNode) => {
 					this.rootNode = rootNode;
@@ -308,9 +336,5 @@ class ExpressionGroup extends React.Component {
 		);
 	}
 }
-
-ExpressionGroup.displayName = EXPRESSION_GROUP;
-ExpressionGroup.propTypes = propTypes;
-ExpressionGroup.defaultProps = defaultProps;
 
 export default ExpressionGroup;

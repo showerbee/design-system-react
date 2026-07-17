@@ -2,53 +2,67 @@
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
 // Implements the [Expression Condition design pattern](https://lightningdesignsystem.com/components/expression/) in React.
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type SyntheticEvent } from 'react';
 import classNames from 'classnames';
 import assign from 'lodash.assign';
 
 import { EXPRESSION_CONDITION } from '../../utilities/constants';
 import generateId from '../../utilities/generate-id';
 
-import Combobox from '../combobox';
+import Combobox, { type ComboboxOption } from '../combobox';
 import Input from '../input';
 import Button from '../button';
 
-const propTypes = {
+export interface ExpressionConditionAssistiveText {
+	/** Title for the condition fieldset. Defaults to 'Condition' */
+	title?: string;
+	/** Assistive text for the Delete Condition button's icon. Defaults to 'Delete Condition' */
+	deleteIcon?: string;
+}
+
+export interface ExpressionConditionEvents {
+	onChangeResource?: (event: SyntheticEvent, data: unknown) => void;
+	onChangeOperator?: (event: SyntheticEvent, data: unknown) => void;
+	onChangeValue?: (event: SyntheticEvent, data: unknown) => void;
+	onDelete?: (event: React.MouseEvent) => void;
+}
+
+export interface ExpressionConditionLabels {
+	/** Title for the delete condition button. Defaults to "Delete Condition". */
+	deleteCondition?: string;
+	/** Label for the condition, shown left-most in the row. Left empty on default. */
+	label?: string;
+	/** Label for the operator selection dropdown. Defaults to "Operator" */
+	operator?: string;
+	/** Label for the resource selection dropdown. Defaults to "Resource" */
+	resource?: string;
+	/** Label for the value input box. Defaults to "Value" */
+	value?: string;
+}
+
+export interface ExpressionConditionProps {
 	/**
 	 *  **Assistive text for accessibility.**
 	 * * `title`: For users of assistive technology, title for the condition fieldset. Defaults to 'Condition'
 	 * * `deleteIcon`: For users of assistive technology, assistive text for the Delete Condition button's icon. Defaults to 'Delete Condition'
 	 */
-	assistiveText: PropTypes.shape({
-		title: PropTypes.string,
-		deleteIcon: PropTypes.string,
-	}),
+	assistiveText?: ExpressionConditionAssistiveText;
 	/**
 	 * HTML id for component.
 	 */
-	id: PropTypes.string,
+	id?: string;
 	/**
 	 * CSS classes to be added to the element with class `.slds-expression__row`. Uses `classNames` [API](https://github.com/JedWatson/classnames).
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * Callbacks for various expression condition events such as value change, delete etc
 	 */
-	events: PropTypes.shape({
-		onChangeResource: PropTypes.func,
-		onChangeOperator: PropTypes.func,
-		onChangeValue: PropTypes.func,
-		onDelete: PropTypes.func,
-	}).isRequired,
+	events: ExpressionConditionEvents;
 	/**
 	 * If set to true, the component will focus on the first focusable input upon mounting. This is useful for accessibility when adding new conditions.
 	 */
-	focusOnMount: PropTypes.bool,
+	focusOnMount?: boolean;
 	/**
 	 * **Text labels for internationalization**
 	 * This object is merged with the default props object on every
@@ -58,66 +72,36 @@ const propTypes = {
 	 * * `resource`: Label for the resource selection dropdown. Defaults to "Resource"
 	 * * `value`: Label for the value input box. Defaults to "Value"
 	 */
-	labels: PropTypes.shape({
-		deleteCondition: PropTypes.string,
-		label: PropTypes.string,
-		operator: PropTypes.string,
-		resource: PropTypes.string,
-		value: PropTypes.string,
-	}),
+	labels?: ExpressionConditionLabels;
 	/**
 	 * Controls whether the condition is a sub-condition inside a ExpressionGroup
 	 */
-	isSubCondition: PropTypes.bool,
+	isSubCondition?: boolean;
 	/**
 	 * **Array of item objects that are options in the resource selection dropdown menu.**
-	 * Each object can contain:
-	 * * `id`: A unique identifier string.
-	 * * `label`: A primary string of text for a menu item.
-	 * ```
-	 * {
-	 * 	id: '1',
-	 * 	label: 'Resource 1',
-	 * },
-	 * ```
-	 * Note: The dropdown uses the Combobox Component, and `resourcesList` is
-	 * passed as `options` props to it, and hence shall also support more
-	 * custom objects. Please refer to the Combobox documentation.
 	 */
-	resourcesList: PropTypes.arrayOf(PropTypes.object),
+	resourcesList?: ComboboxOption[];
 	/**
 	 *  Accepts an object from the `resourcesList` which needs to be selected
 	 *  for the resource dropdown menu,
 	 */
-	resourceSelected: PropTypes.object,
+	resourceSelected?: ComboboxOption;
 	/**
 	 * **Array of item objects that are options in the operator selection dropdown menu.**
-	 * Each object can contain:
-	 * * `id`: A unique identifier string.
-	 * * `label`: A primary string of text for a menu item.
-	 * ```
-	 * {
-	 * 	id: '1',
-	 * 	label: 'Operator 1',
-	 * },
-	 * ```
-	 * Note: The dropdown uses the Combobox Component, and `operatorList` is
-	 * passed as `options` props to it, and hence shall also support more
-	 * custom objects. Please refer to the Combobox documentation.
 	 */
-	operatorsList: PropTypes.arrayOf(PropTypes.object),
+	operatorsList?: ComboboxOption[];
 	/**
 	 *  Accepts an object from the `operatorSelected` which needs to be selected
 	 *  for the operator dropdown menu,
 	 */
-	operatorSelected: PropTypes.object,
+	operatorSelected?: ComboboxOption;
 	/**
 	 *  Sets the input value for the Value input field.
 	 */
-	value: PropTypes.string,
-};
+	value?: string;
+}
 
-const defaultProps = {
+const defaultProps: Partial<ExpressionConditionProps> = {
 	assistiveText: {
 		title: 'Condition',
 		deleteIcon: 'Delete Condition',
@@ -134,8 +118,16 @@ const defaultProps = {
 /**
  * Expression Condition Component
  */
-class ExpressionCondition extends React.Component {
-	constructor(props) {
+class ExpressionCondition extends React.Component<ExpressionConditionProps> {
+	static displayName = EXPRESSION_CONDITION;
+
+	static defaultProps = defaultProps;
+
+	generatedId: string;
+
+	rootNode: HTMLElement | null = null;
+
+	constructor(props: ExpressionConditionProps) {
 		super(props);
 		this.generatedId = generateId();
 	}
@@ -168,7 +160,7 @@ class ExpressionCondition extends React.Component {
 				className={classNames(
 					`slds-expression__row`,
 					{ 'slds-expression__row_group': this.props.isSubCondition },
-					this.props.className
+					this.props.className as string
 				)}
 				id={this.getId()}
 				ref={(rootNode) => {
@@ -191,7 +183,11 @@ class ExpressionCondition extends React.Component {
 								variant="readonly"
 								labels={{ label: labels.resource }}
 								options={this.props.resourcesList}
-								selection={[this.props.resourceSelected]}
+								selection={
+									this.props.resourceSelected
+										? [this.props.resourceSelected]
+										: []
+								}
 							/>
 						</div>
 						<div className="slds-col slds-grow-none">
@@ -204,7 +200,11 @@ class ExpressionCondition extends React.Component {
 								variant="readonly"
 								labels={{ label: labels.operator }}
 								options={this.props.operatorsList}
-								selection={[this.props.operatorSelected]}
+								selection={
+									this.props.operatorSelected
+										? [this.props.operatorSelected]
+										: []
+								}
 								singleInputDisabled={!this.props.resourceSelected}
 							/>
 						</div>
@@ -242,9 +242,5 @@ class ExpressionCondition extends React.Component {
 		);
 	}
 }
-
-ExpressionCondition.displayName = EXPRESSION_CONDITION;
-ExpressionCondition.propTypes = propTypes;
-ExpressionCondition.defaultProps = defaultProps;
 
 export default ExpressionCondition;

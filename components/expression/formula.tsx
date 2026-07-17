@@ -2,8 +2,7 @@
 /* Licensed under BSD 3-Clause - see LICENSE.txt or git.io/sfdc-license */
 
 // Implements the [Expression Formula design pattern](https://lightningdesignsystem.com/components/expression/) in React.
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type ReactNode, type SyntheticEvent } from 'react';
 import classNames from 'classnames';
 import assign from 'lodash.assign';
 import ContentEditable from 'react-contenteditable';
@@ -13,34 +12,47 @@ import generateId from '../../utilities/generate-id';
 
 import Button from '../button';
 
-const propTypes = {
+export interface ExpressionFormulaAssistiveText {
+	/** Assistive text for help icon */
+	help?: string;
+}
+
+export interface ExpressionFormulaEvents {
+	onChangeTextEditor?: (
+		event: SyntheticEvent,
+		data: { textEditorValue: string }
+	) => void;
+	onClickHelp?: (event: React.MouseEvent) => void;
+	onClickCheckSyntax?: (event: React.MouseEvent) => void;
+}
+
+export interface ExpressionFormulaLabels {
+	/** Label for the Expression Formula group. Defaults to "Formula" */
+	label?: string;
+	/** Label for the Check Syntax Button. Defaults to "Check Syntax" */
+	checkSyntax?: string;
+	/** Label for the `triggerType` selector. Defaults to "Take Action When" */
+	textArea?: string;
+}
+
+export interface ExpressionFormulaProps {
 	/**
 	 *  **Assistive text for accessibility.**
 	 * * `help`: Assistive text for help icon
 	 */
-	assistiveText: PropTypes.shape({
-		help: PropTypes.string,
-	}),
+	assistiveText?: ExpressionFormulaAssistiveText;
 	/**
 	 * HTML id for component.
 	 */
-	id: PropTypes.string,
+	id?: string;
 	/**
 	 * CSS classes to be added to the element with class `.slds-form-element`. Uses `classNames` [API](https://github.com/JedWatson/classnames).
 	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
+	className?: unknown[] | Record<string, unknown> | string;
 	/**
 	 * Callbacks for various expression formula events such as text editor change, check syntax etc
 	 */
-	events: PropTypes.shape({
-		onChangeTextEditor: PropTypes.func,
-		onClickHelp: PropTypes.func,
-		onClickCheckSyntax: PropTypes.func,
-	}),
+	events?: ExpressionFormulaEvents;
 	/**
 	 * **Text labels for internationalization**
 	 * This object is merged with the default props object on every render.
@@ -48,30 +60,30 @@ const propTypes = {
 	 * * `checkSyntax`: Label for the Check Syntax Button. Defaults to "Check Syntax"
 	 * * `textArea`: Label for the `triggerType` selector. Defaults to "Take Action When"
 	 */
-	labels: PropTypes.shape({
-		label: PropTypes.string,
-		checkSyntax: PropTypes.string,
-		textArea: PropTypes.string,
-	}),
+	labels?: ExpressionFormulaLabels;
 	/**
 	 *  Accepts a single combobox component, to select resource in the expression formula editor
 	 */
-	resourceCombobox: PropTypes.node,
+	resourceCombobox?: ReactNode;
 	/**
 	 *  Accepts a single combobox component, to select function in the expression formula editor
 	 */
-	functionCombobox: PropTypes.node,
+	functionCombobox?: ReactNode;
 	/**
 	 *  Accepts a single input component, to enter operator in the expression formula editor
 	 */
-	operatorInput: PropTypes.node,
+	operatorInput?: ReactNode;
 	/**
 	 *  Value for the text editor in expression formula editor
 	 */
-	textEditorValue: PropTypes.node,
-};
+	textEditorValue?: string;
+}
 
-const defaultProps = {
+interface ExpressionFormulaState {
+	textEditorValue: string;
+}
+
+const defaultProps: Partial<ExpressionFormulaProps> = {
 	assistiveText: {
 		help: 'Help',
 	},
@@ -84,9 +96,20 @@ const defaultProps = {
 /**
  * Expression Formula Component
  */
-class ExpressionFormula extends React.Component {
-	constructor() {
-		super();
+class ExpressionFormula extends React.Component<
+	ExpressionFormulaProps,
+	ExpressionFormulaState
+> {
+	static displayName = EXPRESSION_FORMULA;
+
+	static defaultProps = defaultProps;
+
+	textEditorRef: React.RefObject<HTMLElement | null>;
+
+	generatedId: string;
+
+	constructor(props: ExpressionFormulaProps) {
+		super(props);
 		this.textEditorRef = React.createRef();
 		this.state = {
 			textEditorValue: 'Compose formula...', // default is set here to preserve functionality if not controlled by props.textEditorValue
@@ -101,7 +124,7 @@ class ExpressionFormula extends React.Component {
 		return this.props.id || this.generatedId;
 	}
 
-	handleTextEditorChange = (event) => {
+	handleTextEditorChange = (event: { target: { value: string } }) => {
 		const textEditorValue = event.target.value;
 
 		if (this.props.textEditorValue === undefined) {
@@ -109,7 +132,9 @@ class ExpressionFormula extends React.Component {
 		}
 
 		if (this.props.events && this.props.events.onChangeTextEditor) {
-			this.props.events.onChangeTextEditor(event, { textEditorValue });
+			this.props.events.onChangeTextEditor(event as unknown as SyntheticEvent, {
+				textEditorValue,
+			});
 		}
 	};
 
@@ -127,7 +152,7 @@ class ExpressionFormula extends React.Component {
 					id={this.getId()}
 					className={classNames(
 						`slds-expression_formula__rte`,
-						this.props.className
+						this.props.className as string
 					)}
 				>
 					<div className="slds-form-element">
@@ -157,7 +182,7 @@ class ExpressionFormula extends React.Component {
 											variant="icon"
 											iconCategory="utility"
 											iconName="help"
-											onClick={this.props.events.onClickHelp}
+											onClick={this.props.events?.onClickHelp}
 											title={assistiveText.help}
 										/>
 									</div>
@@ -165,9 +190,11 @@ class ExpressionFormula extends React.Component {
 								<div className="slds-rich-text-editor__textarea slds-grid">
 									<ContentEditable
 										id={`${this.getId()}-content-editor`}
-										aria-label={this.props.labels.textArea}
+										aria-label={this.props.labels?.textArea}
 										className="slds-rich-text-area__content slds-text-color_weak slds-grow"
-										innerRef={this.textEditorRef}
+										innerRef={
+											this.textEditorRef as React.RefObject<HTMLElement>
+										}
 										html={
 											this.props.textEditorValue !== undefined
 												? this.props.textEditorValue
@@ -186,16 +213,12 @@ class ExpressionFormula extends React.Component {
 						id={`${this.getId()}-check-syntax-button`}
 						variant="neutral"
 						label={labels.checkSyntax}
-						onClick={this.props.events.onClickCheckSyntax}
+						onClick={this.props.events?.onClickCheckSyntax}
 					/>
 				</div>
 			</React.Fragment>
 		);
 	}
 }
-
-ExpressionFormula.displayName = EXPRESSION_FORMULA;
-ExpressionFormula.propTypes = propTypes;
-ExpressionFormula.defaultProps = defaultProps;
 
 export default ExpressionFormula;
