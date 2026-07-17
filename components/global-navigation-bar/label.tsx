@@ -5,9 +5,6 @@
 
 // ## Dependencies
 
-// ### React
-import PropTypes from 'prop-types';
-
 // ### classNames
 import classNames from 'classnames';
 
@@ -16,10 +13,29 @@ import colors from '../../utilities/design-tokens/dist/salesforce-skin.common.js
 // ## Constants
 import { GLOBAL_NAVIGATION_BAR_LABEL } from '../../utilities/constants';
 
+export interface GlobalNavigationBarLabelProps {
+	/**
+	 * Class names to be added to the `span` element
+	 */
+	className?: unknown[] | Record<string, unknown> | string;
+	/**
+	 * Determines position of separating bar.
+	 */
+	dividerPosition?: 'left' | 'right';
+	/**
+	 * Id string applied to first <span> inside of <li>
+	 */
+	id?: string;
+	/**
+	 * Text to show
+	 */
+	label?: string;
+}
+
 /**
  * Wraps text in the proper markup and removes link styling to support use in the GlobalNavigationBar.
  */
-const GlobalNavigationBarLabel = (props) => {
+const GlobalNavigationBarLabel = (props: GlobalNavigationBarLabelProps) => {
 	// Separate props we care about in order to pass others along passively to the `span` tag
 	const { className, dividerPosition, id, label } = props;
 
@@ -32,9 +48,10 @@ const GlobalNavigationBarLabel = (props) => {
 				className={classNames(
 					'slds-context-bar__label-action',
 					{
-						[`slds-context-bar__item_divider-${dividerPosition}`]: dividerPosition,
+						[`slds-context-bar__item_divider-${dividerPosition}`]:
+							dividerPosition,
 					},
-					className
+					className as string
 				)}
 			>
 				<span className="slds-truncate">{label}</span>
@@ -44,29 +61,5 @@ const GlobalNavigationBarLabel = (props) => {
 };
 
 GlobalNavigationBarLabel.displayName = GLOBAL_NAVIGATION_BAR_LABEL;
-
-// ### Prop Types
-GlobalNavigationBarLabel.propTypes = {
-	/**
-	 * Class names to be added to the `span` element
-	 */
-	className: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.object,
-		PropTypes.string,
-	]),
-	/**
-	 * Determines position of separating bar.
-	 */
-	dividerPosition: PropTypes.oneOf(['left', 'right']),
-	/**
-	 * Id string applied to first <span> inside of <li>
-	 */
-	id: PropTypes.string,
-	/**
-	 * Text to show
-	 */
-	label: PropTypes.string,
-};
 
 export default GlobalNavigationBarLabel;

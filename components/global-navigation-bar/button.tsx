@@ -5,17 +5,25 @@
 
 // ## Dependencies
 
-// ### React
-import PropTypes from 'prop-types';
-
 // ### classNames
 import classNames from 'classnames';
 
 // ### Button
-import Button from '../button';
+import Button, { type ButtonProps } from '../button';
 
 // ## Constants
 import { GLOBAL_NAVIGATION_BAR_BUTTON } from '../../utilities/constants';
+
+export interface GlobalNavigationButtonProps extends ButtonProps {
+	/**
+	 * Whether the item is active or not.
+	 */
+	active?: boolean;
+	/**
+	 * Determines position of separating bar.
+	 */
+	dividerPosition?: 'left' | 'right';
+}
 
 /**
  * A helper component that renders a Button as an item in the Global Navigation Bar. All props are passed onto `Button` except `active` and `dividerPosition`.
@@ -27,7 +35,7 @@ const GlobalNavigationButton = ({
 	active,
 	dividerPosition,
 	...props
-}) => (
+}: GlobalNavigationButtonProps) => (
 	<li
 		className={classNames('slds-context-bar__item', {
 			'slds-is-active': active,
@@ -39,17 +47,5 @@ const GlobalNavigationButton = ({
 );
 
 GlobalNavigationButton.displayName = GLOBAL_NAVIGATION_BAR_BUTTON;
-
-// ### Prop Types
-GlobalNavigationButton.propTypes = {
-	/**
-	 * Whether the item is active or not.
-	 */
-	active: PropTypes.bool,
-	/**
-	 * Determines position of separating bar.
-	 */
-	dividerPosition: PropTypes.oneOf(['left', 'right']),
-};
 
 export default GlobalNavigationButton;

@@ -8,9 +8,7 @@
 // ## Dependencies
 
 // ### React
-import React from 'react';
-
-import PropTypes from 'prop-types';
+import React, { type ReactNode } from 'react';
 
 // ### classNames
 import classNames from 'classnames';
@@ -18,19 +16,58 @@ import classNames from 'classnames';
 // ## Constants
 import { GLOBAL_NAVIGATION_BAR_REGION } from '../../utilities/constants';
 
+type RegionClassName = unknown[] | Record<string, unknown> | string;
+
+export interface RegionProps {
+	/**
+	 * Contents of region. Expects `GlobalNavigationBarLink`, `GlobalNavigationBarDropdown`, `GlobalNavigationBarApplicationName`, `AppSwitcher`, but could be any component. This is the place to pass in an Object Switcher until that is supported.
+	 */
+	children?: ReactNode;
+	/**
+	 * Determines position of separating bar.
+	 */
+	dividerPosition?: 'left' | 'right';
+	/**
+	 * CSS classes to be added to the region
+	 */
+	className?: RegionClassName;
+	/**
+	 * Wraps the `secondary` region in a `nav` and adds a role attribute
+	 */
+	navigation?: boolean;
+	/**
+	 * Region wrap children in styling specific to that region. When `tertiary`
+	 * region is used, secondary region only supports four list items.
+	 */
+	region: 'primary' | 'secondary' | 'tertiary';
+}
+
 // List regions for export
 const regions = ['primary', 'secondary', 'tertiary'];
 
 /* eslint-disable react/display-name */
-const renderPrimary = (dividerClass, className, children) => (
+const renderPrimary = (
+	dividerClass: string | null,
+	className: RegionClassName | undefined,
+	children: ReactNode
+) => (
 	<div
-		className={classNames('slds-context-bar__primary', dividerClass, className)}
+		className={classNames(
+			'slds-context-bar__primary',
+			dividerClass,
+			className as string
+		)}
 	>
 		{children}
 	</div>
 );
 
-const renderSecondary = (dividerClass, className, children, navigation) => {
+const renderSecondary = (
+	dividerClass: string | null,
+	className: RegionClassName | undefined,
+	children: ReactNode,
+	navigation?: boolean
+) => {
 	let region;
 
 	if (navigation) {
@@ -39,7 +76,7 @@ const renderSecondary = (dividerClass, className, children, navigation) => {
 				className={classNames(
 					'slds-context-bar__secondary',
 					dividerClass,
-					className
+					className as string
 				)}
 				role="navigation"
 			>
@@ -52,7 +89,7 @@ const renderSecondary = (dividerClass, className, children, navigation) => {
 				className={classNames(
 					'slds-context-bar__secondary',
 					dividerClass,
-					className
+					className as string
 				)}
 			>
 				<ul className="slds-grid">{children}</ul>
@@ -62,13 +99,17 @@ const renderSecondary = (dividerClass, className, children, navigation) => {
 	return region;
 };
 
-const renderTertiary = (dividerClass, className, children) => (
+const renderTertiary = (
+	dividerClass: string | null,
+	className: RegionClassName | undefined,
+	children: ReactNode
+) => (
 	<div
 		className={classNames(
 			'slds-context-bar__tertiary',
 			'slds-col_bump-left',
 			dividerClass,
-			className
+			className as string
 		)}
 	>
 		<ul className="slds-grid">{children}</ul>
@@ -80,36 +121,8 @@ const renderTertiary = (dividerClass, className, children) => (
 /**
  * Regions make up a GlobalNavigation Bar and typically contain links and dropdowns. The Primary region contains the AppSwitcher, Application Name, and Object Switcher. The secondary region typically has navigation betweens sections of the application. The tertiary region is aligned to the right side of the screen and contains shortcuts or actions.
  */
-class Region extends React.Component {
+class Region extends React.Component<RegionProps> {
 	static displayName = GLOBAL_NAVIGATION_BAR_REGION;
-
-	static propTypes = {
-		/**
-		 * Contents of region. Expects `GlobalNavigationBarLink`, `GlobalNavigationBarDropdown`, `GlobalNavigationBarApplicationName`, `AppSwitcher`, but could be any component. This is the place to pass in an Object Switcher until that is supported.
-		 */
-		children: PropTypes.node,
-		/**
-		 * Determines position of separating bar.
-		 */
-		dividerPosition: PropTypes.oneOf(['left', 'right']),
-		/**
-		 * CSS classes to be added to the region
-		 */
-		className: PropTypes.oneOfType([
-			PropTypes.array,
-			PropTypes.object,
-			PropTypes.string,
-		]),
-		/**
-		 * Wraps the `secondary` region in a `nav` and adds a role attribute
-		 */
-		navigation: PropTypes.bool,
-		/**
-		 * Region wrap children in styling specific to that region. When `tertiary`
-		 * region is used, secondary region only supports four list items.
-		 */
-		region: PropTypes.oneOf(['primary', 'secondary', 'tertiary']).isRequired,
-	};
 
 	render() {
 		let region;
