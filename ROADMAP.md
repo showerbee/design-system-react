@@ -49,6 +49,35 @@ Dialog positioning layer which still uses **popper.js v1** (deprecated, unmainta
       `icon-settings`, `panel`, `portal-settings`, `progress-bar`, `progress-ring`,
       `radio`, `scoped-notification`, `trial-bar`
 
+**Story/feature gaps vs. SLDS 2** — from the component-by-component comparison in
+[`docs/superpowers/specs/2026-08-07-slds2-vs-react-comparison.md`](docs/superpowers/specs/2026-08-07-slds2-vs-react-comparison.md)
+(48 matched pairs). Ordered by leverage; skip anything filed "Legacy Components" upstream.
+
+- [ ] **Token-theming ("Customization") story pattern.** SLDS 2 attaches a live
+      styling-hook / design-token panel to ~20 components; React has none. Build a shared
+      decorator + exemplar "Theming" stories for `button`, `card`, `input`, `avatar` first,
+      then extend. *(Highest-leverage, most on-theme for "components using SLDS 2".)*
+- [ ] **Wire existing `__examples__` into stories (near-zero cost):**
+  - [ ] `builder-header` — `base-with-toolbar`, `successful-save`, `failed-save`, `base-with-utilities` already exist unwired.
+  - [ ] `combobox` — 30+ example files (RTL, dialog, custom/ disabled menu items) exist but aren't exported as stories.
+- [ ] **Add missing high-value state stories:**
+  - [ ] `docked-composer` — voice/telephony call-state suite (~10 states), popped-out, overflow menu, log-a-task.
+  - [ ] `card` — Loading, Collapsed, NestedCards, DataTiles.
+  - [ ] `checkbox` — fieldset group variants, read-only "view mode", help-text/tooltip.
+  - [ ] `expression` — error, disabled-inputs, nested groups, locked filters, formula.
+  - [ ] `accordion` — ActionMenu, Nested, WrappedInCard, heading truncation.
+  - [ ] `modal` — SizeFull; `tabs` — conditional tab, scoped-with-overflow.
+  - [ ] `radio-group` — help-icon(+tooltip), disabled-checked, error-checked, label-placement.
+
+**Component feature gaps (capability missing, not just a story)** — file as
+enhancement issues, not story fill-ins:
+- [ ] `vertical-navigation` — badge / compact / icon / shaded / overflow / validation variants.
+- [ ] `visual-picker` — small size tier, disabled state, non-coverable content.
+- [ ] `date-picker` — date-**range** selection (SLDS 2 is a dual single/range picker; React is single-only).
+- [ ] `app-launcher` — drag-and-drop tile reordering.
+- [ ] `input` — native `type` variants (checkbox / toggle / range / color / file).
+- [ ] `global-header` — interactive search + notification panel *(blocked by `react-onclickoutside` / React 19 — ties to P1 dependency work).*
+
 ### P3 — SLDS 2 delivery follow-through
 - [x] Storybook renders on the npm `@salesforce-ux/design-system-2` package (latest,
       2.264.0) via `/slds2` static dir instead of the committed `slds-plus.css`.
