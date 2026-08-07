@@ -76,6 +76,9 @@ const config: StorybookConfig = {
   staticDirs: [
     { from: '../node_modules/@salesforce-ux/design-system/assets', to: '/assets' },
     { from: '../assets', to: '/assets' },
+    // SLDS 2 styling is served from the npm package @salesforce-ux/design-system-2
+    // (latest) rather than a committed static stylesheet. See preview-head.html.
+    { from: '../node_modules/@salesforce-ux/design-system-2/dist/css', to: '/slds2' },
   ],
 
   typescript: {

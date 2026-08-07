@@ -74,6 +74,7 @@
   },
   "homepage": "https://react.lightningdesignsystem.com",
   "dependencies": {
+    "@salesforce-ux/design-system-2": "^2.264.0",
     "classnames": "^2.5.1",
     "column-resizer": "^1.3.6",
     "lodash.assign": "^4.2.0",

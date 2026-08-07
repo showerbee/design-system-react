@@ -62,16 +62,20 @@ import IconSettings from '@salesforce/design-system-react/components/icon-settin
 
 ## Styling
 
-Add the SLDS stylesheet to your page. This library currently bundles SLDS 2 styles:
+Add the SLDS 2 stylesheet to your page from the official
+[`@salesforce-ux/design-system-2`](https://www.npmjs.com/package/@salesforce-ux/design-system-2)
+package. The bundled Lightning Blue theme is the SLDS 2 default (Cosmos is the alternate):
 
 ```html
-<link 
-  rel="stylesheet" 
-  href="/node_modules/@salesforce/design-system-react/assets/styles/slds-plus.css" 
+<link
+  rel="stylesheet"
+  href="/node_modules/@salesforce-ux/design-system-2/dist/css/bundled/slds2.lightning-blue.css"
 />
 ```
 
-> **Note:** The bundled `slds-plus.css` is temporary. When SLDS 2 is published to npm as a separate package, you'll import styles from there instead. We'll update these instructions when the official package is available.
+> **Note:** This replaces the previously bundled `slds-plus.css` stopgap. Styling now
+> comes from the published SLDS 2 npm package. Storybook is wired up the same way — see
+> `.storybook/preview-head.html`.
 
 <details>
 <summary>Using SLDS 1 instead?</summary>
