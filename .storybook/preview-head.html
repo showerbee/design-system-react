@@ -1,18 +1,19 @@
-<!-- SLDS 2 CSS served from the npm package @salesforce-ux/design-system-2 (latest),
-     mapped to /slds2 in .storybook/main.ts. The bundled Lightning Blue theme is the
-     SLDS 2 default and includes the light-dark() color functions and @layer cascade. -->
-<link rel="stylesheet" href="/slds2/bundled/slds2.lightning-blue.css" />
+<!-- SLDS 2 CSS served from the npm package @salesforce-ux/design-system-2, mapped
+     to /slds2 in .storybook/main.ts. This is the first-paint default (Lightning Blue);
+     the preview decorator (preview-decorator.js) then owns the <link id="slds2-theme">
+     and swaps it when the Theme toolbar changes. -->
+<link id="slds2-theme" rel="stylesheet" href="/slds2/bundled/slds2.lightning-blue.css" />
 
 <style>
-  /* Apply light color scheme by default */
+  /* color-scheme is driven by the slds-color-scheme--* class the decorator sets on <body> */
   body {
     color-scheme: light dark;
   }
-  
+
   body.slds-color-scheme--light {
     color-scheme: only light;
   }
-  
+
   body.slds-color-scheme--dark {
     color-scheme: only dark;
   }
