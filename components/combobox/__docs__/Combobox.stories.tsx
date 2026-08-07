@@ -7,6 +7,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import Combobox from '../index';
 import Icon from '../../icon';
 import IconSettings from '../../icon-settings';
+import UNSAFE_DirectionSettings from '../../utilities/UNSAFE_direction';
 
 const meta: Meta<typeof Combobox> = {
 	title: 'Components/Combobox',
@@ -373,6 +374,127 @@ export const WithMenuSpinner: Story = {
 					},
 				}}
 			/>
+		);
+	},
+};
+
+// ===== Custom Menu Item Rendering =====
+
+// A custom renderer for each option, showing a two-line entity layout
+// (label + meta) via `onRenderMenuItem`.
+const EntityMenuItem = ({
+	option,
+}: {
+	option: { label: string; subTitle?: string };
+}) => (
+	<span>
+		<span className="slds-listbox__option-text slds-listbox__option-text_entity">
+			{option.label}
+		</span>
+		<span className="slds-listbox__option-meta slds-listbox__option-meta_entity">
+			{option.subTitle || ' '}
+		</span>
+	</span>
+);
+
+export const WithCustomMenuItem: Story = {
+	render: () => {
+		const [inputValue, setInputValue] = useState('');
+		const [selection, setSelection] = useState<typeof accountsWithIcons>([]);
+
+		return (
+			<Combobox
+				id="custom-menu-item"
+				labels={{ label: 'Search', placeholder: 'Search Salesforce' }}
+				multiple
+				onRenderMenuItem={EntityMenuItem}
+				options={accountsWithIcons.filter(
+					(account) =>
+						!inputValue ||
+						account.label.toLowerCase().includes(inputValue.toLowerCase())
+				)}
+				selection={selection}
+				value={inputValue}
+				events={{
+					onChange: (_event, { value }) => setInputValue(value),
+					onSelect: (_event, { selection: newSelection }) => {
+						setSelection(newSelection);
+						setInputValue('');
+					},
+					onRequestRemoveSelectedOption: (_event, { selection: newSelection }) => {
+						setSelection(newSelection);
+					},
+				}}
+			/>
+		);
+	},
+};
+
+// ===== Disabled Options =====
+
+// Individual options can be disabled via `disabled: true`; they render
+// dimmed and are not selectable, while the rest stay interactive.
+export const WithDisabledOptions: Story = {
+	render: () => {
+		const optionsWithDisabled = accountsWithIcons.map((account, index) => ({
+			...account,
+			disabled: index === 1 || index === 3,
+		}));
+		const [inputValue, setInputValue] = useState('');
+		const [selection, setSelection] = useState<typeof optionsWithDisabled>([]);
+
+		return (
+			<Combobox
+				id="disabled-options"
+				labels={{ label: 'Search', placeholder: 'Search Salesforce' }}
+				multiple
+				options={optionsWithDisabled.filter(
+					(account) =>
+						!inputValue ||
+						account.label.toLowerCase().includes(inputValue.toLowerCase())
+				)}
+				selection={selection}
+				value={inputValue}
+				events={{
+					onChange: (_event, { value }) => setInputValue(value),
+					onSelect: (_event, { selection: newSelection }) => {
+						setSelection(newSelection);
+						setInputValue('');
+					},
+					onRequestRemoveSelectedOption: (_event, { selection: newSelection }) => {
+						setSelection(newSelection);
+					},
+				}}
+			/>
+		);
+	},
+};
+
+// ===== Right-to-Left =====
+
+// Combobox rendered in RTL mode. Note: the static SLDS 2 CSS is LTR-only,
+// so some visuals may look off — this exercises the component's RTL wiring.
+export const RightToLeft: Story = {
+	render: () => {
+		const [selection, setSelection] = useState<typeof picklistOptions>([]);
+
+		return (
+			<UNSAFE_DirectionSettings.Provider value="rtl">
+				<div dir="rtl" style={{ width: '300px' }}>
+					<Combobox
+						id="rtl-combobox"
+						labels={{ label: 'Search', placeholder: 'Search Salesforce' }}
+						options={picklistOptions}
+						selection={selection}
+						variant="readonly"
+						events={{
+							onSelect: (_event, { selection: newSelection }) => {
+								setSelection(newSelection);
+							},
+						}}
+					/>
+				</div>
+			</UNSAFE_DirectionSettings.Provider>
 		);
 	},
 };
