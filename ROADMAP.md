@@ -4,22 +4,26 @@
 >
 > This branch (`feat/typescript-modernization`) modernizes the library to React 19,
 > SLDS 2, and a modern toolchain (Vite / Vitest / TypeScript 5 strict / Storybook 10).
-> As of the **2026-08-06** audit, essentially every component ships as real `.tsx`
-> with a Storybook (CSF) story, the type-check gate is clean, and 56 Vitest test
-> files run in place of the old Enzyme suites. The remaining work is the popper.js →
-> @floating-ui migration (which blocks the last 3 source files), test/story gap-fill,
-> the SLDS 2 package swap follow-through, and the major-version toolchain bumps.
+> As of the **2026-08-11** audit, essentially every component ships as real `.tsx`
+> with a Storybook (CSF) story, the type-check gate is clean, lint is at **zero
+> errors** (blocking in CI), and 56 Vitest test files run in place of the old
+> Enzyme suites. Storybook now also auto-deploys to GitHub Pages on every push to
+> `master`. The remaining work is the popper.js → @floating-ui migration (which
+> blocks the last 3 source files — design in progress, see
+> `docs/superpowers/specs/`), test/story gap-fill, the SLDS 2 package swap
+> follow-through, and the major-version toolchain bumps.
 
-## Status Snapshot (2026-08-06)
+## Status Snapshot (2026-08-11)
 
 | Area | State | Notes |
 |------|-------|-------|
 | Component sources | **~68 / 71 on `.tsx`** | Only `lookup/index`, `lookup/lookup`, and `utilities/dialog` remain `.jsx` — all blocked by popper.js |
 | TypeScript | **`tsc --noEmit` clean** | Root `tsconfig.json` present; `strict: true` |
-| Storybook | **10.5.5**, CSF stories | 68 components have stories; 3 do not (see below) |
+| Storybook | **10.5.5**, CSF stories | 68 components have stories; 3 do not (see below); auto-published to GitHub Pages from `master` |
 | Tests | **56 Vitest files**, 0 Enzyme | Migration off Enzyme complete; ~15 components still lack a test |
+| Lint | **0 errors / 199 warnings, blocking in CI** | Fixed `storybook-static/` build output leaking into the lint glob; warnings are pre-existing quality debt (unused vars, a11y) |
 | SLDS 2 CSS | **npm package** | Storybook loads `@salesforce-ux/design-system-2@2.264.0` bundled Lightning Blue; static `slds-plus.css` no longer referenced |
-| Positioning | **popper.js v1** | Still the deprecated Popper.js v1 — sole blocker for the last 3 `.jsx` (P1) |
+| Positioning | **popper.js v1** | Still the deprecated Popper.js v1 — sole blocker for the last 3 `.jsx` (P1); Floating UI migration design in progress |
 | React / tooling | React 19.2.8, Vite 5.4, Vitest 1.6, ESLint 8.57 | Major upgrades (Vite 8, Vitest 4, ESLint 10) pending — P4 |
 | `react-onclickoutside` / `enzyme` | **removed** | Clean `npm install` no longer needs `--legacy-peer-deps` for these |
 
@@ -57,9 +61,9 @@ Dialog positioning layer which still uses **popper.js v1** (deprecated, unmainta
       styling-hook / design-token panel to ~20 components; React has none. Build a shared
       decorator + exemplar "Theming" stories for `button`, `card`, `input`, `avatar` first,
       then extend. *(Highest-leverage, most on-theme for "components using SLDS 2".)*
-- [ ] **Wire existing `__examples__` into stories (near-zero cost):**
-  - [ ] `builder-header` — `base-with-toolbar`, `successful-save`, `failed-save`, `base-with-utilities` already exist unwired.
-  - [ ] `combobox` — 30+ example files (RTL, dialog, custom/ disabled menu items) exist but aren't exported as stories.
+- [x] **Wire existing `__examples__` into stories (near-zero cost):**
+  - [x] `builder-header` — toolbar, utilities, successful/after-successful/failed-save stories added (`a594203e3`). `base-with-page-type-editable` intentionally deferred — depends on Popover/Dialog positioning, tied to P1.
+  - [x] `combobox` — custom-menu-item, disabled-options, and RTL stories added (`8a25a5d11`). Remaining 25+ example files still unwired (dialog-boundary variants, additional icon/subheader combos) — lower leverage, revisit after P1 unblocks Dialog.
 - [ ] **Add missing high-value state stories:**
   - [ ] `docked-composer` — voice/telephony call-state suite (~10 states), popped-out, overflow menu, log-a-task.
   - [ ] `card` — Loading, Collapsed, NestedCards, DataTiles.
@@ -94,8 +98,9 @@ enhancement issues, not story fill-ins:
 - [ ] ESLint 8 → 10 (flat config), `@typescript-eslint/*` 7 → 8, `eslint-plugin-react-hooks` 4 → 7
 - [ ] `@babel/core` 7 → 8, `@types/node` 20 → 26, `nanoid` 5 → 6, `@testing-library/jest-dom` 6 → 7
 - [ ] Verify/repair the npm-publish pipeline (Node 20, Vite build, `files`/`prepack`, `sideEffects`)
-- [ ] **GitHub Pages:** the repo has no Pages site; publish the built Storybook
-      (`storybook build`) to GitHub Pages via CI so the fork has a live component gallery.
+- [x] **GitHub Pages:** `.github/workflows/pages.yml` builds Storybook and deploys on
+      every push to `master`; Pages source set to "GitHub Actions" on the fork. Live at
+      https://showerbee.github.io/design-system-react/ once `master` picks up this branch.
 
 ## Known Limitations
 
