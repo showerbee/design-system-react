@@ -30,11 +30,5 @@ jobs:
       - name: Build
         run: npm run build
 
-      # Non-blocking during modernization: the repo currently has ~379 lint
-      # errors (deprecated React APIs, strict FP rules, ESLint/tsconfig config
-      # drift) tracked as P4 in the modernization roadmap. Surfaced here for
-      # visibility without failing the build. Flip to a blocking step once the
-      # backlog is cleared.
-      - name: Lint (non-blocking)
+      - name: Lint
         run: npm run lint
-        continue-on-error: true

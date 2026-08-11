@@ -6,6 +6,10 @@ icons/
 # is noise until they are ported or removed.
 **/*.browser-test.*
 
+# Built Storybook output (gitignored, but the "**/*.{js,...}" lint glob still
+# picks it up if it exists locally from a prior `build-storybook`).
+storybook-static/
+
 # --- FROM GITIGNORE FILE BELOW THIS LINE ---
 
 ### Project files ###
