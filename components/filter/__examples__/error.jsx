@@ -54,7 +54,7 @@ class Example extends React.Component {
 	render() {
 		return (
 			this.state['show-me'].isActive && (
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<div>
 						<Filter
 							errorLabel="Error Message"

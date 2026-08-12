@@ -37,7 +37,7 @@ class Example extends React.Component {
 		const headerButton = <Button label="App Exchange" />;
 
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<GlobalNavigationBar>
 					<GlobalNavigationBarRegion region="primary">
 						<AppLauncher

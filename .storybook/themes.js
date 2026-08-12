@@ -16,16 +16,16 @@
 export const THEMES = {
 	'lightning-blue': {
 		title: 'Lightning Blue',
-		href: '/slds2/bundled/slds2.lightning-blue.css',
+		href: './slds2/bundled/slds2.lightning-blue.css',
 	},
 	cosmos: {
 		title: 'Cosmos (SLDS2)',
-		href: '/slds2/bundled/slds2.cosmos.css',
+		href: './slds2/bundled/slds2.cosmos.css',
 	},
 	glass: {
 		title: 'Glass',
-		href: '/slds2/bundled/slds2.cosmos.css',
-		overlay: '/slds2/sub-themes/glass.css',
+		href: './slds2/bundled/slds2.cosmos.css',
+		overlay: './slds2/sub-themes/glass.css',
 	},
 };
 

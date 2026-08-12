@@ -49,7 +49,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Combobox
 					className="this-is-the-input"
 					classNameContainer="this-is-the-container"

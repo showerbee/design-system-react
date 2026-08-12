@@ -118,7 +118,7 @@ class Example extends React.Component {
 		];
 
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<PageHeader
 					info="10 items • sorted by name"
 					onRenderActions={actions}

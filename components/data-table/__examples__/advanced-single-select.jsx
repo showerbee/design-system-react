@@ -109,7 +109,7 @@ class Example extends React.Component {
 	render() {
 		return (
 			<div>
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<DataTable
 						assistiveText={{
 							actionsHeader: 'actions',

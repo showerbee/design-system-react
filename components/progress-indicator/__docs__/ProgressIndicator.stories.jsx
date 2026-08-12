@@ -16,7 +16,7 @@ export default {
 	decorators: [
 		(Story) => (
 			<div className="slds-p-around_medium">
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<Story />
 				</IconSettings>
 			</div>

@@ -17,7 +17,7 @@ class Example extends React.Component {
 			labels.error = this.props.errorLabel;
 		}
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div>
 					<RadioButtonGroup
 						labels={labels}

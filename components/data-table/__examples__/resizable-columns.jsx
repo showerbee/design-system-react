@@ -186,7 +186,7 @@ class Example extends React.Component {
 					<h3 className="slds-text-heading_medium slds-m-vertical_medium">
 						With keyboard navigation
 					</h3>
-					<IconSettings iconPath="/assets/icons">
+					<IconSettings iconPath="./assets/icons">
 						<div style={{ height: '200px' }}>
 							<DataTable
 								items={this.state.items}
@@ -209,7 +209,7 @@ class Example extends React.Component {
 					<h3 className="slds-text-heading_medium slds-m-vertical_medium">
 						Resizeable: Columns 0 and 3 fixed
 					</h3>
-					<IconSettings iconPath="/assets/icons">
+					<IconSettings iconPath="./assets/icons">
 						<div style={{ height: '200px' }}>
 							<DataTable
 								items={this.state.items}

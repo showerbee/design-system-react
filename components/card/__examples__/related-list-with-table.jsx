@@ -42,7 +42,7 @@ class Example extends React.Component {
 		const isEmpty = this.state.items.length === 0;
 
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div className="slds-grid slds-grid_vertical">
 					<Card
 						id="ExampleCard"

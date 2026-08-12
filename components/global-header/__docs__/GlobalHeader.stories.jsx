@@ -10,7 +10,7 @@ export default {
 	decorators: [
 		(Story) => (
 			<div className="slds-p-around_medium">
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<Story />
 				</IconSettings>
 			</div>
@@ -22,7 +22,7 @@ export default {
 export const Default = {
 	render: () => (
 		<GlobalHeader 
-			logoSrc="/assets/images/logo-noname.svg"
+			logoSrc="./assets/images/logo-noname.svg"
 			onSkipToContent={() => console.log('Skip to content')}
 			onSkipToNav={() => console.log('Skip to nav')}
 		/>
@@ -33,7 +33,7 @@ export const Default = {
 export const WithNavigation = {
 	render: () => (
 		<GlobalHeader
-			logoSrc="/assets/images/logo-noname.svg"
+			logoSrc="./assets/images/logo-noname.svg"
 			navigation={
 				<nav className="slds-context-bar" role="navigation">
 					<div className="slds-context-bar__primary">
@@ -53,7 +53,7 @@ export const WithNavigation = {
 export const WithActions = {
 	render: () => (
 		<GlobalHeader
-			logoSrc="/assets/images/logo-noname.svg"
+			logoSrc="./assets/images/logo-noname.svg"
 			navigation={
 				<nav className="slds-context-bar" role="navigation">
 					<div className="slds-context-bar__primary">

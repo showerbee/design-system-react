@@ -16,7 +16,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<section className="slds-grid slds-grid_pull-padded slds-grid_vertical-align-center">
 					<div className="slds-col_padded">
 						<h1 className="slds-text-title_caps slds-p-vertical_medium">

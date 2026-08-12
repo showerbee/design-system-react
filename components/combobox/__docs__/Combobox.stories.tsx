@@ -14,7 +14,7 @@ const meta: Meta<typeof Combobox> = {
 	component: Combobox,
 	decorators: [
 		(Story) => (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div className="slds-p-around_medium">
 					<Story />
 				</div>

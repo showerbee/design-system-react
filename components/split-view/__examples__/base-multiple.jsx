@@ -311,7 +311,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div style={{ height: '90vh' }}>
 					<SplitView
 						id="base-multiple-example"

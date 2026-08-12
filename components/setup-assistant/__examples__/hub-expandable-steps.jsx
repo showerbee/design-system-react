@@ -177,7 +177,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<SetupAssistant
 					id="hub-expandable-steps-setup-assistant"
 					onStepToggleIsOpen={(event, data) => {

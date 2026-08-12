@@ -9,7 +9,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Tabs id="tabs-example-default">
 					<TabsPanel label="Item One">Item One Content</TabsPanel>
 					<TabsPanel label="Item Two">Item Two Content</TabsPanel>

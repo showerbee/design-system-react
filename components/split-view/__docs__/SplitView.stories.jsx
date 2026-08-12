@@ -34,7 +34,7 @@ export default {
 	decorators: [
 		(Story) => (
 			<div className="slds-p-around_medium" style={{ height: '400px', border: '1px solid #d8dde6' }}>
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<Story />
 				</IconSettings>
 			</div>

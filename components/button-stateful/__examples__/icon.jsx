@@ -19,7 +19,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<ButtonStateful
 					assistiveText={{ icon: this.state.isActive ? 'liked' : 'not liked' }}
 					aria-pressed={this.state.isActive}

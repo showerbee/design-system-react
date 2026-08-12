@@ -96,7 +96,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div>
 					<div className="slds-p-vertical_medium">
 						<h3 className="slds-text-heading_small">Static Examples</h3>

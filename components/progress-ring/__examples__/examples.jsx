@@ -8,7 +8,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div className="slds-grid slds-grid_pull-padded slds-grid_vertical-align-center slds-wrap">
 					<div className="slds-col_padded slds-m-top_x-large slds-size_1-of-4 slds-align_absolute-center">
 						<ProgressRing value={0} />

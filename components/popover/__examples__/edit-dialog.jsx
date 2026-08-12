@@ -82,7 +82,7 @@ class Example extends React.Component {
 			</div>
 		);
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div>
 					<span className="slds-p-right_x-small">
 						{this.state.prevFirstName} {this.state.prevLastName}

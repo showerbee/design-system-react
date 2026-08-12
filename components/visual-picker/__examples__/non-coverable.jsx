@@ -6,7 +6,7 @@ import IconSettings from '~/components/icon-settings';
 class Example extends React.Component {
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div
 					style={{
 						padding: '4rem 1rem 0px',

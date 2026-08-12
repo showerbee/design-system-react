@@ -11,11 +11,11 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Files id="files-with-actions-example">
 					<File
 						id="file-without-title"
-						image="/assets/images/placeholder-img@16x9.jpg"
+						image="./assets/images/placeholder-img@16x9.jpg"
 						hasNoVisibleTitle
 						labels={{
 							title: 'Proposal.pdf',
@@ -49,7 +49,7 @@ class Example extends React.Component {
 							title: 'Proposal.pdf',
 						}}
 						icon={<Icon category="doctype" name="pdf" />}
-						image="/assets/images/placeholder-img@16x9.jpg"
+						image="./assets/images/placeholder-img@16x9.jpg"
 						onClickDownload={() => {
 							console.log('Download Button Clicked');
 						}}
@@ -75,7 +75,7 @@ class Example extends React.Component {
 					<MoreFiles
 						id="more-file-card"
 						count="22+"
-						image="/assets/images/placeholder-img@16x9.jpg"
+						image="./assets/images/placeholder-img@16x9.jpg"
 					/>
 				</Files>
 			</IconSettings>

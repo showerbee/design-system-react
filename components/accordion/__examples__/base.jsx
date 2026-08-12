@@ -86,7 +86,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Accordion id="base-example-accordion">
 					{this.state.items.map((item, i) => {
 						return (

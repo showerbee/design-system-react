@@ -87,7 +87,7 @@ class Example extends React.Component {
 		);
 
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				{this.props.isModal ? (
 					<Modal
 						isOpen

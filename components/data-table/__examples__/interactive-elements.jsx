@@ -89,7 +89,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div style={{ overflow: 'auto' }}>
 					<h3 className="slds-text-heading_medium slds-m-vertical_medium">
 						Default Fluid Layout

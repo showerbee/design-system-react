@@ -18,7 +18,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Button
 					label="Open Steps Complete WelcomeMat"
 					onClick={this.toggleOpen}

@@ -64,7 +64,7 @@ const meta: Meta<typeof MenuDropdown> = {
 	decorators: [
 		(Story) => (
 			<div className="slds-p-around_medium slds-text-align_center">
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<Story />
 				</IconSettings>
 			</div>
@@ -351,7 +351,7 @@ export const Inverse: Story = {
 				className="slds-p-around_medium"
 				style={{ backgroundColor: '#16325c' }}
 			>
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<Story />
 				</IconSettings>
 			</div>

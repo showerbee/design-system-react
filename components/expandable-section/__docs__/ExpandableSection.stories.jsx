@@ -8,7 +8,7 @@ export default {
 	decorators: [
 		(Story) => (
 			<div className="slds-p-around_medium" style={{ maxWidth: '600px' }}>
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<Story />
 				</IconSettings>
 			</div>

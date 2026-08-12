@@ -5,7 +5,7 @@ import ProgressRing from '~/components/progress-ring';
 class Example extends React.Component {
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div className="slds-grid slds-grid_pull-padded slds-grid_vertical-align-center">
 					<div className="slds-col_padded">
 						<ProgressRing value={100} theme="complete" />

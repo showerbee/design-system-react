@@ -87,7 +87,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div style={{ overflow: 'auto' }}>
 					<DataTable items={this.state.items} id="DataTableExample-1-default">
 						{columns}

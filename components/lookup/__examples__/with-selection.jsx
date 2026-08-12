@@ -8,7 +8,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Lookup
 					emptyMessage="No items found"
 					footerRenderer={Lookup.DefaultFooter}

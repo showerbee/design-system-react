@@ -14,7 +14,7 @@ const meta: Meta<typeof Search> = {
 	tags: ['autodocs'],
 	decorators: [
 		(Story) => (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div className="slds-p-around_medium" style={{ maxWidth: '400px' }}>
 					<Story />
 				</div>

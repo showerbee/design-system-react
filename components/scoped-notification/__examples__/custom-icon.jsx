@@ -6,7 +6,7 @@ import ScopedNotification from '~/components/scoped-notification';
 class Example extends React.Component {
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<ScopedNotification
 					icon={
 						<Icon

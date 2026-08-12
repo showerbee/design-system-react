@@ -10,7 +10,7 @@ import BuilderHeaderNavDropdown from '~/components/builder-header/nav-dropdown';
 import BuilderHeaderToolbar from '~/components/builder-header/toolbar';
 
 const Example = (props) => (
-	<IconSettings iconPath="/assets/icons">
+	<IconSettings iconPath="./assets/icons">
 		<BuilderHeader
 			assistiveText={{
 				backIcon: 'Back',

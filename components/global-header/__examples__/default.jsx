@@ -35,7 +35,7 @@ const HeaderNotificationsCustomContent = (props) => (
 						<span className="slds-avatar slds-avatar_small">
 							<img
 								alt={item.name}
-								src={`/assets/images/${item.avatar}.jpg`}
+								src={`./assets/images/${item.avatar}.jpg`}
 								title={`${item.name} avatar"`}
 							/>
 						</span>
@@ -116,9 +116,9 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<GlobalHeader
-					logoSrc="/assets/images/logo.svg"
+					logoSrc="./assets/images/logo.svg"
 					onSkipToContent={() => {
 						console.log('>>> Skip to Content Clicked');
 					}}

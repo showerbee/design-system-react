@@ -38,7 +38,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div>
 					<Popover
 						isOpen={this.state.isOpen}

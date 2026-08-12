@@ -73,7 +73,7 @@ class Example extends React.Component {
 			</Modal>
 		);
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div>
 					<Button label="Open no header" onClick={this.toggleNoHeaderIsOpen} />
 					<Button label="Open no footer" onClick={this.toggleNofooterIsOpen} />
