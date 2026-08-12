@@ -7,7 +7,7 @@ import IconSettings from '~/components/icon-settings';
 class Example extends React.Component {
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<ToastContainer className="this-is-the-container">
 					<Toast
 						className="this-is-the-alert"

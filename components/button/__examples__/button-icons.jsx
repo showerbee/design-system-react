@@ -8,7 +8,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div className="slds-x-small-buttons_horizontal">
 					<Button
 						assistiveText={{ icon: 'Icon Bare Small' }}

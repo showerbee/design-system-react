@@ -20,7 +20,7 @@ export default {
 					width: '500px',
 				}}
 			>
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<Story />
 				</IconSettings>
 			</div>

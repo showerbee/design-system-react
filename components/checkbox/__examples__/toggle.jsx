@@ -6,7 +6,7 @@ import Checkbox from '~/components/checkbox';
 class Example extends React.Component {
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div>
 					<div className="slds-grid slds-grid_pull-padded slds-grid_vertical-align-center">
 						<div className="slds-col_padded">

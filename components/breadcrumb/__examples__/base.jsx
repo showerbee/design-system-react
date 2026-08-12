@@ -15,7 +15,7 @@ class Example extends React.Component {
 		];
 
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<BreadCrumb
 					assistiveText={{ label: 'Two item breadcrumb' }}
 					trail={trail}

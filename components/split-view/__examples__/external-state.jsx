@@ -319,7 +319,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div>
 					<div className="slds-box slds-m-bottom_large">
 						<div className="slds-m-bottom_small">

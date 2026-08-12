@@ -42,7 +42,7 @@ class Example extends React.Component {
 		];
 
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<GlobalNavigationBar>
 					<GlobalNavigationBarRegion region="primary">
 						<AppLauncher

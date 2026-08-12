@@ -232,7 +232,7 @@ class Example extends React.Component {
 					height: '200px',
 				}}
 			>
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<DataTable
 						assistiveText={{
 							actionsHeader: 'actions',

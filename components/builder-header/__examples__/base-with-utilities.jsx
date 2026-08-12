@@ -7,7 +7,7 @@ import BuilderHeaderNavLink from '../nav-link';
 import BuilderHeaderUtilities from '../utilities';
 
 const Example = (props) => (
-	<IconSettings iconPath="/assets/icons">
+	<IconSettings iconPath="./assets/icons">
 		<BuilderHeader
 			assistiveText={{
 				icon: 'Builder',

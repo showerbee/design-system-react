@@ -84,7 +84,7 @@ class Example extends React.Component {
 			this.state['list-price'].isActive ||
 			this.state.new.isActive;
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Panel variant="filters">
 					<PanelFilterGroup
 						errorLabel="Filters could not be applied. Please fix the validation errors below."

@@ -48,7 +48,7 @@ class Example extends React.Component {
 		);
 
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div>
 					<Button label="Open small modal" onClick={this.toggleOpenSmall} />
 					<Button label="Open medium modal" onClick={this.toggleOpenMedium} />

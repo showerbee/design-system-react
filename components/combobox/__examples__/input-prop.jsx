@@ -85,7 +85,7 @@ class Example extends React.Component {
 			/>
 		);
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Combobox
 					id="combobox-input-prop-example"
 					input={inputElement}

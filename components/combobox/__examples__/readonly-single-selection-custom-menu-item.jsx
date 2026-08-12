@@ -95,7 +95,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Combobox
 					id="combobox-readonly-single-custom-item"
 					events={{

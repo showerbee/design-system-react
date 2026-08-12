@@ -16,7 +16,7 @@ const meta: Meta<typeof Input> = {
 	tags: ['autodocs'],
 	decorators: [
 		(Story) => (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div className="slds-p-around_medium">
 					<Story />
 				</div>

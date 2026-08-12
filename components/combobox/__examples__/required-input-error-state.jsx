@@ -76,7 +76,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Combobox
 					aria-describedby="description-unique-id"
 					id="combobox-required-error-state"

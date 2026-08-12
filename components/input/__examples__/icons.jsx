@@ -9,7 +9,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div className="slds-grid slds-grid_pull-padded slds-grid_vertical-align-center">
 					<h1 className="slds-text-title_caps slds-p-vertical_medium">
 						Input with Icons

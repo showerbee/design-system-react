@@ -19,7 +19,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Button
 					label="Open Trailhead Complete WelcomeMat"
 					onClick={this.toggleOpen}
@@ -35,7 +35,7 @@ class Example extends React.Component {
 							}}
 							infoBadge={
 								<WelcomeMatInfoBadge
-									image="/assets/images/welcome-mat/trailhead_badge@2x.png"
+									image="./assets/images/welcome-mat/trailhead_badge@2x.png"
 									onCompleteRenderActions={() => (
 										<React.Fragment>
 											<p>Cha-ching! You earned the badge.</p>

@@ -6,7 +6,7 @@ import InputIcon from '~/components/icon/input-icon';
 class Example extends React.Component {
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<section>
 					<ol>
 						<li className="slds-p-bottom_large">

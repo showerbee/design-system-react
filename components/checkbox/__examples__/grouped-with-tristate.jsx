@@ -50,7 +50,7 @@ class Example extends React.Component {
 		const allCondimentsStatus = this.getAllCondimentsStatus();
 
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<fieldset>
 					<legend className="slds-p-bottom_xx-small">
 						Grouped with Tristate

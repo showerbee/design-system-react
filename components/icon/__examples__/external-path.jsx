@@ -8,11 +8,11 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Icon
 					assistiveText={{ label: 'We got news!' }}
 					inverse
-					path="/assets/icons/utility-sprite/svg/symbols.svg#announcement"
+					path="./assets/icons/utility-sprite/svg/symbols.svg#announcement"
 					size="medium"
 				/>
 			</IconSettings>

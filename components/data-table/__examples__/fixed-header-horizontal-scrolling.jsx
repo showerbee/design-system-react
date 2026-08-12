@@ -204,7 +204,7 @@ class Example extends React.Component {
 					width: '400px',
 				}}
 			>
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<DataTable
 						assistiveText={{
 							actionsHeader: 'actions',

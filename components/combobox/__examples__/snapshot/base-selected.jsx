@@ -44,7 +44,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Combobox
 					assistiveText={{ label: 'Search' }}
 					id="combobox-unique-id"

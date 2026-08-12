@@ -327,7 +327,7 @@ class Example extends React.Component {
 					marginBottom: '150px',
 				}}
 			>
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<PageHeader
 						onRenderActions={actions}
 						icon={

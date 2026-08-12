@@ -104,7 +104,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div className="slds-grid slds-grid_pull-padded-medium">
 					<div className="slds-p-horizontal_medium">{this.renderLinked()}</div>
 					<div className="slds-p-horizontal_medium">

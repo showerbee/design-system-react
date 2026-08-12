@@ -9,7 +9,7 @@ export default {
 	decorators: [
 		(Story) => (
 			<div className="slds-p-around_large" style={{ minHeight: '300px' }}>
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<Story />
 				</IconSettings>
 			</div>

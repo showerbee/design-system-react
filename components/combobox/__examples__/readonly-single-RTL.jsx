@@ -60,7 +60,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<h1>1. Combobox in RTL mode.</h1>
 				<h2 style={{ fontSize: '10px' }}>
 					Note that <i>design-system.css</i> styles are in LTR. See example code

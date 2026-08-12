@@ -4,7 +4,7 @@ import IconSettings from '~/components/icon-settings';
 import Datepicker from '~/components/date-picker';
 
 const Example = () => (
-	<IconSettings iconPath="/assets/icons">
+	<IconSettings iconPath="./assets/icons">
 		<Datepicker
 			labels={{
 				label: 'Date',

@@ -77,7 +77,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<PortalSettings renderTo="#div1">
 					<div id="div1" />
 					<div id="div2">

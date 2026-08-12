@@ -14,7 +14,7 @@ class Example extends React.Component {
 		];
 
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Breadcrumb
 					id="ADFA34_"
 					assistiveText={{ label: 'Breadcrumb with overflow menu' }}

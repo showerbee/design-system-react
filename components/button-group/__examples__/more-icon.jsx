@@ -10,7 +10,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<ButtonGroup id="button-group-more-icon">
 					<Button label="Refresh" />
 					<Button label="Edit" />

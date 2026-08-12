@@ -13,7 +13,7 @@ class Example extends React.Component {
 			// eslint-disable-next-line
 			<UNSAFE_DirectionSettings.Provider value="rtl">
 				<div dir="rtl">
-					<IconSettings iconPath="/assets/icons">
+					<IconSettings iconPath="./assets/icons">
 						<Dropdown
 							assistiveText={{ icon: 'More Options' }}
 							iconCategory="utility"

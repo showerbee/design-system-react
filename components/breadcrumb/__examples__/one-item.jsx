@@ -10,7 +10,7 @@ class Example extends React.Component {
 		const trail = [<a key="entity" href="#entity">Parent Entity</a>];
 
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<BreadCrumb trail={trail} />
 			</IconSettings>
 		);

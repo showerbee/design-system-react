@@ -8,7 +8,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Avatar
 					assistiveText={{ icon: 'User Icon Avatar' }}
 					title="User Icon Avatar"

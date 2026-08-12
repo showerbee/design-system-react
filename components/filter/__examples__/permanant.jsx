@@ -54,7 +54,7 @@ class Example extends React.Component {
 	render() {
 		return (
 			this.state['show-me'].isActive && (
-				<IconSettings iconPath="/assets/icons">
+				<IconSettings iconPath="./assets/icons">
 					<Filter
 						align={this.props.align}
 						id="sample-panel-filtering-show-me"

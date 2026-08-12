@@ -10,7 +10,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Files id="files-with-no-title-example">
 					<File
 						id="file-with-no-title"
@@ -18,7 +18,7 @@ class Example extends React.Component {
 							title: 'Proposal.pdf',
 						}}
 						hasNoVisibleTitle
-						image="/assets/images/placeholder-img@16x9.jpg"
+						image="./assets/images/placeholder-img@16x9.jpg"
 						onClickImage={(event) => {
 							event.preventDefault();
 							log({

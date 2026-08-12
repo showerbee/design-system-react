@@ -8,7 +8,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<Avatar inverse variant="user" label="Annie Wilson" size="medium" />
 			</IconSettings>
 		);

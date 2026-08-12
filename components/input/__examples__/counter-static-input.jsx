@@ -14,7 +14,7 @@ class Example extends React.Component {
 
 	render() {
 		return (
-			<IconSettings iconPath="/assets/icons">
+			<IconSettings iconPath="./assets/icons">
 				<div>
 					<h1 className="slds-text-title_caps slds-p-vertical_medium">
 						1. Static counter input

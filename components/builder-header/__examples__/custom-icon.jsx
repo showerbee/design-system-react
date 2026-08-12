@@ -5,7 +5,7 @@ import BuilderHeaderNavDropdown from '../nav-dropdown';
 import BuilderHeaderNavLink from '../nav-link';
 
 const Example = (props) => (
-	<IconSettings iconPath="/assets/icons">
+	<IconSettings iconPath="./assets/icons">
 		<BuilderHeader
 			assistiveText={{
 				icon: 'Builder',
