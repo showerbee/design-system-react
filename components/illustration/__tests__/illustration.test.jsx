@@ -159,6 +159,34 @@ describe('SLDSIllustration', () => {
 		});
 	});
 
+	describe('Unsafe path is rejected', () => {
+		it('does not render svg for a dangerous protocol path', () => {
+			const { container } = render(
+				<DemoIllustration
+					heading="Lorem ipsum dolor"
+					messageBody="Lorem ipsum dolor sit amet, consectetur"
+					name="No Access"
+					path="javascript:alert(1)"
+				/>
+			);
+
+			expect(container.querySelector('svg')).not.toBeInTheDocument();
+		});
+
+		it('does not render svg for a file: protocol path', () => {
+			const { container } = render(
+				<DemoIllustration
+					heading="Lorem ipsum dolor"
+					messageBody="Lorem ipsum dolor sit amet, consectetur"
+					name="No Access"
+					path="file://server/folder/data.xml"
+				/>
+			);
+
+			expect(container.querySelector('svg')).not.toBeInTheDocument();
+		});
+	});
+
 	describe('Heading and message render', () => {
 		it('does not render svg', () => {
 			const { container } = render(
