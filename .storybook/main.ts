@@ -30,6 +30,8 @@ const config: StorybookConfig = {
     '../components/filter/__docs__/Filter.stories.tsx',
     '../components/global-header/__docs__/GlobalHeader.stories.jsx',
     '../components/global-navigation-bar/__docs__/GlobalNavigationBar.stories.jsx',
+    '../components/grid/__docs__/Grid.stories.jsx',
+    '../components/icon/__docs__/Icon.stories.jsx',
     '../components/input/__docs__/Input.stories.tsx',
     '../components/input/__docs__/Search.stories.tsx',
     '../components/location-map/__docs__/LocationMap.stories.jsx',

@@ -20,9 +20,9 @@
 | Component sources | **~68 / 71 on `.tsx`** | Only `lookup/index`, `lookup/lookup`, and `utilities/dialog` remain `.jsx` — all blocked by popper.js |
 | TypeScript | **`tsc --noEmit` clean** | Root `tsconfig.json` present; `strict: true` |
 | Storybook | **10.5.5**, CSF stories | 68 components have stories; 3 do not (see below); auto-published to GitHub Pages from `master` |
-| Tests | **56 Vitest files**, 0 Enzyme | Migration off Enzyme complete; ~15 components still lack a test |
+| Tests | **73 Vitest files / 879 tests**, 0 Enzyme | Migration off Enzyme complete; the per-component test gap is closed (2026-08-28) |
 | Lint | **0 errors / 199 warnings, blocking in CI** | Fixed `storybook-static/` build output leaking into the lint glob; warnings are pre-existing quality debt (unused vars, a11y) |
-| SLDS 2 CSS | **npm package** | Storybook loads `@salesforce-ux/design-system-2@2.264.0` bundled Lightning Blue; static `slds-plus.css` no longer referenced |
+| SLDS 2 CSS | **npm package** | Storybook loads `@salesforce-ux/design-system-2@2.264.0` bundled Lightning Blue; the vendored `slds-plus.css` stopgap has been deleted |
 | Positioning | **popper.js v1** | Still the deprecated Popper.js v1 — sole blocker for the last 3 `.jsx` (P1); Floating UI migration design in progress |
 | React / tooling | React 19.2.8, Vite 5.4, Vitest 1.6, ESLint 8.57 | Major upgrades (Vite 8, Vitest 4, ESLint 10) pending — P4 |
 | `react-onclickoutside` / `enzyme` | **removed** | Clean `npm install` no longer needs `--legacy-peer-deps` for these |
@@ -45,16 +45,20 @@ Dialog positioning layer which still uses **popper.js v1** (deprecated, unmainta
 
 ### P2 — Close the story & test gaps
 **Components with no Storybook story** — add CSF stories:
-- [ ] `grid`
-- [ ] `navigation`
-- [ ] `popover-tooltip`
-- [ ] `icon` — story file exists (`components/icon/__docs__/Icon.stories.jsx`) but is not
-      registered in `.storybook/main.ts`'s `stories` glob, so it never builds/renders. One-line fix.
+- [x] `grid` — CSF3 story added (`components/grid/__docs__/Grid.stories.jsx`).
+- [x] `icon` — existing `Icon.stories.jsx` registered in `.storybook/main.ts` (was orphaned).
+- [x] `navigation` / `popover-tooltip` — **intentionally no story.** Both are deprecated
+      alias shims (`componentHasMoved`) re-exporting `vertical-navigation` and `tooltip`
+      respectively; adding stories would just duplicate those components in the sidebar.
+      They do have tests now (verifying the alias + deprecation warning).
 
-**Components with no Vitest test** — add tests (template: `components/button/__tests__`):
-- [ ] `badge`, `brand-band`, `breadcrumb`, `checkbox`, `dynamic-icon`, `files`,
-      `icon-settings`, `panel`, `portal-settings`, `progress-bar`, `progress-ring`,
-      `radio`, `scoped-notification`, `trial-bar`
+**Components with no Vitest test** — ✅ **done** (2026-08-28). Added Vitest + RTL tests
+(template: `components/button/__tests__`) for all 17 that lacked one — `badge`,
+`brand-band`, `breadcrumb`, `checkbox`, `dynamic-icon`, `files`, `grid`, `icon-settings`,
+`navigation`, `panel`, `popover-tooltip`, `portal-settings`, `progress-bar`,
+`progress-ring`, `radio`, `scoped-notification`, `trial-bar`. Suite is now **73 test
+files / 879 tests** (was 56 files). `bread-crumb` is a deprecated alias and is
+intentionally untested.
 
 **Story/feature gaps vs. SLDS 2** — from the component-by-component comparison in
 [`docs/superpowers/specs/2026-08-07-slds2-vs-react-comparison.md`](docs/superpowers/specs/2026-08-07-slds2-vs-react-comparison.md)
@@ -172,12 +176,16 @@ the pitching phase; revisit once there's a committed team/CI budget):**
 ### P3 — SLDS 2 delivery follow-through
 - [x] Storybook renders on the npm `@salesforce-ux/design-system-2` package (latest,
       2.264.0) via `/slds2` static dir instead of the committed `slds-plus.css`.
-- [ ] Delete the vendored `assets/styles/slds-plus.css` once nothing references it
-      (README and the audit spec still mention it).
+- [x] Delete the vendored `assets/styles/slds-plus.css` (removed 2026-08-28; only
+      historical doc references remain, which is fine).
 - [ ] Decide what CSS, if any, the **published package** ships to consumers (peer
       dependency on `@salesforce-ux/design-system-2` vs. documented consumer
       responsibility vs. a re-exported entry stylesheet).
 - [ ] Offer a theme choice (Lightning Blue default; Cosmos alternate) and document it.
+- [ ] **Integrate [`slds-linter`](https://github.com/salesforce-ux/slds-linter) into CI**
+      (or at least run it locally) to validate SLDS 2 token / class usage and flag
+      deprecated styling hooks. *Blocked for now: `slds-linter` is being updated to
+      support React/JSX — revisit once that lands. Remember this exists.*
 
 ### P4 — Toolchain major upgrades & publish
 - [ ] Vite 5 → 8, `@vitejs/plugin-react` 4 → 6, `vite-plugin-dts` 3 → 5
