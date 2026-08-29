@@ -106,6 +106,7 @@ const defaultProps: Partial<ExpressionConditionProps> = {
 		title: 'Condition',
 		deleteIcon: 'Delete Condition',
 	},
+	events: {},
 	labels: {
 		label: '',
 		operator: 'Operator',

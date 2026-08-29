@@ -25,6 +25,37 @@ export interface IllustrationData {
 /**
  * Props for the Illustration component
  */
+const DANGEROUS_PATH_PROTOCOLS = [
+	'javascript:', // eslint-disable-line no-script-url
+	'data:',
+	'vbscript:',
+	'file:',
+	'blob:',
+];
+
+const sanitizePath = (path?: string): string | undefined => {
+	if (!path) return undefined;
+
+	const normalizedPath = path
+		.replace(/[\x00-\x1f\x7f]/g, '') // eslint-disable-line no-control-regex
+		.trim()
+		.toLowerCase();
+
+	const isDangerous = DANGEROUS_PATH_PROTOCOLS.some((protocol) =>
+		normalizedPath.startsWith(protocol)
+	);
+
+	if (isDangerous) {
+		// eslint-disable-next-line no-console
+		console.warn(
+			`Illustration: Blocked potentially unsafe path "${path}". Only http, https, relative paths, and fragment identifiers are allowed.`
+		);
+		return undefined;
+	}
+
+	return path;
+};
+
 export interface IllustrationProps {
 	/** CSS classes */
 	className?: string | string[] | Record<string, boolean>;
@@ -82,16 +113,19 @@ const Illustration = ({
 			/>
 		);
 	} else if (path) {
-		illustrationSvg = (
-			<svg
-				className="slds-illustration__svg"
-				aria-hidden="true"
-				name={kebabCaseName}
-				style={styles}
-			>
-				<use xlinkHref={path} />
-			</svg>
-		);
+		const safePath = sanitizePath(path);
+		if (safePath) {
+			illustrationSvg = (
+				<svg
+					className="slds-illustration__svg"
+					aria-hidden="true"
+					name={kebabCaseName}
+					style={styles}
+				>
+					<use xlinkHref={safePath} />
+				</svg>
+			);
+		}
 	}
 
 	return (

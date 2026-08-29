@@ -127,6 +127,11 @@ const ProgressBar = ({
 		<div id={id} style={containerStyle}>
 			{orientation === 'horizontal' && renderDescription()}
 			<div
+				aria-label={
+					orientation === 'horizontal' && labels.label
+						? undefined
+						: assistiveText.progress
+				}
 				aria-labelledby={
 					orientation === 'horizontal' && labels.label
 						? `progress-bar-label-${id}`

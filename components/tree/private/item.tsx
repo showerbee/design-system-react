@@ -197,8 +197,9 @@ const Item: React.FC<ItemProps> = (props) => {
 				onClick={(event) => handleSelect({ event, props })}
 			>
 				<Button
+					aria-hidden="true"
 					tabIndex={-1}
-					assistiveText={{ icon: '' }}
+					assistiveText={{ icon: 'Expand Tree Branch' }}
 					iconCategory="utility"
 					iconName="chevronright"
 					iconSize="small"

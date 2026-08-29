@@ -51,6 +51,8 @@ export interface ProgressRingProps {
 	flowDirection?: ProgressRingFlowDirection;
 	/** Size of the progress ring */
 	size?: ProgressRingSize;
+	/** Accessible label for the progress value announced to screen readers. Defaults to `Progress: {value}%` */
+	assistiveText?: string;
 }
 
 /**
@@ -65,6 +67,7 @@ const ProgressRing = ({
 	value,
 	flowDirection = 'drain',
 	size = 'medium',
+	assistiveText,
 }: ProgressRingProps): React.ReactElement => {
 	// Get icon based on theme or custom icon
 	const getIcon = (): ReactNode => {
@@ -96,6 +99,7 @@ const ProgressRing = ({
 			})}
 			fillPercentDecimal={percentDecimal}
 			flowDirection={flowDirection}
+			assistiveText={assistiveText || `Progress: ${value}%`}
 		>
 			{getIcon()}
 		</ProgressRingShape>
