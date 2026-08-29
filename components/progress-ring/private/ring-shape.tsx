@@ -33,6 +33,10 @@ export interface ProgressRingShapeProps {
 	 * Content rendered in the center of the ring.
 	 */
 	children?: ReactNode;
+	/**
+	 * Accessible label for the progressbar element.
+	 */
+	assistiveText?: string;
 }
 
 /**
@@ -66,6 +70,7 @@ const ProgressRingShape = ({
 	id,
 	className,
 	children,
+	assistiveText,
 }: ProgressRingShapeProps) => {
 	const progressStyles: React.CSSProperties = {
 		height: size === 'large' ? '2rem' : '1.5rem',
@@ -78,6 +83,7 @@ const ProgressRingShape = ({
 	return (
 		<div id={id} className={classNames('slds-progress-ring', className as string)}>
 			<div
+				aria-label={assistiveText}
 				aria-valuemin={0}
 				aria-valuemax={100}
 				aria-valuenow={fillPercentDecimal * 100}

@@ -26,6 +26,7 @@
 | Positioning | **popper.js v1** | Still the deprecated Popper.js v1 — sole blocker for the last 3 `.jsx` (P1); Floating UI migration design in progress |
 | React / tooling | React 19.2.8, Vite 5.4, Vitest 1.6, ESLint 8.57 | Major upgrades (Vite 8, Vitest 4, ESLint 10) pending — P4 |
 | `react-onclickoutside` / `enzyme` | **removed** | Clean `npm install` no longer needs `--legacy-peer-deps` for these |
+| Accessibility | **One-off axe audit run 2026-08-12** | 62 violations remain across 447 stories (down from 93 after this session's fixes), mostly `color-contrast` in SLDS 2 tokens; see [Accessibility](#accessibility) below. No CI gate yet. |
 
 ## Prioritized Plan
 
@@ -47,6 +48,8 @@ Dialog positioning layer which still uses **popper.js v1** (deprecated, unmainta
 - [ ] `grid`
 - [ ] `navigation`
 - [ ] `popover-tooltip`
+- [ ] `icon` — story file exists (`components/icon/__docs__/Icon.stories.jsx`) but is not
+      registered in `.storybook/main.ts`'s `stories` glob, so it never builds/renders. One-line fix.
 
 **Components with no Vitest test** — add tests (template: `components/button/__tests__`):
 - [ ] `badge`, `brand-band`, `breadcrumb`, `checkbox`, `dynamic-icon`, `files`,
@@ -82,6 +85,90 @@ enhancement issues, not story fill-ins:
 - [ ] `input` — native `type` variants (checkbox / toggle / range / color / file).
 - [ ] `global-header` — interactive search + notification panel *(blocked by `react-onclickoutside` / React 19 — ties to P1 dependency work).*
 
+### Accessibility
+
+This repo is still experimental and in the pitching phase, so a11y work so far is a
+**manual one-off audit**, not an enforced gate. Below is what was found, what was
+fixed, what's still open, and the plan for making this automatic once the project
+graduates past "pitching."
+
+**How the audit works today (run once, by hand):**
+- [`scripts/a11y-audit.mjs`](scripts/a11y-audit.mjs) builds on `axe-core` + Playwright:
+  it reads `storybook-static/index.json` for the full story list, then for each story
+  navigates a headless Chromium page to `iframe.html?id=<story>`, waits for Storybook's
+  `sb-show-main` render-complete signal, and runs `axe.run()` scoped to `#storybook-root`
+  against the WCAG 2.1/2.2 A/AA + best-practice rule sets.
+- Usage: `npm run build-storybook`, serve `storybook-static/` with `http-server -s`
+  (not `serve`, which 301-redirects clean URLs and breaks Storybook's routing), then
+  `node scripts/a11y-audit.mjs --url <served-url> --out a11y-report.json`.
+- This is deliberately a standalone script, not wired into `npm test` or CI — see
+  "Future: automate this" below for the plan to change that.
+
+**2026-08-12 audit results and fixes applied this pass:**
+- Initial run: 447 stories, 93 violations across 25 components, plus **4 stories that
+  crashed outright** (`Components/Expression` — `default`, `all-conditions`,
+  `any-condition`, `custom-logic`) due to a missing `events` default prop causing a
+  `TypeError` at render time. Fixed in `components/expression/condition.tsx`.
+- `aria-progressbar-name`: fixed across `ProgressBar`, `ProgressRing` (+ its private
+  `ring-shape.tsx`), and `ProgressIndicator`'s private progress-bar — all four had
+  `role="progressbar"` elements relying on visually-hidden child text for their
+  accessible name, which the ARIA spec does not credit to a progressbar (only
+  `aria-label`/`aria-labelledby`/`title` count). Added proper `aria-label`s.
+- `button-name`: fixed `Tree`'s leaf-item decorative chevron button (`aria-hidden="true"`
+  + non-empty assistive text, since it's a permanently-disabled visual-alignment
+  placeholder that never actually expands anything on a leaf node).
+- Investigating the `MenuDropdown` `button-name` finding on `CustomTrigger`/`WithNubbins`
+  surfaced a real, separate **functional bug**, not just a missing label: in the built
+  Storybook/Vite bundle (not under Vitest+RTL), `menu-dropdown.tsx`'s custom-trigger
+  detection compared a child's `displayName` against the frozen `MENU_DROPDOWN_TRIGGER`
+  string constant — but Storybook's `reactDocgenTypescriptOptions` docgen plugin mutates
+  every component's `.displayName` at runtime after module load (for docs metadata),
+  so the frozen-constant comparison silently stopped matching in the production build.
+  `button-trigger.tsx`'s equivalent check already compared against `Button.displayName`
+  live and kept working. Fixed `menu-dropdown.tsx` to compare against `DefaultTrigger.displayName`
+  (live) instead of the constant, which also fixes the trigger's icon/label rendering
+  in the correct place instead of leaking into the opened dropdown's menu content.
+- Re-ran the audit after fixes and rebuilding Storybook: **62 violations, 0 crashes**,
+  down from 93 violations + 4 crashes. Verified via `npx vitest run` on
+  `menu-dropdown`, `time-picker`, `global-header`, `global-navigation-bar` (all of
+  which share the same displayName-matching pattern) — 79 tests, all passing.
+
+**Remaining 62 violations (not fixed this pass — triaged, not yet actioned):**
+- `color-contrast` (46 of 62, ~20 components: `Accordion`, `Avatar`, `Badge`,
+  `Breadcrumb`, `Button`, `Card`, `Checkbox`, `DataTable`, `ExpandableSection`,
+  `LocationMap`, `MenuDropdown`, `PageHeader`, `PillContainer`, `ScopedNotification`,
+  `SplitView`, `VisualPicker`, and others) — this is almost certainly an SLDS 2
+  design-token issue (color pairs defined upstream), not a component-code bug. Needs
+  a scoping decision: fix at the token level (upstream `@salesforce-ux/design-system-2`
+  concern) vs. component-level color overrides.
+- `Pill` — `nested-interactive` + `aria-required-parent` (a focusable `role="option"`
+  element with focusable descendants, outside a `role="listbox"` parent).
+- `VisualPicker` — `label` (radio inputs without associated `<label>`).
+- `Panel` — `select-name` (unlabeled `<select>`).
+- `ColorPicker` — `aria-input-field-name` (unlabeled text input).
+- `Card` — `scrollable-region-focusable` (scrollable region not keyboard-focusable).
+- `DockedComposer` — `target-size` (touch targets below the 24×24px minimum).
+
+**Future: automate this (not started — deliberately deferred while the project is in
+the pitching phase; revisit once there's a committed team/CI budget):**
+- [ ] Wire `scripts/a11y-audit.mjs` (or a `@storybook/test-runner` + `axe-playwright`
+      equivalent — both researched and version-compatible with this repo's Storybook
+      `^10.2.1`, but not yet installed) into CI as a real merge gate, generating one
+      check per story or one aggregate report. Upstream `salesforce-design-system`'s
+      legacy `packages/design-system/__tests__/a11y/` harness (axe + `@sa11y/preset-rules`,
+      one Playwright spec per story batch) is worth adapting the pattern from — but note
+      upstream itself never wired it into a workflow file either, so this would be new
+      ground, not a lift-and-shift.
+  - [ ] Baseline the current 62 known violations as an accepted-debt allowlist so the
+        gate only fails on *new* violations at first, then ratchet down.
+- [ ] Triage the ~91 pre-existing `jsx-a11y` ESLint warnings (currently `warn`, not
+      `error` — intentional while getting the repo to zero *errors* was the priority):
+      fix the cheap ones, then flip the rule to `error` once the remainder is at or
+      near zero, so new a11y lint issues fail CI immediately instead of relying on the
+      (currently manual) axe pass.
+- [ ] Register `components/icon/__docs__/Icon.stories.jsx` in `.storybook/main.ts` (see
+      P2) — orphaned stories are invisible to any future story-driven a11y gate.
+
 ### P3 — SLDS 2 delivery follow-through
 - [x] Storybook renders on the npm `@salesforce-ux/design-system-2` package (latest,
       2.264.0) via `/slds2` static dir instead of the committed `slds-plus.css`.
@@ -110,6 +197,9 @@ enhancement issues, not story fill-ins:
 4. **Published CSS** — the published package does not yet ship SLDS 2 CSS to consumers;
    Storybook wires it up locally from the npm package (P3).
 5. **Toolchain majors pending** — Vite/Vitest/ESLint are a major version behind (P4).
+6. **No automated a11y gate** — a one-off manual axe/Playwright audit (see
+   [Accessibility](#accessibility)) found 62 open violations, mostly `color-contrast`;
+   nothing currently blocks a PR from introducing new ones.
 
 ## How to Help
 

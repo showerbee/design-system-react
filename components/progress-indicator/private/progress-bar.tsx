@@ -35,6 +35,10 @@ class ProgressBar extends React.Component<ProgressBarProps> {
 				className={classNames('slds-progress-bar slds-progress-bar_x-small', {
 					'slds-progress-bar_vertical': this.props.orientation === 'vertical',
 				})}
+				aria-label={
+					this.props.assistiveText?.percentage ||
+					`Progress: ${this.props.value}%`
+				}
 				aria-valuemin={0}
 				aria-valuemax={100}
 				aria-valuenow={Number(this.props.value)}

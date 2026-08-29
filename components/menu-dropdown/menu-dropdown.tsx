@@ -48,11 +48,7 @@ import generateId from '../../utilities/generate-id';
 import keyboardNavigate from '../../utilities/keyboard-navigate';
 import KeyBuffer from '../../utilities/key-buffer';
 import KEYS from '../../utilities/key-code';
-import {
-	MENU_DROPDOWN,
-	MENU_DROPDOWN_TRIGGER,
-	LIST,
-} from '../../utilities/constants';
+import { MENU_DROPDOWN, LIST } from '../../utilities/constants';
 import { IconSettingsContext } from '../icon-settings';
 
 const documentDefined = typeof document !== 'undefined';
@@ -998,7 +994,7 @@ const MenuDropdown: React.FC<MenuDropdownProps> & {
 			typeof child === 'object' &&
 			'type' in child &&
 			(child.type as { displayName?: string })?.displayName ===
-				MENU_DROPDOWN_TRIGGER
+				DefaultTrigger.displayName
 		) {
 			CustomTriggerChildProps = (child as ReactElement).props as Record<string, unknown>;
 			CurrentTrigger = (child as ReactElement).type as React.ElementType;
